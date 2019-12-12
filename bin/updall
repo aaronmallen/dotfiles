@@ -7,24 +7,22 @@ command -v brew >/dev/null && \
 
 #rvm
 command -v rvm >/dev/null && \
-  rvm reload
-  rvm use default
-  rvm get stable
-  rvm get head
-  rvm cleanup all
+  rvm reload && sleep 1s && \
+  rvm get stable && sleep 1s && \
+  rvm use stable && sleep 1s && \
+  rvm cleanup all && sleep 1s
 
 # npm
 command -v npm >/dev/null && \
-  npm config delete prefix &&
+  npm config delete prefix && sleep 1s && \
   npm update -g
 
 # nvm
 command -v nvm >/dev/null && \
-  nvm install --lts --latest-npm
-  nvm alias default $(nvm stable)
-  nvm use --delete-prefix stable --silent
+  nvm install --lts --latest-npm && sleep 1s && \
+  nvm use --lts --delete-prefix --silent
 
 # docker
 command -v docker >/dev/null && \
-  docker system prune &&
+  docker system prune  && sleep 1s && \
   docker image prune
