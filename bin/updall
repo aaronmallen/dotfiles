@@ -1,0 +1,29 @@
+# homebrew
+command -v brew >/dev/null && \
+  brew update && sleep 1s && \
+  brew upgrade && sleep 1s && \
+  brew cleanup && sleep 1s && \
+  brew doctor
+
+#rvm
+command -v rvm >/dev/null && \
+  rvm reload
+  rvm use default
+  rvm get stable
+  rvm get head
+  rvm cleanup all
+
+# npm
+command -v npm >/dev/null && \
+  npm config delete prefix &&
+  npm update -g
+
+# nvm
+command -v nvm >/dev/null && \
+  nvm use --delete-prefix $(node --version) --silent
+  nvm install --lts --latest-npm
+
+# docker
+command -v docker >/dev/null && \
+  docker system prune &&
+  docker image prune

@@ -1,0 +1,11 @@
+alias cat='bat'
+alias compose='docker-compose'
+
+# git aliases
+alias commit='git commit -S -m'
+alias commit-all='git add . && git commit -S -m'
+alias push-head='git push origin head'
+alias push-master='git push origin master'
+
+# dotfile management
+alias config='/usr/bin/git --git-dir=/$HOME/.cfg/ --work-tree=$HOME'

@@ -1,0 +1,11 @@
+# open SourceTree
+function st {
+  dir=$(git rev-parse --show-toplevel 2>/dev/null)
+
+  [ $? -ne 0 ] && { echo "Not in a git repo."; return; }
+
+  command -v stree >/dev/null 2>&1 && stree $dir || {
+    echo "Please install SourceTree first!"
+    open https://www.sourcetreeapp.com/
+  }
+}

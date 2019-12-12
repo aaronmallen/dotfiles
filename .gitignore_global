@@ -1,0 +1,21 @@
+.DS_Store
+.idea
+.project-abbr
+.env
+*.log
+cscope.out
+
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# workspace files are user-specific
+Session.vim
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.vscode
+
+# sftp configuration file
+sftp-config.json

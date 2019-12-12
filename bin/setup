@@ -1,0 +1,36 @@
+#!/bin/zsh
+
+chsh -s /bin/zsh
+
+echo "==> Installing Oh My Zsh.."
+$ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+echo "==> Installing Homebrew..."
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew update
+/usr/local/bin/brew tap Homebrew/bundle
+brew -v
+
+echo "==> Installing Brew Packages..."
+brew bundle
+
+echo "==> Installing RVM..."
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+curl -sSL https://get.rvm.io | bash -s stable
+source ~/.rvm/scripts/rvm
+rvm get head
+rvm install ruby-2.6
+rvm use ruby-2.6 --default
+rvm -v
+
+echo "==> Installing NVM..."
+mkdir ~/.nvm
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+export NVM_DIR=$HOME/.nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+nvm --version
+
+echo "==> Finalizing Setup"
+compaudit | xargs chmod g-w
+defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock

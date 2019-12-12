@@ -1,0 +1,30 @@
+[user]
+	name = Aaron Allen
+	email = aaronmallen4@gmail.com
+	signingkey = D297648204303B49
+[core]
+	excludesfile = /Users/aarona/.gitignore_global
+  editor = code --wait
+[diff]
+  tool = default-difftool
+[difftool "default-difftool"]
+  cmd = code --wait --diff $LOCAL $REMOTE
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[push]
+  default = simple
+[color]
+  ui = true
+  diff   = auto
+  status = auto
+  branch = auto
+[alias]
+  fucked = !git checkout . && git clean -df
+[github]
+  user  = aaronmallen
+[gpg]
+  program = gpg
