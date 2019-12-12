@@ -20,8 +20,9 @@ command -v npm >/dev/null && \
 
 # nvm
 command -v nvm >/dev/null && \
-  nvm use --delete-prefix $(node --version) --silent
   nvm install --lts --latest-npm
+  nvm alias default $(nvm stable)
+  nvm use --delete-prefix stable --silent
 
 # docker
 command -v docker >/dev/null && \
