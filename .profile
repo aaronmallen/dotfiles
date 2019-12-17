@@ -6,11 +6,12 @@
 
 # environment
 # set up the path
-export PATH="/usr/local/share/npm/bin:/usr/local/opt/go/libexec/bin:/usr/local/bin:/usr/local/sbin:$HOME/bin:$PATH"
+export PATH=$PATH:/usr/local/bin:/usr/local/sbin:$HOME/bin
 
 export CDPATH=.
 
 # node
+export PATH=$PATH:/usr/local/share/npm/bin
 export NODE_PATH=/usr/local/lib/node:/usr/local/lib/node_modules
 
 # gpg
