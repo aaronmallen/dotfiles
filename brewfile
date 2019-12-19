@@ -71,6 +71,7 @@ cask "vectr"
 cask "virtualbox"
 cask "visual-studio-code"
 cask "whatsapp"
+mas "Jira Cloud by Atlassian", id: 1475897096
 mas "LastPass", id: 926036361
 mas "Magnet", id: 441258766
 mas "Spark", id: 1176895641
