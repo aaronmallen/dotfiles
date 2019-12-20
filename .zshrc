@@ -3,8 +3,12 @@
 
 # load our own completion functions
 fpath=(~/.zsh/completion $fpath)
-fpath=(/usr/localshare/zsh/site-functions $fpath)
+fpath=(/usr/local/share/zsh/site-functions $fpath)
 fpath=(/usr/local/share/zsh-completions $fpath)
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi
+
 
 # completion
 autoload -U compinit
