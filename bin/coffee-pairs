@@ -1,0 +1,409 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'json'
+require 'optparse'
+
+module CoffeePairs
+  VERSION = '0.1.0'
+
+  module Store
+    FILEPATH = File.join(ENV['HOME'], '.coffee-pairs.json')
+
+    class << self
+      def destroy!
+        File.delete(FILEPATH) if File.exist?(FILEPATH)
+      end
+
+      def load
+        init_store
+        JSON.parse(File.read(FILEPATH))
+      end
+
+      def save(data = [])
+        File.write(FILEPATH, data.to_json)
+        File.exist?(FILEPATH)
+      end
+
+      private
+
+      def init_store
+        return if File.exist?(FILEPATH)
+
+        File.write(FILEPATH, [].to_json)
+      end
+    end
+  end
+
+  class Person
+    attr_accessor :id, :name, :previously_paired
+
+    class << self
+      def collection
+        @collection ||= Store.load.each_with_index.map do |person, id|
+          new(id: id, name: person['name'], previously_paired: person['previously_paired'])
+        end
+      end
+      alias all collection
+
+      def each(&block)
+        collection.each(&block)
+      end
+
+      def find(name)
+        collection.select { |person| person.name == name }.first
+      end
+
+      def map(&block)
+        collection.map(&block)
+      end
+    end
+
+    def initialize(attributes = {})
+      @id = attributes[:id]
+      @name = attributes[:name]
+      @previously_paired = attributes[:previously_paired] || []
+    end
+
+    def delete
+      if id
+        self.class.collection[id] = nil
+      else
+        self.class.collection.delete(self)
+      end
+      save_collection!
+    end
+
+    def save
+      if id
+        self.class.collection[id] = self
+      else
+        self.id = self.class.collection.length
+        self.class.collection << self
+      end
+      save_collection!
+    end
+
+    def to_hash
+      {
+        name: name,
+        previously_paired: previously_paired
+      }
+    end
+
+    private
+
+    def save_collection!
+      Store.save(self.class.collection.compact.map(&:to_hash))
+    end
+  end
+
+  module Pairer
+    class << self
+      def run(to_pair)
+        return unless to_pair
+
+        to_pair.map do |person|
+          partner = find_partners(person).sample
+          next unless partner
+
+          save_pairing(person, partner)
+          "#{person.name} <==> #{partner.name}"
+        end
+      end
+
+      private
+
+      def people
+        Person.all
+      end
+
+      def find_partners(person)
+        people.reject do |partner|
+          previously_paired = person.previously_paired.include?(partner.name)
+          same_name = partner.name == person.name
+          previously_paired || same_name
+        end
+      end
+
+      def save_pairing(person1, person2)
+        person1.previously_paired << person2.name
+        person2.previously_paired << person1.name
+        [person1, person2].each(&:save)
+      end
+    end
+  end
+
+  module CLI
+    class Command
+      attr_accessor :options
+      def self.banner(banner = nil)
+        return @banner unless banner
+
+        @banner = banner
+      end
+
+      def self.command_name
+        name[/[^:]*$/].split(/(?=[A-Z])/).map(&:downcase).join('-')
+      end
+
+      def self.desc(desc = nil)
+        return @desc unless desc
+
+        @desc = desc
+      end
+
+      def self.options?
+        @has_options != false
+      end
+
+      def self.no_options!
+        @has_options = false
+      end
+
+      def self.option_parser
+        OptionParser.new do |opts|
+          opts.banner = useage
+
+          yield opts if block_given?
+
+          opts.on('-h', '--help', 'Print this help') do
+            puts opts
+            exit
+          end
+        end
+      end
+
+      def self.useage
+        "Usage: coffee-pairs #{command_name} #{banner}".strip
+      end
+
+      def initialize(args)
+        @options = self.class.option_parser.parse!(args) if self.class.options?
+      end
+
+      def execute; end
+
+      private
+
+      def print_usage_and_exit_1
+        puts self.class.useage
+        exit 1
+      end
+
+      def single_arg
+        arg = options&.join(' ')
+        return unless arg
+
+        arg unless arg.empty?
+      end
+    end
+
+    class Add < Command
+      desc 'Add a person to the pairing list'
+      banner '<name>'
+
+      def execute
+        if single_arg
+          Person.new(name: single_arg).save
+        else
+          print_usage_and_exit_1
+        end
+      end
+    end
+
+    class Clear < Command
+      desc 'Remove coffee-pairs data from your computer'
+      no_options!
+
+      def execute
+        Store.destroy!
+      end
+    end
+
+    class Help < Command
+      no_options!
+      desc 'Prints this help'
+
+      def self.command_name
+        '-h, --help'
+      end
+
+      def execute
+        message = CLI.commands.sort_by { |command| command.command_name }.map do |command|
+          "#{command.command_name}#{space(command.command_name)}#{command.desc}"
+        end
+
+        puts message.join("\n")
+      end
+
+      private
+
+      def space(command_name)
+        max_length = CLI.commands.map(&:command_name).max_by(&:length).length + 25
+        space_length = max_length - command_name.length
+        space_length.times.map { ' ' }.join
+      end
+    end
+
+    class List < Command
+      desc 'List pairable people'
+      banner '[name]'
+
+      def execute
+        print_previously_paired || print_all_names
+      end
+
+      private
+
+      def print_all_names
+        puts Person.map(&:name).join("\n")
+      end
+
+      def print_previously_paired
+        return unless single_arg
+
+        names = Person.find(single_arg)&.previously_paired
+        if names.empty?
+          puts "#{name} hasn't been paired with anyone"
+        else
+          puts names.join("\n")
+        end
+      end
+    end
+
+    class Pair < Command
+      desc 'Pair an individual or generate pairs for all pairable people'
+      banner '[name]'
+
+      def execute
+        pair_one || pair_all || no_pairs
+      end
+
+      private
+
+      def no_pairs
+        puts 'There are no more pairs :('
+      end
+
+      def pair_all
+        pairs = Pairer.run(Person.all)
+        puts pairs.join("\n") unless pairs.empty?
+      end
+
+      def pair_one
+        return unless single_arg
+
+        pairs = Pairer.run([Person.find(single_arg)])
+        puts pairs.join("\n") unless pairs.empty?
+      end
+    end
+
+    class Remove < Command
+      desc 'Remove a person from the pairing list'
+      banner '<name>'
+
+      def execute
+        if single_arg
+          Person.find(single_arg)&.delete
+        else
+          print_usage_and_exit_1
+        end
+      end
+    end
+
+    class Reset < Command
+      desc 'Reset the pairing list'
+      banner '[name]'
+
+      def execute
+        reset_one || reset_all
+      end
+
+      private
+
+      def reset_all
+        Person.each do |person|
+          person.previously_paired = []
+          person.save
+        end
+        true
+      end
+
+      def reset_one
+        return unless single_arg
+
+        person = Person.find(single_arg)
+        return unless person
+
+        person.previously_paired = []
+        person.save
+        true
+      end
+    end
+
+    class Version < Command
+      no_options!
+      desc 'Prints coffee-pairs version'
+
+      def self.command_name
+        '-v, --version'
+      end
+
+      def execute
+        puts "v#{CoffeePairs::VERSION}"
+      end
+    end
+
+    class << self
+      def run(args)
+        name = args.shift unless args.empty?
+        command = command(name).new(args)
+        command.execute
+      end
+
+      def commands
+        CLI.constants
+           .map { |name| try_const_get(name) }
+           .select { |constant| command?(constant) }
+      end
+
+      private
+
+      def command(name)
+        const_name = command_name(name)
+        constant   = CLI.const_get(const_name) if const_exist?(const_name)
+        if command?(constant)
+          constant
+        else
+          warn "unknown command #{name}"
+          exit 1
+        end
+      end
+
+      def command?(constant)
+        constant.is_a?(Class) && constant < Command
+      end
+
+      def command_name(name)
+        case name
+        when nil, '-h', '--help' then 'Help'
+        when '-v', '--version' then 'Version'
+        when /^--/ then command_name(name[2..-1])
+        else name.split('-').map(&:capitalize).join
+        end
+      end
+
+      def const_exist?(const_name)
+        const_name =~ /^[A-Z][A-Za-z]+$/ && const_defined?(const_name)
+      end
+
+      def try_const_get(name)
+        CLI.const_get(name)
+      rescue Exception
+      end
+    end
+  end
+end
+
+CoffeePairs::CLI.run(ARGV)
