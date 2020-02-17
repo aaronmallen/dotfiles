@@ -9,3 +9,55 @@ function st {
     open https://www.sourcetreeapp.com/
   }
 }
+
+# Usage for _git_topic_branch
+function _git_topic_branch_usage {
+  [ -z "$1" ] && { echo "Usage: git <branch_type> <issue_id>"; return; }
+  [ -z "$2" ] && { echo "Usage: git $1 <issue_id>"; return; }
+}
+
+# start a git topic branch
+function _git_topic_branch_start {
+  git checkout -b "$1/$2"
+}
+
+# complete a git topic branch
+function _git_topic_branch_stop {
+  git checkout master
+  git pull origin master
+  git branch -D "$1/$2"
+}
+
+# start or finish a git topic branch
+function _git_topic_branch {
+  [ -z "$1" ] && { _git_topic_branch_usage; return; }
+
+  current_branch=$(git branch --show-current)
+  if [[ $current_branch =~ $1 ]]; then
+    issue_id=${current_branch//$1\/}
+    _git_topic_branch_stop $1 $issue_id
+  else
+    [ -z "$2" ] && { _git_topic_branch_usage $1; return; }
+    _git_topic_branch_start $1 $2
+  fi
+}
+
+# git feature branch
+function git-feature {
+  _git_topic_branch feature $1
+}
+
+# git bugfix branch
+function git-bugfix {
+  _git_topic_branch bugfix $1
+}
+
+# git chore branch
+function git-chore {
+  _git_topic_branch chore $1
+}
+
+# git task branch
+function git-task {
+  _git_topic_branch task $1
+}
