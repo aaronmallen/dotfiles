@@ -24,7 +24,11 @@
   branch = auto
 [alias]
   fucked = !git checkout . && git clean -df
+	last = log -1 HEAD
 [github]
   user  = aaronmallen
 [gpg]
   program = gpg
+[pager]
+	branch = false
+	tag = false
