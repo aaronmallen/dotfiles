@@ -1,15 +1,15 @@
 # homebrew
 command -v brew >/dev/null && \
   brew update && sleep 1s && \
-  brew upgrade && sleep 1s && \
+  brew upgrade --cask && sleep 1s && \
   brew cleanup && sleep 1s && \
   brew doctor
 
 #rvm
 command -v rvm >/dev/null && \
+  rvm get head && sleep 1 && \
   rvm reload && sleep 1s && \
   rvm get stable && sleep 1s && \
-  rvm use stable && sleep 1s && \
   rvm cleanup all && sleep 1s
 
 # npm
@@ -22,7 +22,7 @@ command -v nvm >/dev/null && \
   nvm install --lts --latest-npm && sleep 1s && \
   nvm use --lts --delete-prefix --silent
 
-# docker
-command -v docker >/dev/null && \
-  docker system prune  && sleep 1s && \
-  docker image prune
+# apple
+command -v softwareupdate >/dev/null && \
+  softwareupdate -i --all && sleep 1s && \
+  defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
