@@ -3,10 +3,10 @@
 chsh -s /bin/zsh
 
 echo "==> Installing Oh My Zsh.."
-$ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+/bin/zsh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 echo "==> Installing Homebrew..."
-/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew update
 /usr/local/bin/brew tap Homebrew/bundle
 brew -v
@@ -20,6 +20,7 @@ asdf_plugins=(
   golang
   nodejs
   postgres
+  python
   redis
   ruby
   sqlite

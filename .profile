@@ -28,8 +28,8 @@ export GOPATH=$HOME/Development/go
 export PATH=$PATH:$GOPATH/bin
 
 # Add asdf to PATH for scripting.
-source `brew --prefix asdf`/asdf.sh
+command -v brew >/dev/null && source `brew --prefix asdf`/asdf.sh
 
 # use z to track most-used directories and jump around more easily than
 # with cd
-source `brew --prefix`/etc/profile.d/z.sh # z https://github.com/rupa/z
+command -v brew >/dev/null && source `brew --prefix`/etc/profile.d/z.sh # z https://github.com/rupa/z
