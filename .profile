@@ -17,10 +17,6 @@ export NODE_PATH=/usr/local/lib/node:/usr/local/lib/node_modules
 # gpg
 export GPG_TTY=$(tty)
 
-# nvm
-export NVM_DIR=$HOME/.nvm
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
 # keep a lot more history than the default 500 previous commands
 export HISTSIZE=10000
 export HISTFILESIZE=10000
@@ -31,10 +27,8 @@ export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export GOPATH=$HOME/Development/go
 export PATH=$PATH:$GOPATH/bin
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH=$PATH:$HOME/.rvm/bin
-# Load RVM into a shell session *as a function*
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+# Add asdf to PATH for scripting.
+source `brew --prefix asdf`/asdf.sh
 
 # use z to track most-used directories and jump around more easily than
 # with cd

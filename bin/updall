@@ -5,22 +5,9 @@ command -v brew >/dev/null && \
   brew cleanup && sleep 1s && \
   brew doctor
 
-#rvm
-command -v rvm >/dev/null && \
-  rvm get head && sleep 1 && \
-  rvm reload && sleep 1s && \
-  rvm get stable && sleep 1s && \
-  rvm cleanup all && sleep 1s
-
-# npm
-command -v npm >/dev/null && \
-  npm config delete prefix && sleep 1s && \
-  npm update -g
-
-# nvm
-command -v nvm >/dev/null && \
-  nvm install --lts --latest-npm && sleep 1s && \
-  nvm use --lts --delete-prefix --silent
+# asdf
+command -v asdf >/dev/null && \
+ asdf plugin update --all && sleep 1s
 
 # apple
 command -v softwareupdate >/dev/null && \

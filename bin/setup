@@ -6,7 +6,7 @@ echo "==> Installing Oh My Zsh.."
 $ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 echo "==> Installing Homebrew..."
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew update
 /usr/local/bin/brew tap Homebrew/bundle
 brew -v
@@ -14,27 +14,41 @@ brew -v
 echo "==> Installing Brew Packages..."
 brew bundle
 
-echo "==> Installing RVM..."
-gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-curl -sSL https://get.rvm.io | bash -s stable
-source ~/.rvm/scripts/rvm
-rvm get head
-rvm install ruby-2.6
-rvm use ruby-2.6 --default
-rvm -v
+echo "==> Installing asdf Plugins..."
+source `brew --prefix asdf`/asdf.sh
+asdf_plugins=(
+  golang
+  nodejs
+  postgres
+  redis
+  ruby
+  sqlite
+  yarn
+)
 
-echo "==> Installing NVM..."
-mkdir ~/.nvm
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-export NVM_DIR=$HOME/.nvm
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm --version
-nvm install --lts
-nvm use --lts
-nvm install-latest-npm
+asdf_setups=(
+  '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
+)
+
+for plugin in "${asdf_plugins[@]}"
+do
+  echo "==> Installing asdf Plugin: ${plugin}"
+  asdf plugin add ${plugin}
+done
+
+echo "==> Setuping Up asdf Dependencies..."
+for setup in "${asdf_setups[@]}"
+do
+  zsh -c ${setup}
+done
+
+for plugin in "${asdf_plugins[@]}"
+do
+  echo "==> Installing latest ${plugin}"
+  asdf install ${plugin} latest
+done
 
 echo "==> Installing global Node modules..."
-
 node_modules=(
   @vue/cli
   caniuse-cmd
