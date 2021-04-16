@@ -3,22 +3,13 @@ command -v brew >/dev/null && \
   brew update && sleep 1s && \
   brew upgrade && sleep 1s && \
   brew upgrade --cask && sleep 1s && \
+  brew bundle && sleep 1s && \
   brew cleanup && sleep 1s && \
   brew doctor
-
-update_all_asdf_plugins() {
-  plugins=$(asdf plugin list)
-
-  for plugin in $plugins
-  do
-    sh -c "asdf install $plugin latest"
-  done
-}
 
 # asdf
 command -v asdf >/dev/null && \
  asdf plugin update --all && sleep 1s && \
- update_all_asdf_plugins && sleep 1s && \
  asdf reshim
 
 # apple
