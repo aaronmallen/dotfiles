@@ -1,18 +1,18 @@
 # homebrew
 command -v brew >/dev/null && \
-  brew update && sleep 1s && \
-  brew upgrade && sleep 1s && \
-  brew upgrade --cask && sleep 1s && \
-  brew bundle && sleep 1s && \
-  brew cleanup && sleep 1s && \
+  brew update && sleep 1 && \
+  brew upgrade && sleep 1 && \
+  brew upgrade --cask && sleep 1 && \
+  brew bundle && sleep 1 && \
+  brew cleanup && sleep 1 && \
   brew doctor
 
 # asdf
 command -v asdf >/dev/null && \
- asdf plugin update --all && sleep 1s && \
+ asdf plugin update --all && sleep 1 && \
  asdf reshim
 
 # apple
 command -v softwareupdate >/dev/null && \
-  softwareupdate -i --all && sleep 1s && \
+  softwareupdate -i --all && sleep 1 && \
   defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
