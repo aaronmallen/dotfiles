@@ -88,7 +88,6 @@ COMPLETION_WAITING_DOTS="true"
 plugins=(
   docker
   git
-  kubectl
   npm
   yarn
   z
