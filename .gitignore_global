@@ -16,6 +16,7 @@ Session.vim
 *.sublime-workspace
 *.code-workspace
 .vscode
+*.solargraph.yml
 
 # sftp configuration file
 sftp-config.json

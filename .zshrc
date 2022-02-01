@@ -15,6 +15,7 @@ autoload -U compinit
 compinit
 
 [ -f $HOME/.profile ] && source $HOME/.profile
+[ -f $HOME/.se_profile ] && source $HOME/.se_profile
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
