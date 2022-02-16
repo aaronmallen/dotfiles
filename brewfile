@@ -78,7 +78,6 @@ cask "visual-studio-code"
 cask "ytmdesktop-youtube-music"
 cask "zoom"
 mas "Facebook Messenger", id: 1480068668
-mas "Jira Cloud by Atlassian", id: 1475897096
 mas "Magnet", id: 441258766
 mas "Microsoft To Do", id: 1274495053
 mas "Sequence Diagram for Mac", id: 1195426709
