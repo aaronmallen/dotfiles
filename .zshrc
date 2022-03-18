@@ -86,9 +86,18 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+  asdf
+  bundler
+  command-not-found
   docker
+  docker-compose
+  encode64
+  gem
   git
+  iterm2
   npm
+  thefuck
+  web-search
   yarn
   z
 )
@@ -121,7 +130,14 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# customize username
+# ensure timestamp on prompt is updated
+TMOUT=1
+TRAPALRM() {
+  zle reset-prompt
+}
+
+# customize prompt segments
 prompt_context () {
   prompt_segment black default "$USER "
+  prompt_segment green black "%D{%Y-%m-%f} %D{%H:%M:%S}"
 }
