@@ -8,7 +8,7 @@ echo "==> Installing Oh My Zsh.."
 echo "==> Installing Homebrew..."
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew update
-/usr/local/bin/brew tap Homebrew/bundle
+/opt/homebrew/bin/brew tap Homebrew/bundle
 brew -v
 
 echo "==> Installing Brew Packages..."

@@ -18,6 +18,9 @@ export HISTSIZE=10000
 export HISTFILESIZE=10000
 export HISTCONTROL=ignoreboth
 
+# Add Homebrew to PATH for scripting.
+[ -f /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # Add asdf to PATH for scripting.
 command -v brew >/dev/null && source `brew --prefix asdf`/asdf.sh
 
