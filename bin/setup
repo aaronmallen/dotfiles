@@ -4,11 +4,16 @@ chsh -s /bin/zsh
 
 echo "==> Installing Oh My Zsh.."
 /bin/zsh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+config checkout main .zshrc
+source .zshrc
 
 echo "==> Installing Homebrew..."
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew update
-/opt/homebrew/bin/brew tap Homebrew/bundle
+if [ -f /opt/homebrew/bin/brew ]; then
+  /opt/homebrew/bin/brew tap Homebrew/bundle
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 brew -v
 
 echo "==> Installing Brew Packages..."
@@ -17,7 +22,9 @@ brew bundle
 echo "==> Installing asdf Plugins..."
 source `brew --prefix asdf`/asdf.sh
 asdf_plugins=(
+  deno
   golang
+  mysql
   nodejs
   postgres
   python
@@ -27,41 +34,22 @@ asdf_plugins=(
   yarn
 )
 
-asdf_setups=(
-  '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-)
-
 for plugin in "${asdf_plugins[@]}"
 do
   echo "==> Installing asdf Plugin: ${plugin}"
   asdf plugin add ${plugin}
 done
 
-echo "==> Setuping Up asdf Dependencies..."
-for setup in "${asdf_setups[@]}"
-do
-  zsh -c ${setup}
-done
-
 for plugin in "${asdf_plugins[@]}"
 do
   echo "==> Installing latest ${plugin}"
   asdf install ${plugin} latest
-done
-
-echo "==> Installing global Node modules..."
-node_modules=(
-  @vue/cli
-  caniuse-cmd
-  eslint
-)
-
-for module in "${node_modules[@]}"
-do
-  echo "==> Installing Node module: ${module}"
-  /usr/local/bin/npm install -g ${module}
+  asdf global ${plugin} latest
 done
 
 echo "==> Finalizing Setup"
 compaudit | xargs chmod g-w
 defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
+
+echo "== Setup Complete =="
+echo "Be sure to setup .se_profile if it is needed"

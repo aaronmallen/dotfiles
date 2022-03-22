@@ -138,6 +138,6 @@ TRAPALRM() {
 
 # customize prompt segments
 prompt_context () {
-  prompt_segment black default "$USER "
+  prompt_segment black default "$USER@$HOST"
   prompt_segment green black "%D{%Y-%m-%f} %D{%H:%M:%S}"
 }
