@@ -1,0 +1,23 @@
+asdf_plugins=($(asdf plugin list))
+
+function green_echo {
+  green="\033[0;32m"
+  no_color="\033[0m"
+  echo "${green}${1}${no_color}"
+}
+
+green_echo "==> Updating Plugins"
+asdf plugin update --all
+
+for plugin in "${asdf_plugins[@]}"
+do
+  if [ "${plugin}" = "nodejs" ]; then
+    green_echo "==> Installing lts ${plugin}"
+    asdf install ${plugin} lts
+  fi
+  green_echo "==> Installing lastest ${plugin}"
+  asdf install ${plugin} latest
+done
+
+green_echo "==> Reshimming Plugins"
+asdf reshim
