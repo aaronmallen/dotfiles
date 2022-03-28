@@ -1,0 +1,16 @@
+# colors
+green="\033[0;32m"
+red="\033[0;31m"
+no_color="\033[0m"
+
+# echo in green
+function green_echo {
+  message="${@}"
+  echo "${green}${message}${no_color}"
+}
+
+# echo in red
+function red_echo {
+  message="${@}"
+  echo "${red}${message}${no_color}"
+}

@@ -1,10 +1,6 @@
-asdf_plugins=($(asdf plugin list))
+[ -f $HOME/functions/echo-functions ] && source $HOME/functions/echo-functions
 
-function green_echo {
-  green="\033[0;32m"
-  no_color="\033[0m"
-  echo "${green}${1}${no_color}"
-}
+asdf_plugins=($(asdf plugin list))
 
 green_echo "==> Updating Plugins"
 asdf plugin update --all

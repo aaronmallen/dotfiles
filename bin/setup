@@ -2,12 +2,14 @@
 
 chsh -s /bin/zsh
 
-echo "==> Installing Oh My Zsh.."
+[ -f $HOME/functions/echo-functions ] && source $HOME/functions/echo-functions
+
+green_echo "==> Installing Oh My Zsh.."
 /bin/zsh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 config checkout main .zshrc
 source .zshrc
 
-echo "==> Installing Homebrew..."
+green_echo "==> Installing Homebrew..."
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew update
 if [ -f /opt/homebrew/bin/brew ]; then
@@ -16,10 +18,10 @@ if [ -f /opt/homebrew/bin/brew ]; then
 fi
 brew -v
 
-echo "==> Installing Brew Packages..."
+green_echo "==> Installing Brew Packages..."
 brew bundle
 
-echo "==> Installing asdf Plugins..."
+green_echo "==> Installing asdf Plugins..."
 source `brew --prefix asdf`/asdf.sh
 asdf_plugins=(
   deno
@@ -36,20 +38,20 @@ asdf_plugins=(
 
 for plugin in "${asdf_plugins[@]}"
 do
-  echo "==> Installing asdf Plugin: ${plugin}"
+  green_echo "==> Installing asdf Plugin: ${plugin}"
   asdf plugin add ${plugin}
 done
 
 for plugin in "${asdf_plugins[@]}"
 do
-  echo "==> Installing latest ${plugin}"
+  green_echo "==> Installing latest ${plugin}"
   asdf install ${plugin} latest
   asdf global ${plugin} latest
 done
 
-echo "==> Finalizing Setup"
+green_echo "==> Finalizing Setup"
 compaudit | xargs chmod g-w
 defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
 
-echo "== Setup Complete =="
+green_echo "== Setup Complete =="
 echo "Be sure to setup .se_profile if it is needed"

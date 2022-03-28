@@ -2,7 +2,8 @@
 [ -f $HOME/.alias ] && source $HOME/.alias
 
 # functions
-[ -f $HOME/functions/functions ] && source $HOME/functions/functions
+[ -f $HOME/functions/echo-functions ] && source $HOME/functions/echo-functions
+[ -f $HOME/functions/git-functions ] && source $HOME/functions/git-functions
 
 # environment
 # set up the path
