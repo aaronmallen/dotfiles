@@ -23,7 +23,7 @@ export HISTCONTROL=ignoreboth
 [ -f /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Add asdf to PATH for scripting.
-command -v brew >/dev/null && source `brew --prefix asdf`/asdf.sh
+command -v brew >/dev/null && source `brew --prefix asdf`/libexec/asdf.sh
 
 # use z to track most-used directories and jump around more easily than
 # with cd
