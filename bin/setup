@@ -26,6 +26,7 @@ source `brew --prefix asdf`/asdf.sh
 asdf_plugins=(
   deno
   golang
+  java
   mysql
   nodejs
   postgres
