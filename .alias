@@ -2,8 +2,8 @@ alias cat='bat'
 alias compose='docker-compose'
 
 # git aliases
-alias commit='git commit -S -m'
-alias commit-all='git add . && git commit -S -m'
+alias commit='git commit -S'
+alias commit-all='git add . && git commit -S'
 alias push-head='git push origin head'
 alias push-main='git push origin main'
 
