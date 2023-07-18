@@ -1,3 +1,5 @@
+FLAGS=$*
+
 [ -f $HOME/functions/echo-functions ] && source $HOME/functions/echo-functions
 
 asdf_plugins=($(asdf plugin list))
@@ -9,6 +11,12 @@ for plugin in "${asdf_plugins[@]}"
 do
   green_echo "==> Installing lastest ${plugin}"
   asdf install ${plugin} latest
+
+  if [[ "$FLAGS" == *"--set-global"* ]]; then
+    version=($(asdf latest $plugin))
+    green_echo "==> Setting ${plugin} ${version} as global version"
+    asdf global ${plugin} latest
+  fi
 done
 
 green_echo "==> Reshimming Plugins"

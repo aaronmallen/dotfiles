@@ -27,6 +27,7 @@ asdf_plugins=(
   deno
   golang
   java
+  lua
   mysql
   nodejs
   postgres
