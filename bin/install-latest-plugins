@@ -7,10 +7,6 @@ asdf plugin update --all
 
 for plugin in "${asdf_plugins[@]}"
 do
-  if [ "${plugin}" = "nodejs" ]; then
-    green_echo "==> Installing lts ${plugin}"
-    asdf install ${plugin} lts
-  fi
   green_echo "==> Installing lastest ${plugin}"
   asdf install ${plugin} latest
 done

@@ -4,6 +4,7 @@ alias compose='docker-compose'
 # git aliases
 alias commit='git commit -S'
 alias commit-all='git add . && git commit -S'
+alias force-push-head='git push origin head --force'
 alias push-head='git push origin head'
 alias push-main='git push origin main'
 
