@@ -1,23 +1,153 @@
-FLAGS=$*
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-[ -f $HOME/functions/echo-functions ] && source $HOME/functions/echo-functions
+require 'optparse'
 
-asdf_plugins=($(asdf plugin list))
+module InstallLatestPlugins
+  VERSION = '0.2.0'
 
-green_echo "==> Updating Plugins"
-asdf plugin update --all
+  module TerminalHelper
+    RESET = "\033[0m"
+    RED = "\033[0;31m"
+    GREEN = "\033[0;32m"
+    YELLOW = "\033[0;33m"
+    CYAN = "\033[0;36m"
 
-for plugin in "${asdf_plugins[@]}"
-do
-  green_echo "==> Installing lastest ${plugin}"
-  asdf install ${plugin} latest
+    def put_error(message)
+      puts "\n#{RED} [ERROR] - #{message}#{RESET}"
+    end
 
-  if [[ "$FLAGS" == *"--set-global"* ]]; then
-    version=($(asdf latest $plugin))
-    green_echo "==> Setting ${plugin} ${version} as global version"
-    asdf global ${plugin} latest
-  fi
-done
+    def put_info(message)
+      puts "\n#{CYAN}#{message}#{RESET}"
+    end
 
-green_echo "==> Reshimming Plugins"
-asdf reshim
+    def put_success(message)
+      puts "\n#{GREEN}#{message}#{RESET}"
+    end
+  end
+
+  module ASDF
+    class << self
+      def install_latest_version_for_plugin(plugin)
+        system("asdf install #{plugin} latest") if plugin_responds_to_latest?(plugin)
+      end
+
+      def installed_plugins
+        @installed_plugins ||= `asdf plugin list`.split("\n").compact.sort
+      end
+
+      def latest_version_for_plugin(plugin)
+        `asdf latest #{plugin}`.strip
+      end
+
+      def plugin_responds_to_latest?(plugin)
+        system("asdf latest #{plugin} > /dev/null 2>&1")
+      end
+
+      def reshim
+        system('asdf reshim')
+      end
+
+      def set_global_version_for_plugin(plugin)
+        system("asdf global #{plugin} #{latest_version_for_plugin(plugin)}")
+      end
+
+      def update_all_plugins
+        system('asdf plugin update --all')
+      end
+    end
+  end
+
+  class CLI
+    include TerminalHelper
+    attr_reader :plugins_to_ignore, :plugins_to_set_global
+
+    def initialize(*args)
+      @raw_args = args
+      @skip_reshim = false
+      @plugins_to_ignore = []
+      @plugins_to_set_global = []
+    end
+
+    def run
+      option_parser.parse!(@raw_args)
+      update_plugins
+      install_latest_plugin_versions
+      reshim_asdf unless skip_reshim?
+      put_success('==> Plugins Updated Successfully!')
+    end
+
+    private
+
+    def install_latest_plugin_versions
+      ASDF.installed_plugins.sort.each do |plugin|
+        next unless ASDF.plugin_responds_to_latest?(plugin)
+        next if plugins_to_ignore.include?(plugin)
+
+        put_info("==> Installing latest #{plugin} (#{ASDF.latest_version_for_plugin(plugin)})")
+        ASDF.install_latest_version_for_plugin(plugin)
+        set_global_version_for_plugin(plugin) if plugins_to_set_global.include?(plugin)
+      end
+    end
+
+    def option_parser
+      OptionParser.new do |opts|
+        opts.banner = usage
+
+        opts.on('-g [PLUGIN]', '--set-global [PLUGIN]', 'Set the latest version of the plugin as the global version') do |plugin|
+          if plugin.nil? || plugin == 'all'
+            @plugins_to_set_global = ASDF.installed_plugins
+          elsif ASDF.installed_plugins.include?(plugin)
+            plugins_to_set_global << plugin.strip
+          else
+            put_error("#{plugin} is not a valid option. Please use one of the following: all, #{ASDF.installed_plugins.join(', ')}")
+            exit 1
+          end
+        end
+
+        opts.on('-i <PLUGIN>', '--ignore <PLUGIN>', 'Ignore updates for plugin') do |plugin|
+          plugins_to_ignore << plugin.strip if ASDF.installed_plugins.include?(plugin)
+        end
+
+        opts.on('--skip-reshim', 'Skip reshimming') do
+          @skip_reshim = true
+        end
+
+        opts.on('-v', '--version', 'Print version') do
+          puts "v#{InstallLatestPlugins::VERSION}"
+          exit
+        end
+
+        opts.on('-h', '--help', 'Print help') do
+          puts opts
+          exit
+        end
+      end
+    end
+
+    def reshim_asdf
+      put_info('==> Reshimming Plugins')
+      ASDF.reshim
+    end
+
+    def set_global_version_for_plugin(plugin)
+      put_info("==> Setting global version for #{plugin} to #{ASDF.latest_version_for_plugin(plugin)}")
+      ASDF.set_global_version_for_plugin(plugin)
+    end
+
+    def skip_reshim?
+      @skip_reshim
+    end
+
+    def update_plugins
+      put_info('==> Updating Plugins')
+      ASDF.update_all_plugins
+    end
+
+    def usage
+      'Usage: install-latest-plugins [options]'
+    end
+  end
+end
+
+InstallLatestPlugins::CLI.new(*ARGV).run
