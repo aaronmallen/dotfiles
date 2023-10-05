@@ -24,6 +24,7 @@ brew bundle
 green_echo "==> Installing asdf Plugins..."
 source `brew --prefix asdf`/asdf.sh
 asdf_plugins=(
+  bun
   deno
   golang
   java
