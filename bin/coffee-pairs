@@ -5,7 +5,7 @@ require 'json'
 require 'optparse'
 
 module CoffeePairs
-  VERSION = '0.1.0'
+  VERSION = '0.1.1'
 
   module Store
     FILEPATH = File.join(ENV['HOME'], '.coffee-pairs.json')
@@ -106,10 +106,13 @@ module CoffeePairs
         to_pair.map do |person|
           partner = find_partners(person).sample
           next unless partner
+          next if paired.include?(person.name)
 
+          paired << partner.name
+          paired << person.name
           save_pairing(person, partner)
           "#{person.name} <==> #{partner.name}"
-        end
+        end.compact
       end
 
       private
@@ -118,11 +121,16 @@ module CoffeePairs
         Person.all
       end
 
+      def paired
+        @paired ||= []
+      end
+
       def find_partners(person)
         people.reject do |partner|
           previously_paired = person.previously_paired.include?(partner.name)
           same_name = partner.name == person.name
-          previously_paired || same_name
+          already_paired = paired.include?(partner.name)
+          previously_paired || already_paired || same_name
         end
       end
 

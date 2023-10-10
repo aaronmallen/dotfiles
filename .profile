@@ -8,7 +8,6 @@
 # environment
 # set up the path
 export PATH=$PATH:/usr/local/bin:/usr/local/sbin:$HOME/bin
-
 export CDPATH=.
 
 # gpg
@@ -23,8 +22,8 @@ export HISTCONTROL=ignoreboth
 [ -f /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Add asdf to PATH for scripting.
-command -v brew >/dev/null && source `brew --prefix asdf`/libexec/asdf.sh
+command -v brew >/dev/null && source $(brew --prefix asdf)/libexec/asdf.sh
 
 # use z to track most-used directories and jump around more easily than
 # with cd
-command -v brew >/dev/null && source `brew --prefix`/etc/profile.d/z.sh # z https://github.com/rupa/z
+command -v brew >/dev/null && source $(brew --prefix)/etc/profile.d/z.sh # z https://github.com/rupa/z

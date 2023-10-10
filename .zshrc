@@ -21,10 +21,6 @@ fi
 autoload -U compinit
 compinit
 
-[ -f $HOME/.profile ] && source $HOME/.profile
-[ -f $HOME/.se_profile ] && source $HOME/.se_profile
-[ -f $HOME/.secrets ] && source $HOME/.secrets
-
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -140,3 +136,6 @@ fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[ -f $HOME/.profile ] && source $HOME/.profile
+[ -f $HOME/.se_profile ] && source $HOME/.se_profile
+[ -f $HOME/.secrets ] && source $HOME/.secrets
