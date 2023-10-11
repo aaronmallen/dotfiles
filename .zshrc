@@ -16,6 +16,12 @@ if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
 
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[ -f $HOME/.p10k.zsh ] && source ~/.p10k.zsh
+[ -f $HOME/.secrets ] && source $HOME/.secrets
+[ -f $HOME/.se_profile ] && source $HOME/.se_profile
+[ -f $HOME/.profile ] && source $HOME/.profile
+
 
 # completion
 autoload -U compinit
@@ -133,9 +139,3 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-[ -f $HOME/.profile ] && source $HOME/.profile
-[ -f $HOME/.se_profile ] && source $HOME/.se_profile
-[ -f $HOME/.secrets ] && source $HOME/.secrets
