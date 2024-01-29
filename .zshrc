@@ -17,10 +17,10 @@ if type brew &>/dev/null; then
 fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[ -f $HOME/.secrets ] && source $HOME/.secrets
-[ -f $HOME/.se_profile ] && source $HOME/.se_profile
-[ -f $HOME/.profile ] && source $HOME/.profile
 [ -f $HOME/.p10k.zsh ] && source ~/.p10k.zsh
+[ -f $HOME/.secrets ] && source $HOME/.secrets
+[ -f $HOME/.se_profile ] && source $HOME/.machine_profile
+[ -f $HOME/.profile ] && source $HOME/.profile
 
 
 # completion
@@ -125,7 +125,7 @@ source $ZSH/oh-my-zsh.sh
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='code'
+  export EDITOR='code --wait'
 fi
 
 # Compilation flags
@@ -140,3 +140,4 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+source ~/powerlevel10k/powerlevel10k.zsh-theme

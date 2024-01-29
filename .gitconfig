@@ -1,9 +1,9 @@
 [user]
 	name = Aaron Allen
 	email = hello@aaronmallen.me
-	signingkey = 44D2DFBA343F279C
+	signingkey = 7932AA7B8891042D
 [core]
-	excludesfile = /Users/aarona/.gitignore_global
+	excludesfile = /Users/aaron/.gitignore_global
   editor = code --wait
 [diff]
   tool = default-difftool
@@ -13,7 +13,7 @@
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 [push]
   default = simple
@@ -33,7 +33,7 @@
 	branch = false
 	tag = false
 [commit]
-	template = /Users/aarona/.stCommitMsg
+	gpgsign = true
 [filter "lfs"]
 	process = git-lfs filter-process
 	required = true
