@@ -34,6 +34,7 @@
 	tag = false
 [commit]
 	gpgsign = true
+	template = /Users/aaron/.stCommitMsg
 [filter "lfs"]
 	process = git-lfs filter-process
 	required = true

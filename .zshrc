@@ -19,7 +19,7 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [ -f $HOME/.p10k.zsh ] && source ~/.p10k.zsh
 [ -f $HOME/.secrets ] && source $HOME/.secrets
-[ -f $HOME/.se_profile ] && source $HOME/.machine_profile
+[ -f $HOME/.machine_profile ] && source $HOME/.machine_profile
 [ -f $HOME/.profile ] && source $HOME/.profile
 
 
