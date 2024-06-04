@@ -1,6 +1,4 @@
 tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
-tap "homebrew/cask-versions"
 tap "git-chglog/git-chglog"
 tap "git-duet/tap"
 tap "hashicorp/tap"
