@@ -16,19 +16,19 @@ if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[ -f $HOME/.p10k.zsh ] && source ~/.p10k.zsh
-[ -f $HOME/.secrets ] && source $HOME/.secrets
-[ -f $HOME/.machine_profile ] && source $HOME/.machine_profile
-[ -f $HOME/.profile ] && source $HOME/.profile
+export ZSH="$HOME/.oh-my-zsh"
 
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[ -f $HOME/powerlevel10k/powerlevel10k.zsh-theme ] && source $HOME/powerlevel10k/powerlevel10k.zsh-theme
+[ -f $HOME/.p10k.zsh ] && source $HOME/.p10k.zsh
+[ -f $ZSH/oh-my-zsh.sh ] && source $ZSH/oh-my-zsh.sh
+[ -f $HOME/.secrets ] && source $HOME/.secrets
+[ -f $HOME/.profile ] && source $HOME/.profile
+[ -f $HOME/.machine_profile ] && source $HOME/.machine_profile
 
 # completion
 autoload -U compinit
 compinit
-
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
 
 
 # Set name of the theme to load --- if set to "random", it will
@@ -112,8 +112,6 @@ plugins=(
   z
 )
 
-source $ZSH/oh-my-zsh.sh
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -139,5 +137,3 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-source ~/powerlevel10k/powerlevel10k.zsh-theme
