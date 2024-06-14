@@ -11,8 +11,7 @@ export PATH=$PATH:/usr/local/bin:/usr/local/sbin:$HOME/bin
 export CDPATH=.
 
 # gpg
-GPG_TTY=$(tty)
-export GPG_TTY
+export GPG_TTY=$(tty)
 
 # keep a lot more history than the default 500 previous commands
 export HISTSIZE=10000
