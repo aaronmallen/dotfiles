@@ -27,3 +27,6 @@ command -v brew >/dev/null && source $(brew --prefix asdf)/libexec/asdf.sh
 # use z to track most-used directories and jump around more easily than
 # with cd
 command -v brew >/dev/null && source $(brew --prefix)/etc/profile.d/z.sh # z https://github.com/rupa/z
+
+# Add 1password CLI completion
+eval "$(op completion zsh)"; compdef _op op
