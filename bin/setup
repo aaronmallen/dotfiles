@@ -58,4 +58,4 @@ compaudit | xargs chmod g-w
 defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
 
 green_echo "== Setup Complete =="
-echo "Be sure to setup .se_profile if it is needed"
+echo "Be sure to setup .machine_profile if it is needed"
