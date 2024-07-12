@@ -19,7 +19,7 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[ -f $HOME/powerlevel10k/powerlevel10k.zsh-theme ] && source $HOME/powerlevel10k/powerlevel10k.zsh-theme
+[ -f $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme ] && source $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme
 [ -f $HOME/.p10k.zsh ] && source $HOME/.p10k.zsh
 [ -f $ZSH/oh-my-zsh.sh ] && source $ZSH/oh-my-zsh.sh
 [ -f $HOME/.secrets ] && source $HOME/.secrets
