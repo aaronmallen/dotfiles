@@ -7,7 +7,9 @@ chsh -s /bin/zsh
 green_echo "==> Installing Oh My Zsh.."
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 /bin/zsh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-config checkout main .zshrc
+touch .zshrc
+config checkout main .my_zshrc
+echo "[ -f $HOME/.my_zshrc ] && source $HOME/.my_zshrc" >> .zshrc
 source .zshrc
 
 green_echo "==> Installing Homebrew..."
