@@ -56,9 +56,31 @@ do
   asdf global ${plugin} latest
 done
 
+green_echo "==> Configuring Git..."
+git config --global user.name "Aaron Allen"
+git config --global core.excludesfile $HOME/.gitignore_global
+git config --global core.editor vim
+git config --global commit.gpgsign true
+git config --global commit.template $HOME/.stCommitMsg
+git config --global pager.branch false
+git config --global pager.tag false
+git config --global init.defaultBranch main
+git config --global alias.fucked "!git reset && git checkout . && git clean -df"
+git config --global alias.last "log -1 HEAD"
+git config --global gpg.program gpg
+
+
 green_echo "==> Finalizing Setup"
 compaudit | xargs chmod g-w
 defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
 
 green_echo "== Setup Complete =="
+echo "################################################################################"
+echo "Be sure to complete git configuration by running the following commands:"
+echo ""
+echo "  git config --global user.email <YOUR_EMAIL>"
+echo "  git config --global user.signingKey <YOUR GPG KEY>"
+echo "  git config --global github.user <YOUR_GITHUB_USERNAME>"
+echo ""
 echo "Be sure to setup .machine_profile if it is needed"
+echo "################################################################################"
