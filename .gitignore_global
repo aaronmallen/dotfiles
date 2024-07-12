@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+*.iml
 .project-abbr
 .env
 *.log
