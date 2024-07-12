@@ -79,6 +79,7 @@ cask "slack"
 cask "sourcetree"
 cask "telegram"
 cask "visual-studio-code"
+cask "warp"
 cask "zoom"
 mas "Facebook Messenger", id: 1480068668
 mas "Magnet", id: 441258766
