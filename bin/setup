@@ -61,7 +61,7 @@ git config --global user.name "Aaron Allen"
 git config --global core.excludesfile $HOME/.gitignore_global
 git config --global core.editor vim
 git config --global commit.gpgsign true
-git config --global commit.template $HOME/.git-commit-template
+git config --global commit.template $HOME/.git_commit_template
 git config --global pager.branch false
 git config --global pager.tag false
 git config --global init.defaultBranch main
