@@ -1,32 +1,55 @@
 #!/bin/zsh
 
-chsh -s /bin/zsh
+if [ "$SHELL" != "/bin/zsh" ]; then
+  chsh -s /bin/zsh
+fi
 
 [ -f $HOME/functions/echo-functions ] && source $HOME/functions/echo-functions
 
-green_echo "==> Installing Oh My Zsh.."
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
-/bin/zsh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+function ensure_line_in_file() {
+  LINE=$1
+  FILE=$2
+  CALLBACK=$2
+
+  if ! grep -Fxq "$LINE" "$FILE"; then
+    echo "$LINE" >> "$FILE"
+    eval "$CALLBACK"
+  fi
+}
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  green_echo "\n\n==> Installing Oh My Zsh..\n\n"
+  /bin/zsh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+source .alias
 touch .zshrc
-config checkout main .my_zshrc
-echo "[ -f $HOME/.my_zshrc ] && source $HOME/.my_zshrc" >> .zshrc
+config checkout main .my_zshrc > /dev/null 2>&1
+# add .my_zsh to .zsh if it isn't already there
+ensure_line_in_file "[ -f \$HOME/.my_zshrc ] && source \$HOME/.my_zshrc" ".zshrc"
 source .zshrc
 
-green_echo "==> Installing Homebrew..."
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+if ! command -v brew &> /dev/null; then
+  green_echo "\n\n==> Installing Homebrew...\n\n"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+fi
+green_echo "\n\n==> Updating Homebrew...\n\n"
 brew update
+
 if [ -f /opt/homebrew/bin/brew ]; then
+  green_echo "\n\n==> Installing Homebrew Bundle...\n\n"
   /opt/homebrew/bin/brew tap Homebrew/bundle
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
+
 brew -v
 
-green_echo "==> Installing Brew Packages..."
+green_echo "\n\n==> Installing Brew Packages...\n\n"
 brew bundle
 source .zshrc
 
-green_echo "==> Installing asdf Plugins..."
-source `brew --prefix asdf`/asdf.sh
+green_echo "\n\n==> Installing asdf Plugins...\n\n"
+source $(brew --prefix asdf)/asdf.sh
 asdf_plugins=(
   bun
   deno
@@ -45,51 +68,65 @@ asdf_plugins=(
 
 for plugin in "${asdf_plugins[@]}"
 do
-  green_echo "==> Installing asdf Plugin: ${plugin}"
+  green_echo "Installing asdf Plugin: ${plugin}..."
   asdf plugin add ${plugin}
 done
 
 for plugin in "${asdf_plugins[@]}"
 do
-  green_echo "==> Installing latest ${plugin}"
+  green_echo "==> Installing latest ${plugin}..."
   asdf install ${plugin} latest
   asdf global ${plugin} latest
 done
 
-green_echo "==> Configuring Vim..."
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-/usr/local/bin/vim +PlugInstall +qall
+green_echo "\n\n==> Configuring Vim...\n\n"
+if [ ! -f ~/.vim/autoload/plug.vim ]; then
+  curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  vim +PlugInstall +qall
+fi
 
-green_echo "==> Configuring GPG..."
-echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" >> ~/.gnupg/gpg-agent.conf
-killall gpg-agent
+green_echo "\n\n==> Configuring GPG...\n\n"
+mkdir -p ~/.gnupg
+ensure_line_in_file "pinentry-program $(brew --prefix)/bin/pinentry-mac" "$HOME/.gnupg/gpg-agent.conf" "killall gpg-agent || true"
 
-green_echo "==> Configuring Git..."
-git config --global user.name "Aaron Allen"
-git config --global core.excludesfile $HOME/.gitignore_global
-git config --global core.editor vim
-git config --global commit.gpgsign true
-git config --global commit.template $HOME/.git_commit_template
-git config --global pager.branch false
-git config --global pager.tag false
-git config --global init.defaultBranch main
-git config --global alias.fucked "!git reset && git checkout . && git clean -df"
-git config --global alias.last "log -1 HEAD"
-git config --global gpg.program gpg
+green_echo "\n\n==> Configuring Git...\n\n"
 
+function set_git_config() {
+  KEY=$1
+  VALUE=$2
 
-green_echo "==> Finalizing Setup"
+  if [ "$(git config --global --get "$KEY")" != "$VALUE" ]; then
+    git config --global "$KEY" "$VALUE"
+  fi
+}
+
+set_git_config user.name "Aaron Allen"
+set_git_config core.excludesfile $HOME/.gitignore_global
+set_git_config core.editor vim
+set_git_config commit.gpgsign true
+set_git_config commit.template $HOME/.git_commit_template
+set_git_config pager.branch false
+set_git_config pager.tag false
+set_git_config init.defaultBranch main
+set_git_config alias.fucked "!git reset && git checkout . && git clean -df"
+set_git_config alias.last "log -1 HEAD"
+set_git_config gpg.program gpg
+
+green_echo "\n\n==> Finalizing Setup\n\n"
 compaudit | xargs chmod g-w
 defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
+source .zshrc
 
-green_echo "== Setup Complete =="
-echo "################################################################################"
-echo "Be sure to complete git configuration by running the following commands:"
-echo ""
-echo "  git config --global user.email <YOUR_EMAIL>"
-echo "  git config --global user.signingKey <YOUR GPG KEY>"
-echo "  git config --global github.user <YOUR_GITHUB_USERNAME>"
-echo ""
-echo "Be sure to setup .machine_profile if it is needed"
-echo "################################################################################"
+green_echo "\n\n== Setup Complete ==\n\n"
+cat <<EOF
+################################################################################
+Be sure to complete git configuration by running the following commands:
+
+  git config --global user.email <YOUR_EMAIL>
+  git config --global user.signingKey <YOUR GPG KEY>
+  git config --global github.user <YOUR_GITHUB_USERNAME>
+
+Be sure to setup .machine_profile if it is needed
+################################################################################
+EOF
