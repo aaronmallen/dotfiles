@@ -87,7 +87,13 @@ if [ ! -f ~/.vim/autoload/plug.vim ]; then
 fi
 
 green_echo "\n\n==> Configuring GPG...\n\n"
+
+# Ensure proper permissions for ~/.gnupg directory and gpg-agent.conf file
 mkdir -p ~/.gnupg
+chmod 700 ~/.gnupg
+touch ~/.gnupg/gpg-agent.conf
+chmod 600 ~/.gnupg/gpg-agent.conf
+
 ensure_line_in_file "pinentry-program $(brew --prefix)/bin/pinentry-mac" "$HOME/.gnupg/gpg-agent.conf" "killall gpg-agent || true"
 
 green_echo "\n\n==> Configuring Git...\n\n"
