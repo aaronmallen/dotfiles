@@ -1,3 +1,8 @@
+alias be='bundle exec'
+alias bi='bundle install'
 alias cat='bat'
 alias compose="docker compose"
 alias config='/usr/bin/git --git-dir=/$HOME/.cfg/ --work-tree=$HOME'
+alias migrate='be rails db:migrate db:test:prepare'
+alias rails-console='bundle exec rails c'
+alias rspec='bundle exec rspec'
