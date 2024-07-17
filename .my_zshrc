@@ -98,14 +98,17 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+  1password
   asdf
   bundler
   command-not-found
   docker
   docker-compose
+  dotenv
   encode64
   gem
   git
+  gitignore
   iterm2
   npm
   thefuck
