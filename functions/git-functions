@@ -32,4 +32,9 @@ function git-close-branch {
   _switch_pull_default_branch && git branch -d "${1}" && git prune
 }
 
-
+function rebase_on_main {
+  current_branch=$(git branch --show-current)
+  _switch_pull_default_branch
+  git checkout $current_branch
+  git rebase -i $(_default_git_branch)
+}
