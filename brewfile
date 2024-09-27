@@ -72,8 +72,10 @@ cask "google-drive"
 cask "gpg-suite"
 cask "intellij-idea"
 cask "logitech-g-hub"
+cask "ngrok"
 cask "obsidian"
 cask "offset-explorer"
+cask "ollama"
 cask "orangedrangon-android-messages"
 cask "postman"
 cask "rubymine"
@@ -84,6 +86,7 @@ cask "telegram"
 cask "visual-studio-code"
 cask "warp"
 cask "zoom"
+mas "Enchanted LLM", id: 6474268307
 mas "Facebook Messenger", id: 1480068668
 mas "Magnet", id: 441258766
 mas "Sequence Diagram for Mac", id: 1195426709
