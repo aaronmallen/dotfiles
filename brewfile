@@ -86,6 +86,5 @@ cask "visual-studio-code"
 cask "warp"
 cask "zoom"
 mas "Facebook Messenger", id: 1480068668
-mas "Magnet", id: 441258766
 mas "Sequence Diagram for Mac", id: 1195426709
 mas "Xcode", id: 497799835
