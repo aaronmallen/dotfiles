@@ -85,6 +85,7 @@ cask "telegram"
 cask "visual-studio-code"
 cask "warp"
 cask "zoom"
+mas "ColorSlurp", id: 1287239339
 mas "Facebook Messenger", id: 1480068668
 mas "Sequence Diagram for Mac", id: 1195426709
 mas "Xcode", id: 497799835
