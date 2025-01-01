@@ -99,7 +99,6 @@ COMPLETION_WAITING_DOTS="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   1password
-  asdf
   bundler
   command-not-found
   docker
@@ -109,7 +108,7 @@ plugins=(
   gem
   git
   gitignore
-  iterm2
+  mise
   npm
   thefuck
   web-search
