@@ -7,11 +7,6 @@ command -v brew >/dev/null && \
   brew cleanup && sleep 1 && \
   brew doctor
 
-# asdf
-command -v asdf >/dev/null && \
- asdf plugin update --all && sleep 1 && \
- asdf reshim
-
 # apple
 command -v softwareupdate >/dev/null && \
   softwareupdate -i --all && sleep 1 && \

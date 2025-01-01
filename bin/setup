@@ -48,37 +48,6 @@ green_echo "\n\n==> Installing Brew Packages...\n\n"
 brew bundle
 source .zshrc
 
-green_echo "\n\n==> Installing asdf Plugins...\n\n"
-source $(brew --prefix asdf)/asdf.sh
-asdf_plugins=(
-  bun
-  deno
-  golang
-  java
-  lua
-  mysql
-  nodejs
-  postgres
-  python
-  redis
-  ruby
-  sqlite
-  yarn
-)
-
-for plugin in "${asdf_plugins[@]}"
-do
-  green_echo "Installing asdf Plugin: ${plugin}..."
-  asdf plugin add ${plugin}
-done
-
-for plugin in "${asdf_plugins[@]}"
-do
-  green_echo "==> Installing latest ${plugin}..."
-  asdf install ${plugin} latest
-  asdf global ${plugin} latest
-done
-
 green_echo "\n\n==> Configuring Vim...\n\n"
 if [ ! -f ~/.vim/autoload/plug.vim ]; then
   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
