@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+if [ "$(uname -s)" = "Darwin" ]; then
+  if ! command -v brew >/dev/null 2>&1; then
+    printf "\n\e[38;2;208;255;100m==>\e[0m \e[1;97mInstalling Homebrew...\e[0m\n"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    source ~/.zshrc
+  fi
+
+  if command -v brew &> /dev/null; then
+    printf "\n\e[38;2;208;255;100m==>\e[0m \e[1;97mInstalling Homebrew packages...\e[0m\n"
+    brew bundle
+    source ~/.zshrc
+  fi
+fi

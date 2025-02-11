@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+
+if command -v mise >/dev/null 2>&1; then
+  libs=(
+    bun
+    deno
+    erlang
+    elixir
+    go
+    lua
+    node
+    postgres
+    python
+    redis
+    ruby
+    rust
+    yarn
+  )
+
+  for lib in "${libs[@]}"
+  do
+    printf "\n\e[38;2;208;255;100m==>\e[0m \e[1;97mInstalling latest %s...\e[0m\n", "$lib"
+    mise use --global "$lib@latest"
+  done
+fi

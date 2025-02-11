@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+printf "\n\e[38;2;208;255;100m==>\e[0m \e[1;97mSetting Up Ruby Directories...\e[0m\n"
+
+mkdir -p $BUNDLE_USER_CACHE
+mkdir -p $BUNDLE_USER_PLUGIN
+mkdir -p $GEM_HOME
+mkdir -p $GEM_SPEC_CACHE
