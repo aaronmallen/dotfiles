@@ -1,0 +1,31 @@
+[alias]
+    fucked = !git reset && git checkout . && git clean -df
+[commit]
+    gpgsign = true
+    template = {{ env.XDG_CONFIG_HOME }}/git/commit_template
+[core]
+    editor = vim
+    excludesfile = {{ env.XDG_CONFIG_HOME }}/git/ignore
+    pager = delta
+[delta]
+  dark = true
+  line-numbers = true
+  navigate = true
+  syntax-theme = "Monokai Extended"
+[diff]
+  external = batdiff
+[github]
+    user = aaronmallen
+[gpg]
+    program = gpg
+[include]
+    path = {{ env.XDG_CONFIG_HOME }}/git/config.local
+[init]
+    defaultBranch = main
+[interactive]
+    diffFilter = delta --color-only
+[merge]
+    conflictstyle = zdiff3
+[pager]
+    branch = false
+    tag = false
