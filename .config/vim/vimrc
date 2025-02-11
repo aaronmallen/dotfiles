@@ -1,0 +1,26 @@
+if empty(glob("$XDG_CONFIG_HOME/vim/autoload/plug.vim"))
+  silent! execute '!curl --create-dirs -fsSLo $XDG_CONFIG_HOME/vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * silent! PlugInstall
+endif
+
+set viminfo+=n$XDG_DATA_HOME/vim/viminfo
+
+call plug#begin()
+Plug 'airblade/vim-gitgutter'
+Plug 'phanviet/vim-monokai-pro'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+call plug#end()
+
+syntax on
+filetype on
+set number
+set termguicolors
+colorscheme monokai_pro
+
+" ##############################
+" Airline Configuration
+" ##############################
+let g:airline_powerline_fonts = 1
+let g:airline_theme='deus'
+let g:airline#extensions#tabline#enabled=1

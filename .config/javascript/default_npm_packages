@@ -1,0 +1,6 @@
+@anthropic-ai/claude-code
+eslint
+markdownlint
+markdownlint-cli
+prettier
+tailwindcss
