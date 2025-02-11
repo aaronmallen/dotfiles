@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+# Get the full path of this script
+current_script=$(realpath "$0")
+
+# Find all bootstrap scripts
+bootstrap_scripts=($HOME/.config/**/bootstrap)
+
+for script in "${bootstrap_scripts[@]}"
+do
+  # Skip this script to avoid infinite loop
+  if [ "$(realpath "$script")" != "$current_script" ]; then
+    $script
+  fi
+done
+
+rm -rf ~/.zshrc ~/.zshenv
+ln -s .config/zsh/zshrc.symlink .zshrc
+ln -s .config/zsh/zshenv.symlink .zshenv
+source .zshrc

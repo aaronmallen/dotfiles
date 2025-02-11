@@ -1,0 +1,3 @@
+export MISE_NODE_DEFAULT_PACKAGES_FILE=$XDG_CONFIG_HOME/javascript/default_npm_packages
+export MISE_PYTHON_DEFAULT_PACKAGES_FILE=$XDG_CONFIG_HOME/python/default_packages
+export MISE_RUBY_DEFAULT_PACKAGES_FILE=$XDG_CONFIG_HOME/ruby/default_gems
