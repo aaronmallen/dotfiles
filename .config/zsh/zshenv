@@ -1,0 +1,1 @@
+[ -f "$HOME/.config/xdg/env.zsh" ] && source "$HOME/.config/xdg/env.zsh"

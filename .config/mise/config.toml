@@ -1,0 +1,18 @@
+[tools]
+bun = "latest"
+deno = "latest"
+elixir = "latest"
+erlang = "latest"
+go = "latest"
+lua = "latest"
+node = "latest"
+postgres = "latest"
+python = "latest"
+redis = "latest"
+ruby = "latest"
+rust = "latest"
+sqlite = "latest"
+yarn = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["ruby"]
