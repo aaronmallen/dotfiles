@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/inline'
+require 'fileutils'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'sai', '~> 0.4'
+end
+
+topic, alias_name, alias_command = *ARGV
+
+if topic.nil? || alias_name.nil? || alias_command.nil?
+  warn Sai.rgb(239, 164, 50).bold.decorate("USAGE: add-alias <TOPIC> <ALIAS_NAME> <ALIAS_COMMAND>")
+  exit 1
+end
+
+alias_dir = File.join(ENV['XDG_CONFIG_HOME'], topic)
+alias_file = File.join(alias_dir, "aliases.zsh")
+
+FileUtils.mkdir_p alias_dir
+FileUtils.touch alias_file
+
+lines = File.readlines(alias_file)
+lines << "alias #{alias_name}='#{alias_command}'\n"
+File.write(alias_file, lines.uniq.sort.join)
+system "source #{alias_file}"
+
+puts Sai.rgb(36,161,110).bold.decorate("`#{alias_name}` added to `#{topic}`")
