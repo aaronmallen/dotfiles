@@ -18,22 +18,6 @@ if [ "$(uname -s)" = "Darwin" ]; then
 
   brew install chezmoi
   chezmoi init --apply git@github.com:aaronmallen/dotfiles.git
-  . .config/zsh/.zshrc
-
-  #############################################################################
-  # Setup XDG_DATA_HOME
-  #############################################################################
-
-  mkdir -p $_ZO_DATA_DIR
-  mkdir -p $BUN_INSTALL
-  mkdir -p $BUNDLE_USER_CACHE
-  mkdir -p $BUNDLE_USER_PLUGIN
-  mkdir -p $CARGO_HOME
-  mkdir -p $CLAUDE_HOME
-  mkdir -p $GEM_HOME
-  mkdir -p $GEM_SPEC_CACHE
-  mkdir -p $NVM_DIR
-  mkdir -p $RUSTUP_HOME
 
   #############################################################################
   # Install Dependencies
@@ -108,6 +92,23 @@ if [ "$(uname -s)" = "Darwin" ]; then
   # Restart Finder and Dock for changes to take effect
   killall Finder
   killall Dock
+
+  #############################################################################
+  # Setup XDG_DATA_HOME
+  #############################################################################
+
+  . .config/zsh/.zshrc
+
+  mkdir -p $_ZO_DATA_DIR
+  mkdir -p $BUN_INSTALL
+  mkdir -p $BUNDLE_USER_CACHE
+  mkdir -p $BUNDLE_USER_PLUGIN
+  mkdir -p $CARGO_HOME
+  mkdir -p $CLAUDE_HOME
+  mkdir -p $GEM_HOME
+  mkdir -p $GEM_SPEC_CACHE
+  mkdir -p $NVM_DIR
+  mkdir -p $RUSTUP_HOME
 else
   echo "Your operating system is not yet supported."
   exit 1
