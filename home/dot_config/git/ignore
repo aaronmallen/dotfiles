@@ -1,0 +1,24 @@
+.DS_Store
+.idea
+*.iml
+.project-abbr
+*.log
+cscope.out
+
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# workspace files are user-specific
+Session.vim
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.vscode
+*.solargraph.yml
+
+# sftp configuration file
+sftp-config.json
+
+**/.claude/settings.local.json

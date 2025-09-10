@@ -1,0 +1,114 @@
+#!/usr/bin/env sh
+
+if [ "$(uname -s)" = "Darwin" ]; then
+  if ! command -v brew > /dev/null 2>&1; then
+
+    #############################################################################
+    # Install Homebrew
+    #############################################################################
+
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    export PATH="/opt/homebrew/bin:$PATH"
+    eval "$(brew shellenv)"
+  fi
+
+  #############################################################################
+  # Setup dotfiles
+  #############################################################################
+
+  brew install chezmoi
+  chezmoi init --apply git@github.com:aaronmallen/dotfiles.git
+  . .config/zsh/.zshrc
+
+  #############################################################################
+  # Setup XDG_DATA_HOME
+  #############################################################################
+
+  mkdir -p $_ZO_DATA_DIR
+  mkdir -p $BUN_INSTALL
+  mkdir -p $BUNDLE_USER_CACHE
+  mkdir -p $BUNDLE_USER_PLUGIN
+  mkdir -p $CARGO_HOME
+  mkdir -p $CLAUDE_HOME
+  mkdir -p $GEM_HOME
+  mkdir -p $GEM_SPEC_CACHE
+  mkdir -p $NVM_DIR
+  mkdir -p $RUSTUP_HOME
+
+  #############################################################################
+  # Install Dependencies
+  #############################################################################
+
+  brew bundle
+  mise install
+
+  #############################################################################
+  # Setup Vim
+  #############################################################################
+
+  if command -v nvim >/dev/null 2>&1; then
+    sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+    nvim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+  fi
+
+  if command -v vim >/dev/null 2>&1; then
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+    vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+  fi
+
+  #############################################################################
+  # Setup MacOS
+  #############################################################################
+
+  # Ask for the administrator password upfront
+  sudo -v
+
+  printf "\n\e[38;2;208;255;100m==>\e[0m \e[1;97mSetting macOS preferences...\e[0m\n"
+
+  # Close any open System Preferences panes, to prevent them from overriding
+  # settings we’re about to change
+  osascript -e 'tell application "System Preferences" to quit'
+
+  # =============================================================================
+  # Appearance
+  # =============================================================================
+
+  # Enable dark mode
+  osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
+
+  # =============================================================================
+  # Finder Settings
+  # =============================================================================
+
+  # Ensure Finder always opens in List View
+  defaults write com.apple.finder FXPreferredViewStyle -string Nlsv
+
+  # Show hidden files in Finder
+  defaults write com.apple.finder AppleShowAllFiles -bool true
+
+  # =============================================================================
+  # Dock Settings
+  # =============================================================================
+
+  # Set the icon size of Dock items
+  defaults write com.apple.dock tilesize -int 26
+  defaults write com.apple.dock magnification -bool true
+  defaults write com.apple.dock largesize -int 128
+
+  # Minimize windows into their application’s icon
+  defaults write com.apple.dock minimize-to-application -bool true
+
+  # Don't show recent applications in Dock
+  defaults write com.apple.dock show-recents -bool false
+
+  # Restart Finder and Dock for changes to take effect
+  killall Finder
+  killall Dock
+else
+  echo "Your operating system is not yet supported."
+  exit 1
+fi
