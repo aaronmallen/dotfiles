@@ -16,13 +16,19 @@ if [ "$(uname -s)" = "Darwin" ]; then
   # Setup dotfiles
   #############################################################################
 
+  brew install op
   brew install chezmoi
+  eval $(op signin)
   chezmoi init --apply git@github.com:aaronmallen/dotfiles.git
 
   #############################################################################
   # Install Dependencies
   #############################################################################
 
+  . .config/xdg/env.zsh
+  . .config/homebrew/env.zsh
+  . .config/mise/env.zsh
+  . .config/mise/config.zsh
   brew bundle
   mise install
 
