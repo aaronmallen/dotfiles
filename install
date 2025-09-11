@@ -111,9 +111,9 @@ if [ "$(uname -s)" = "Darwin" ]; then
   mkdir -p $BUNDLE_USER_PLUGIN
   mkdir -p $CARGO_HOME
   mkdir -p $CLAUDE_HOME
-  mkdir -p $GEM_HOME
   mkdir -p $GEM_SPEC_CACHE
   mkdir -p $NVM_DIR
+  mkdir -p $RBENV_ROOT
   mkdir -p $RUSTUP_HOME
 else
   echo "Your operating system is not yet supported."
