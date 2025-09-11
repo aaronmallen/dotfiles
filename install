@@ -16,7 +16,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
   # Setup dotfiles
   #############################################################################
 
-  brew install op
+  brew install 1password-cli
   brew install chezmoi
   eval $(op signin)
   chezmoi init --apply git@github.com:aaronmallen/dotfiles.git
