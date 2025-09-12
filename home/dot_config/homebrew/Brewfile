@@ -1,5 +1,3 @@
-tap "olets/tap"
-
 brew "atuin"
 brew "awk" # needed for yadm
 brew "bat"
@@ -50,7 +48,6 @@ brew "watchexec" # used by mise
 brew "xdg-ninja"
 brew "zlib" # needed for postgres
 brew "zoxide"
-brew "zsh-abbr"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
