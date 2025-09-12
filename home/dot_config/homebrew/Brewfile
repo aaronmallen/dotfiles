@@ -1,4 +1,4 @@
-tap "olets/tap/zsh-abbr"
+tap "olets/tap"
 
 brew "atuin"
 brew "awk" # needed for yadm
@@ -35,7 +35,6 @@ brew "mingw-w64" # use for rust binary compilations
 brew "minikube"
 brew "mise"
 brew "nvim"
-brew "zsh-abbr"
 brew "openssl"
 brew "ossp-uuid" # needed for postgres
 brew "pinentry-mac"
@@ -51,6 +50,7 @@ brew "watchexec" # used by mise
 brew "xdg-ninja"
 brew "zlib" # needed for postgres
 brew "zoxide"
+brew "zsh-abbr"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
