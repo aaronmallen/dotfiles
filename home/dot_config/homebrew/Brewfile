@@ -33,6 +33,7 @@ brew "mingw-w64" # use for rust binary compilations
 brew "minikube"
 brew "mise"
 brew "nvim"
+brew "olets/tap/zsh-abbr"
 brew "openssl"
 brew "ossp-uuid" # needed for postgres
 brew "pinentry-mac"
