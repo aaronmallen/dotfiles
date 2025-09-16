@@ -1,0 +1,40 @@
+[".local/share/powerlevel10k"]
+clone.args = ["--depth=1"]
+private = true
+refreshPeriod = "168h"
+type = "git-repo"
+url = "https://github.com/romkatv/powerlevel10k.git"
+
+[".local/share/zsh-autosuggestions"]
+private = true
+refreshPeriod = "168h"
+type = "git-repo"
+url = "https://github.com/zsh-users/zsh-autosuggestions"
+
+[".local/share/zsh-completions"]
+private = true
+refreshPeriod = "168h"
+type = "git-repo"
+url = "https://github.com/zsh-users/zsh-completions.git"
+
+[".local/share/zsh-syntax-highlighting"]
+private = true
+refreshPeriod = "168h"
+type = "git-repo"
+url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+
+{{- if eq .chezmoi.os "darwin" }}
+
+["Library/Fonts"]
+extract = true
+type = "archive"
+url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip"
+{{- end }}
+
+{{- if eq .chezmoi.os "linux" }}
+
+[".local/share/fonts"]
+extract = true
+type = "archive"
+url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip"
+{{- end }}

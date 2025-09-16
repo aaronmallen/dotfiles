@@ -1,0 +1,11 @@
+Host github.com
+  AddKeysToAgent yes
+  {{- if eq .chezmoi.os "darwin" }}
+  UseKeychain yes
+  {{- end }}
+  {{- if eq .email "hello@aaronmallen.me" }}
+  IdentityFile ~/.ssh/id_ed25519_hello@aaronmallen.me
+  {{- end }}
+  {{- if eq .email "aaron.allen@joinroot.com" }}
+  IdentityFile ~/.shh/id_ed25519_aaron.allen@joinroot.com
+  {{- end }}

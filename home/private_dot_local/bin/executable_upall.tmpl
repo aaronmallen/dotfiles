@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+
+{{- if eq .packageManager "brew" }}
+
+command -v brew > /dev/null \
+  && brew bundle && sleep 1 \
+  && brew update && sleep 1 \
+  && brew upgrade && sleep 1 \
+  && brew cleanup && sleep 1 \
+  && brew doctor
+{{- end }}
+
+{{- if eq .packageManager "paru" }}
+
+command -v paru > /dev/null \
+  && paru -Syu --noconfirm && sleep 1 \
+  && paru -Sc --noconfirm && sleep 1 \
+  && paru --clean --noconfirm
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+
+command -v softwareupdate > /dev/null \
+  && softwareupdate -i --all && sleep 1
+{{- end }}
+
+command -v mise > /dev/null \
+  && mise upgrade
+
+command -v chezmoi > /dev/null \
+  && chezmoi apply
+
+{{- if eq .chezmoi.os "darwin" }}
+
+defaults write com.apple.dock ResetLaunchPad -bool true
+killall Dock
+{{- end }}

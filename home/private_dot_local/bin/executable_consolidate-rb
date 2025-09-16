@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'prism'
+require 'pathname'
+
+# Represents a tree of nested modules and classes
+class Node
+  attr_reader :name, :type, :children, :body
+
+  def initialize(name:, type: :module, body: [], children: [])
+    @name = name
+    @type = type
+    @body = body
+    @children = children
+  end
+
+  def add_child(child)
+    existing = @children.find { |c| c.name == child.name && c.type == child.type }
+    if existing
+      child.body.each { |stmt| existing.body << stmt unless existing.body.include?(stmt) }
+      child.children.each { |gc| existing.add_child(gc) }
+    else
+      @children << child
+    end
+  end
+
+  def to_ruby(indent = 0)
+    ind = '  ' * indent
+    head = "#{ind}#{type} #{name}\n"
+    body_lines = body.map { |line| ind + '  ' + line.strip + "\n" }.join
+    children_lines = children.map { |c| c.to_ruby(indent + 1) }.join("\n")
+    tail = "#{ind}end\n"
+    [head, body_lines, children_lines, tail].join
+  end
+end
+
+# Parse a Prism AST and recursively build our Node structure
+def extract_nodes(ast_body, parent = nil)
+  nodes = []
+  ast_body.compact.each do |stmt|
+    case stmt
+    when Prism::ModuleNode, Prism::ClassNode
+      name = stmt.constant_path.slice
+      type = stmt.type == :module_node ? :module : :class
+      node = Node.new(name: name, type: type)
+      if stmt.body
+        stmt.body.body.each do |child_stmt|
+          if child_stmt.is_a?(Prism::ClassNode) || child_stmt.is_a?(Prism::ModuleNode)
+            node.children.concat(extract_nodes([child_stmt], node))
+          else
+            node.body << child_stmt.location.slice
+          end
+        end
+      end
+      nodes << node
+    else
+      parent&.body << stmt.location.slice if parent
+    end
+  end
+  nodes
+end
+
+raise ArgumentError, 'Usage: consolidate_with_prism.rb <lib_dir> <output_file>' unless ARGV.size == 2
+lib_dir, output_file = ARGV
+
+root = Node.new(name: 'TOPLEVEL', type: :module)
+
+Dir.glob("#{lib_dir}/**/*.rb").sort.each do |file|
+  source = File.read(file)
+  result = Prism.parse(source)
+  next unless result.success?
+
+  extract_nodes(result.value.statements.body).each do |node|
+    root.add_child(node)
+  end
+end
+
+# Generate output code
+ruby_code = root.children.map { |n| n.to_ruby }.join("\n")
+File.write(output_file, ruby_code)

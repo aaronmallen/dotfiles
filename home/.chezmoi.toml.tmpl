@@ -1,0 +1,19 @@
+{{- $email := promptStringOnce . "email" "What is your email address?" -}}
+{{- $fullName := promptStringOnce . "fullName" "What is your full name?" -}}
+
+{{- $packageManager := "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $packageManager = "brew" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   $choices := list "brew" "paru" "yay" -}}
+{{-   $packageManager = promptChoiceOnce . "packageManager" "Which package manager should be used?" $choices -}}
+{{- end -}}
+
+[data]
+fullName = {{ $fullName | quote }}
+email = {{ $email | quote }}
+packageManager = {{ $packageManager | quote }}
+
+[git]
+autoCommit = true
+autoPush = true

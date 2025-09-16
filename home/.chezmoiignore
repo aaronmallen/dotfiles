@@ -1,0 +1,14 @@
+{{ if ne .chezmoi.os "darwin" }}
+.config/macos
+.config/pkgconfig
+.warp
+{{ end }}
+
+{{if ne .chezmoi.os "linux" }}
+.config/xorg
+.local/share/warp-terminal
+{{ end }}
+
+{{ if ne .packageManager "brew" }}
+.config/homebrew
+{{ end }}

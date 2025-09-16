@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+#MISE description="Lint github actions and workflows"
+#MISE alias=["l:gh", "l:github-actions", "lint:gh"]
+
+set -e
+
+actionlint

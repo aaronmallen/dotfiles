@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+set -e
+
+export GNUPGHOME="${HOME}/.local/share/gnupg"
+
+mkdir -p "$GNUPGHOME"
+chmod 700 "$GNUPGHOME"
+
+{{- if eq .email "hello@aaronmallen.me" }}
+
+echo "Importing GPG private key from 1Password..."
+op document get "GPG hello@aaronmallen.me Private Key" --vault Private | gpg --import
+
+echo "Importing GPG ownertrust from 1Password..."
+op document get "GPG hello@aaronmallen.me Ownertrust" --vault Private | gpg --import-ownertrust
+
+echo "GPG keys imported successfully!"
+gpg --list-secret-keys
+{{- end }}

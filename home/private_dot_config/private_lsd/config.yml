@@ -1,0 +1,14 @@
+color:
+  when: always
+
+icons:
+  when: always
+  theme: fancy
+
+ignore-globs:
+  - .git
+  - .idea
+  - .jj
+  - coverage
+  - doc
+  - node_modules

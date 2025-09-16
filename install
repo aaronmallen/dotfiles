@@ -1,0 +1,106 @@
+#!/usr/bin/env sh
+
+set -e
+
+OS="$(uname -s)"
+
+apply_dotfiles() {
+  echo "==> Applying dotfiles"
+  mise exec chezmoi -- chezmoi init aaronmallen --apply
+  (cd $HOME/.local/share/chezmoi && git remote remove origin 2>/dev/null || true && git remote add origin git@github.com:aaronmallen/dotfiles.git)
+}
+
+install_chezmoi() {
+  if ! command -v chezmoi >/dev/null 2>&1; then
+    echo "==> Installing chezmoi"
+    mise install chezmoi
+  fi
+}
+
+install_mise() {
+  if ! command -v mise >/dev/null 2>&1; then
+    echo "==> Installing mise"
+    curl https://mise.run | sh
+    export PATH="$HOME/.local/bin:$PATH"
+  fi
+}
+
+prompt_1password_configuration() {
+  echo ""
+  echo "==> Please complete the following steps:"
+  echo "    1. Open 1Password"
+  echo "    2. Sign in to 1Password CLI if prompted"
+  echo "    3. Go to Settings > Developer"
+  echo "    4. Enable 'Connect with 1Password CLI'"
+  echo ""
+  printf "Press Enter once you have completed these steps..."
+  read -r
+}
+
+
+case "$OS" in
+Darwin)
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "==> Installing Homebrew"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+
+  if ! brew list --cask 1password >/dev/null 2>&1; then
+    echo "==> Installing 1Password"
+    brew install --cask 1password
+  fi
+
+  if ! command -v op >/dev/null 2>&1; then
+    echo "==> Installing 1Password CLI"
+    brew install --cask 1password-CLI
+    prompt_1password_configuration
+  fi
+
+  install_mise
+  install_chezmoi
+  apply_dotfiles
+
+  echo "Setup Complete"
+  exec zsh
+  ;;
+Linux)
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+    arch|cachyos|manjaro)
+      if ! command -v op >/dev/null 2>&1; then
+        if command -v paru >/dev/null 2>&1; then
+          echo "==> Installing 1password"
+          paru -S --noconfirm 1password 1password-cli
+        elif command -v yay >/dev/null 2>&1; then
+          echo "==> Installing 1password"
+          yay -S --noconfirm 1password 1password-cli
+        else
+          echo "Error: AUR helper (paru or yay) not found"
+          exit 1
+        fi
+        prompt_1password_configuration
+      fi
+
+      install_mise
+      install_chezmoi
+      apply_dotfiles
+
+      echo "Setup Complete"
+      exec zsh
+      ;;
+    *)
+      echo "Unsupported Linux distribution: $ID"
+      exit 1
+      ;;
+    esac
+  else
+    echo "Error: /etc/os-release not found"
+    exit 1
+  fi
+  ;;
+*)
+  echo "Unsupported operating system: $OS"
+  exit 1
+  ;;
+esac

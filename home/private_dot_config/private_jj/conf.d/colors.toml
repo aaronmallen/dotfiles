@@ -1,0 +1,107 @@
+[colors]
+"author" = "#FD9353"
+"bookmark" = "#FC618D"
+"bookmarks" = "#FC618D"
+"change_id" = "#FC618D"
+"commit_id" = "#948AE3"
+"committer" = "#FD9353"
+"config_list name" = "#7CD88F"
+"config_list overridden" = "bright black"
+"config_list overridden name" = "bright black"
+"config_list overridden path" = "bright black"
+"config_list overridden source" = "bright black"
+"config_list overridden value" = "bright black"
+"config_list path" = "#FC618D"
+"config_list source" = "#948AE3"
+"config_list value" = "#FD9353"
+"conflict" = "#FC618D"
+"conflict_description" = "#FD9353"
+"conflict_description difficult" = "#FC618D"
+"description placeholder" = "bright black"
+"diff access-denied" = { bg = "#FC618D" }
+"diff added" = { fg = "#7CD88F" }
+"diff binary" = "#5AD4E6"
+"diff copied" = "#7CD88F"
+"diff empty" = "#5AD4E6"
+"diff file_header" = { bold = true }
+"diff header" = "#FD9353"
+"diff hunk_header" = "#5AD4E6"
+"diff modified" = "#5AD4E6"
+"diff removed" = { fg = "#FC618D" }
+"diff renamed" = "#5AD4E6"
+"diff token" = { underline = true }
+"diff untracked" = "#FC618D"
+"elided" = "bright black"
+"empty" = "#7CD88F"
+"empty description placeholder" = "bright black"
+"error" = { fg = "default", bold = true }
+"error heading" = { fg = "#FC618D", bold = true }
+"error_source" = { fg = "default" }
+"error_source heading" = { bold = true }
+"git_head" = "#7CD88F"
+"git_ref" = "#7CD88F"
+"git_refs" = "#7CD88F"
+"hidden prefix" = "default"
+"hint" = { fg = "default" }
+"hint heading" = { fg = "#5AD4E6", bold = true }
+"local_bookmarks" = "#FC618D"
+"mutable divergent" = "#FC618D"
+"mutable divergent change_id" = "#FC618D"
+"mutable divergent prefix" = { fg = "#FC618D", underline = true }
+"mutable divergent rest" = "#FC618D"
+"node conflicted" = { fg = "#FC618D", bold = true }
+"node current_operation" = { fg = "#7CD88F", bold = true }
+"node elided" = { fg = "bright black" }
+"node immutable" = { fg = "#5AD4E6", bold = true }
+"node private" = { fg = "#FC618D", bold = true }
+"node wip" = { fg = "#FC618D", bold = true }
+"node working_copy" = { fg = "#7CD88F", bold = true }
+"operation current_operation" = { bold = true }
+"operation current_operation id" = "#948AE3"
+"operation current_operation tags" = "#FC618D"
+"operation current_operation time" = "#5AD4E6"
+"operation current_operation user" = "#FD9353"
+"operation id" = "#948AE3"
+"operation tags" = "#FC618D"
+"operation time" = "#5AD4E6"
+"operation user" = "#FD9353"
+"placeholder" = "#FC618D"
+"prefix" = { bold = true }
+"remote_bookmarks" = "#FC618D"
+"rest" = "bright black"
+"root" = "#7CD88F"
+"separator" = "bright black"
+"signature display" = "#FD9353"
+"signature key" = "#5AD4E6"
+"signature status bad" = "#FC618D"
+"signature status good" = "#7CD88F"
+"signature status invalid" = "#FC618D"
+"signature status unknown" = "#FD9353"
+"tag" = "#FC618D"
+"tags" = "#FC618D"
+"timestamp" = "#5AD4E6"
+"warning" = { fg = "default", bold = true }
+"warning heading" = { fg = "#FD9353", bold = true }
+"working_copy" = { bold = true }
+"working_copy author" = "#FD9353"
+"working_copy bookmark" = "#FC618D"
+"working_copy bookmarks" = "#FC618D"
+"working_copy change_id" = "#FC618D"
+"working_copy commit_id" = "#948AE3"
+"working_copy committer" = "#FD9353"
+"working_copy conflict" = "#FC618D"
+"working_copy description placeholder" = "bright black"
+"working_copy empty" = "#7CD88F"
+"working_copy empty description placeholder" = "bright black"
+"working_copy git_ref" = "#7CD88F"
+"working_copy git_refs" = "#7CD88F"
+"working_copy local_bookmarks" = "#FC618D"
+"working_copy mutable divergent" = "#FC618D"
+"working_copy mutable divergent change_id" = "#FC618D"
+"working_copy placeholder" = "#FC618D"
+"working_copy remote_bookmarks" = "#FC618D"
+"working_copy tag" = "#FC618D"
+"working_copy tags" = "#FC618D"
+"working_copy timestamp" = "#5AD4E6"
+"working_copy working_copies" = "#7CD88F"
+"working_copies" = "#7CD88F"
