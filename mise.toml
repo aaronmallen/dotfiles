@@ -1,0 +1,59 @@
+[tasks.lint]
+description = "Run all linters"
+depends = [
+  "lint:editorconfig",
+  "lint:github-actions",
+  "lint:markdown",
+  "lint:shell",
+  "lint:toml",
+  "lint:yaml",
+]
+
+[tasks."lint:editorconfig"]
+description = "Lint with editorconfig-checker"
+alias = ["lint:ec"]
+run = "ec"
+
+[tasks."lint:github-actions"]
+description = "Lint github actions"
+alias = ["lint:gh"]
+run = "actionlint"
+
+[tasks."lint:markdown"]
+description = "Lint markdown files"
+alias = ["lint:md"]
+run = "markdownlint ."
+
+[tasks."lint:shell"]
+description = "Lint shell files"
+alias = ["lint:sh"]
+run = """
+find home -type f \\( -name "*.sh" -o -name "*.bash" \\) -exec shfmt -d -i 2 -ci -bn -sr {} + 2>/dev/null || true
+find home -type f -name "*.zsh" ! -name "completion.zsh" ! -name "p10k.zsh" ! -name "prompt.zsh" ! -name "fpath.zsh" -exec shfmt -d -i 2 -ci -bn -sr {} + 2>/dev/null || true
+find home -type f \\( -name "executable_*" -o -name "run_*" \\) -exec sh -c 'head -1 "$1" | grep -q "^#!/.*\\(bash\\|sh\\)" && shfmt -d -i 2 -ci -bn -sr "$1"' _ {} \\; 2>/dev/null || true
+
+find home -type f \\( -name "*.sh" -o -name "*.bash" \\) -exec shellcheck {} + 2>/dev/null || true
+find home -type f \\( -name "executable_*" -o -name "run_*" \\) -exec sh -c 'shebang=$(head -1 "$1"); echo "$shebang" | grep -vq "zsh" && echo "$shebang" | grep -qE "^#!/.*(bash|sh)" && shellcheck "$1"' _ {} \\; 2>/dev/null || true
+
+find home -type f -name "*.zsh" -exec zsh -n {} \\; 2>&1 | grep -v "compdef: unknown command" || true
+find home -type f \\( -name "executable_*" -o -name "run_*" \\) -exec sh -c 'head -1 "$1" | grep -q "^#!/.*zsh" && zsh -n "$1" 2>&1 | grep -v "^$1:" | sed "s|^|$1: |"' _ {} \\; 2>/dev/null || true
+"""
+
+[tasks."lint:toml"]
+description = "Lint TOML files"
+run = "taplo format && taplo lint"
+
+[tasks."lint:yaml"]
+description = "Lint YAML files"
+alias = ["lint:yml"]
+run = "yamllint ."
+
+[tools]
+actionlint = "latest"
+"npm:editorconfig-checker" = "latest"
+"npm:markdownlint-cli" = "latest"
+pipx = "latest"
+"pipx:yamllint" = "latest"
+shellcheck = "latest"
+shfmt = "latest"
+taplo = "latest"

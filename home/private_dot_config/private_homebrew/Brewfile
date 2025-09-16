@@ -1,0 +1,92 @@
+brew "atuin"
+brew "ack"
+brew "bat"
+brew "bat-extras"
+brew "caddy"
+brew "chezmoi"
+brew "codesnap"
+brew "curl" # needed for postgres
+brew "delta" # needed for bat-extras
+brew "docker"
+brew "docker-completion"
+brew "docker-compose"
+brew "doctl"
+brew "entr" # needed for bat-extras
+brew "fzf"
+brew "gcc" # needed for postgres
+brew "gh"
+brew "git"
+brew "git-lfs"
+brew "gpg"
+brew "gnupg" # needed for GPG and pinentry
+brew "icu4c" # needed for postgres
+brew "imagemagick"
+brew "kubectx"
+brew "kubernetes-cli"
+brew "libpq"
+brew "libsass"
+brew "libtool"
+brew "libyaml"
+brew "lsd"
+brew "mas"
+brew "mingw-w64" # use for rust binary compilations
+brew "minikube"
+brew "mise"
+brew "nvim"
+brew "openssl"
+brew "ossp-uuid" # needed for postgres
+brew "pinentry-mac"
+brew "pkg-config" # needed for postgres
+brew "powerlevel10k"
+brew "pygments"
+brew "readline" # needed for postgres
+brew "ripgrep" # used by bat-extras
+brew "shellcheck"
+brew "tlrc"
+brew "tmux"
+brew "watchexec" # used by mise
+brew "xdg-ninja"
+brew "zlib" # needed for postgres
+brew "zoxide"
+brew "zsh-autosuggestions"
+brew "zsh-completions"
+brew "zsh-syntax-highlighting"
+
+cask "1password"
+cask "1password-cli"
+cask "appcleaner"
+cask "bruno"
+cask "chatgpt"
+cask "claude"
+cask "claude-code"
+cask "datagrip"
+cask "discord"
+cask "docker-desktop"
+cask "figma"
+cask "fleet"
+cask "font-fira-code-nerd-font"
+cask "font-hasklug-nerd-font"
+cask "font-jetbrains-mono-nerd-font"
+cask "font-lilex-nerd-font"
+cask "github"
+cask "google-chrome"
+cask "google-drive"
+cask "intellij-idea"
+cask "linear-linear"
+cask "logitech-g-hub"
+cask "obsidian"
+cask "orangedrangon-android-messages"
+cask "rubymine"
+cask "runjs"
+cask "rustrover"
+cask "slack"
+cask "tailscale-app"
+cask "telegram"
+cask "warp"
+cask "webstorm"
+cask "zed"
+cask "zoom"
+
+mas "ColorSlurp", id: 1287239339
+mas "Sequence Diagram for Mac", id: 1195426709
+mas "Xcode", id: 497799835
