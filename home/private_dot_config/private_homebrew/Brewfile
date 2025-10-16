@@ -21,6 +21,7 @@ brew "gpg"
 brew "gnupg" # needed for GPG and pinentry
 brew "icu4c" # needed for postgres
 brew "imagemagick"
+brew "jj"
 brew "kubectx"
 brew "kubernetes-cli"
 brew "libpq"
