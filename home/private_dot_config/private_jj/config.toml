@@ -1,5 +1,10 @@
 #:schema https://jj-vcs.github.io/jj/latest/config-schema.json
 
+[signing]
+behavior = "own"
+backend  = "gpg"
+key      = "87133702D8F60DD8"
+
 [user]
 name = "Aaron Allen"
 email = "hello@aaronmallen.me"
