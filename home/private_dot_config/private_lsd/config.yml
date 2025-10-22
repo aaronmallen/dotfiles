@@ -8,6 +8,7 @@ icons:
 ignore-globs:
   - .git
   - .idea
+  - .jj
   - coverage
   - doc
   - node_modules
