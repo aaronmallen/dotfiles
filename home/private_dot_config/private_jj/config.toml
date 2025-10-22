@@ -5,6 +5,9 @@ behavior = "own"
 backend  = "gpg"
 key      = "87133702D8F60DD8"
 
+[ui]
+default-command = "log"
+
 [user]
-name = "Aaron Allen"
+name  = "Aaron Allen"
 email = "hello@aaronmallen.me"
