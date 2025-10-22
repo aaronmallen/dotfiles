@@ -1,13 +1,20 @@
 #:schema https://jj-vcs.github.io/jj/latest/config-schema.json
 
+[git]
+push-new-bookmarks = true
+
 [signing]
 behavior = "own"
 backend  = "gpg"
 key      = "87133702D8F60DD8"
 
 [ui]
-default-command = "log"
+default-command               = "log"
+editor                        = "nvim"
+pager                         = "delta"
+paginate                      = "auto"
+show-cryptographic-signatures = true
 
 [user]
 name  = "Aaron Allen"
-email = "hello@aaronmallen.me"
+email = "hello@aaronmallen.me":
