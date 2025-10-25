@@ -1,6 +1,6 @@
 #:schema https://jj-vcs.github.io/jj/latest/config-schema.json
 [alias]
-pull = "jj git fetch && jj rebase -d main@origin"
+pull = "!jj git fetch && jj rebase -d main@origin"
 
 [git]
 push-new-bookmarks = true
