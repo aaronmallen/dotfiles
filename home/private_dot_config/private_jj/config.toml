@@ -1,8 +1,125 @@
 #:schema https://jj-vcs.github.io/jj/latest/config-schema.json
+
 [aliases]
 pull = ["util", "exec", "--", "bash", "-c", """
 jj git fetch && jj rebase -d main@origin
 """]
+
+[colors]
+"error" = { fg = "default", bold = true }
+"error_source" = { fg = "default" }
+"warning" = { fg = "default", bold = true }
+"hint" = { fg = "default" }
+"error heading" = { fg = "#FC618D", bold = true }
+"error_source heading" = { bold = true }
+"warning heading" = { fg = "#FD9353", bold = true }
+"hint heading" = { fg = "#5AD4E6", bold = true }
+
+"conflict_description" = "#FD9353"
+"conflict_description difficult" = "#FC618D"
+
+"commit_id" = "#948AE3"
+"change_id" = "#FC618D"
+
+"prefix" = { bold = true }
+"rest" = "bright black"
+"mutable divergent rest" = "#FC618D"
+"mutable divergent prefix" = { fg = "#FC618D", underline = true }
+"hidden prefix" = "default"
+
+"author" = "#FD9353"
+"committer" = "#FD9353"
+"timestamp" = "#5AD4E6"
+"working_copies" = "#7CD88F"
+"bookmark" = "#FC618D"
+"bookmarks" = "#FC618D"
+"local_bookmarks" = "#FC618D"
+"remote_bookmarks" = "#FC618D"
+"tag" = "#FC618D"
+"tags" = "#FC618D"
+"git_ref" = "#7CD88F"
+"git_refs" = "#7CD88F"
+"git_head" = "#7CD88F"
+"mutable divergent" = "#FC618D"
+"mutable divergent change_id" = "#FC618D"
+"conflict" = "#FC618D"
+"empty" = "#7CD88F"
+"placeholder" = "#FC618D"
+"description placeholder" = "#FD9353"
+"empty description placeholder" = "#7CD88F"
+"separator" = "bright black"
+"elided" = "bright black"
+"root" = "#7CD88F"
+
+"working_copy" = { bold = true }
+"working_copy commit_id" = "#948AE3"
+"working_copy change_id" = "#FC618D"
+"working_copy author" = "#FD9353"
+"working_copy committer" = "#FD9353"
+"working_copy timestamp" = "#5AD4E6"
+"working_copy working_copies" = "#7CD88F"
+"working_copy bookmark" = "#FC618D"
+"working_copy bookmarks" = "#FC618D"
+"working_copy local_bookmarks" = "#FC618D"
+"working_copy remote_bookmarks" = "#FC618D"
+"working_copy tag" = "#FC618D"
+"working_copy tags" = "#FC618D"
+"working_copy git_ref" = "#7CD88F"
+"working_copy git_refs" = "#7CD88F"
+"working_copy mutable divergent" = "#FC618D"
+"working_copy mutable divergent change_id" = "#FC618D"
+"working_copy conflict" = "#FC618D"
+"working_copy empty" = "#7CD88F"
+"working_copy placeholder" = "#FC618D"
+"working_copy description placeholder" = "#FD9353"
+"working_copy empty description placeholder" = "#7CD88F"
+
+"config_list name" = "#7CD88F"
+"config_list value" = "#FD9353"
+"config_list source" = "#948AE3"
+"config_list path" = "#FC618D"
+"config_list overridden" = "bright black"
+"config_list overridden name" = "bright black"
+"config_list overridden value" = "bright black"
+"config_list overridden source" = "bright black"
+"config_list overridden path" = "bright black"
+
+"diff header" = "#FD9353"
+"diff empty" = "#5AD4E6"
+"diff binary" = "#5AD4E6"
+"diff file_header" = { bold = true }
+"diff hunk_header" = "#5AD4E6"
+"diff removed" = { fg = "#FC618D" }
+"diff added" = { fg = "#7CD88F" }
+"diff token" = { underline = true }
+"diff modified" = "#5AD4E6"
+"diff untracked" = "#FC618D"
+"diff renamed" = "#5AD4E6"
+"diff copied" = "#7CD88F"
+"diff access-denied" = { bg = "#FC618D" }
+
+"operation id" = "#948AE3"
+"operation user" = "#FD9353"
+"operation time" = "#5AD4E6"
+"operation tags" = "#FC618D"
+"operation current_operation" = { bold = true }
+"operation current_operation id" = "#948AE3"
+"operation current_operation user" = "#FD9353"
+"operation current_operation time" = "#5AD4E6"
+"operation current_operation tags" = "#FC618D"
+
+"node elided" = { fg = "bright black" }
+"node working_copy" = { fg = "#7CD88F", bold = true }
+"node current_operation" = { fg = "#7CD88F", bold = true }
+"node immutable" = { fg = "#5AD4E6", bold = true }
+"node conflicted" = { fg = "#FC618D", bold = true }
+
+"signature display" = "#FD9353"
+"signature key" = "#5AD4E6"
+"signature status good" = "#7CD88F"
+"signature status unknown" = "#FD9353"
+"signature status bad" = "#FC618D"
+"signature status invalid" = "#FC618D"
 
 [git]
 push-new-bookmarks = true
