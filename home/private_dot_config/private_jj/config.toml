@@ -22,6 +22,7 @@ key = "87133702D8F60DD8"
 
 [ui]
 default-command = "log"
+diff-formatter = ":git"
 editor = "nvim"
 pager = "delta"
 paginate = "auto"
