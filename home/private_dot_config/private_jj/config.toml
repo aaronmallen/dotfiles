@@ -1,6 +1,7 @@
 #:schema https://jj-vcs.github.io/jj/latest/config-schema.json
 
 [aliases]
+ll = ["log", "--template", "builtin_log_detailed"]
 pull = [
   "util",
   "exec",
