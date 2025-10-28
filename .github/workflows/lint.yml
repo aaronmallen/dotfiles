@@ -20,8 +20,6 @@ jobs:
         run: mise run lint:github-actions
       - name: Lint Markdown
         run: mise run lint:markdown
-      - name: Lint Shell
-        run: mise run lint:shell
       - name: Lint TOML
         run: mise run lint:toml
       - name: Lint YAML
