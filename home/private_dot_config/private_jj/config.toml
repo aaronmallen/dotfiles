@@ -2,7 +2,7 @@
 
 [aliases]
 ll = ["log", "--template", "builtin_log_detailed"]
-pull = ["util", "exec", "--", "bash", "-c", """
+tug = ["util", "exec", "--", "bash", "-c", """
 jj git fetch && jj rebase -d main@origin
 """]
 
