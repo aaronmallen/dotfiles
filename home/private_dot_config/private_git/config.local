@@ -1,4 +1,4 @@
 [user]
-    name = Aaron Allen
-    email = hello@aaronmallen.me
-    signingKey = 87133702D8F60DD8
+name = Aaron Allen
+email = {{- .email }}
+signingKey = 87133702D8F60DD8

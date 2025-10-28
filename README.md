@@ -32,7 +32,7 @@ curl -Lks https://raw.githubusercontent.com/aaronmallen/dotfiles/refs/heads/main
 
 ### Development Tools
 
-* [Git](https://git-scm.com) - Version control
+* [JJ](https://jj-vcs.github.io/) - Version control
 * [GitHub CLI](https://cli.github.com) - GitHub command line tool
 * [Docker](https://www.docker.com) - Containerization platform
 
