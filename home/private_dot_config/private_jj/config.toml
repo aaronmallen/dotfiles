@@ -16,8 +16,10 @@ key = "87133702D8F60DD8"
 
 [ui]
 default-command = "log"
+diff-editor = "meld"
 diff-formatter = ":git"
 editor = "nvim"
+merge-editor = "meld"
 pager = "delta"
 paginate = "auto"
 show-cryptographic-signatures = true
