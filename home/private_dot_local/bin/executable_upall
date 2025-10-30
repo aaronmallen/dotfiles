@@ -8,6 +8,13 @@ command -v brew > /dev/null \
   && brew doctor
 
 command -v softwareupdate > /dev/null \
-  && softwareupdate -i --all && sleep 1 \
-  && defaults write com.apple.dock ResetLaunchPad -bool true
+  && softwareupdate -i --all && sleep 1
+
+command -v mise > /dev/null \
+  && mise upgrade
+
+command -v chezmoi > /dev/null \
+  && chezmoi apply
+
+defaults write com.apple.dock ResetLaunchPad -bool true
 killall Dock
