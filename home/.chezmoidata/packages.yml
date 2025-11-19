@@ -24,6 +24,7 @@ packages:
     - libsass
     - libtool
     - libyaml
+    - localsend
     - meld
     - mingw-w64-gcc
     - neovim
