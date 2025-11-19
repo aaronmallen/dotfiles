@@ -5,6 +5,7 @@
 {{ end }}
 
 {{if ne .chezmoi.os "linux" }}
+.config/autostart
 .config/xorg
 .local/share/warp-terminal
 {{ end }}
