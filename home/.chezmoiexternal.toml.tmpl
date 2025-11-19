@@ -23,18 +23,17 @@ refreshPeriod = "168h"
 type = "git-repo"
 url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"
 
+{{- $fontDir := "" }}
 {{- if eq .chezmoi.os "darwin" }}
-
-["Library/Fonts"]
-extract = true
-type = "archive"
-url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip"
+{{-   $fontDir = "Library/Fonts" }}
+{{- else if eq .chezmoi.os "linux" }}
+{{-   $fontDir = ".local/share/fonts" }}
 {{- end }}
+{{- range .fonts.nerd_fonts }}
 
-{{- if eq .chezmoi.os "linux" }}
-
-[".local/share/fonts"]
+["{{ $fontDir }}/{{ .name }}"]
 extract = true
+refreshPeriod = "168h"
 type = "archive"
-url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip"
+url = {{ gitHubLatestReleaseAssetURL "ryanoasis/nerd-fonts" .file | quote }}
 {{- end }}
