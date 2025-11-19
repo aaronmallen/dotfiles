@@ -1,3 +1,4 @@
+.claude
 .DS_Store
 .idea
 *.iml
@@ -20,5 +21,3 @@ Session.vim
 
 # sftp configuration file
 sftp-config.json
-
-**/.claude/settings.local.json
