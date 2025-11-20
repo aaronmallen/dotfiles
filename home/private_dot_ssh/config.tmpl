@@ -22,7 +22,7 @@ Host git.aaronmallen.dev
   IdentityFile ~/.shh/id_ed25519_aaron.allen@joinroot.com
   {{- end }}
 
-Host rasberry-pi.local
+Host raspberry-pi.local
   AddKeysToAgent yes
   {{- if eq .chezmoi.os "darwin" }}
   UseKeychain yes
