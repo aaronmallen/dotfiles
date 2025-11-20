@@ -3,25 +3,25 @@
 {{- if eq .packageManager "brew" }}
 
 command -v brew > /dev/null \
-  && brew bundle && sleep 1 \
-  && brew update && sleep 1 \
-  && brew upgrade && sleep 1 \
-  && brew cleanup && sleep 1 \
+  && brew bundle \
+  && brew update \
+  && brew upgrade \
+  && brew cleanup \
   && brew doctor
 {{- end }}
 
 {{- if eq .packageManager "paru" }}
 
 command -v paru > /dev/null \
-  && paru -Syu --noconfirm && sleep 1 \
-  && paru -Sc --noconfirm && sleep 1 \
+  && paru -Syu --noconfirm \
+  && paru -Sc --noconfirm \
   && paru --clean --noconfirm
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
 
 command -v softwareupdate > /dev/null \
-  && softwareupdate -i --all && sleep 1
+  && softwareupdate -i --all
 {{- end }}
 
 command -v mise > /dev/null \
