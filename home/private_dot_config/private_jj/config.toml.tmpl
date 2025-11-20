@@ -60,11 +60,11 @@ show-cryptographic-signatures = true
 "closest_bookmark(to)" = "heads(::to & bookmarks())"
 "closest_pushable(to)" = "heads(::to & mutable() & ~description(exact:'') & (~empty() | merges()))"
 "mine()" = "author(exact:'{{- .fullName }}') | author(exact:'{{- .email }}')"
-"private()" = "description(glob:'[PRIVATE]*') | description(glob:'private:*')"
+"private()" = "description(glob:'private:*')"
 "stack()" = "stack(@, 2)"
 "stack(x)" = "stack(x, 2)"
 "stack(x, n)" = "ancestors(reachable(x, mutable()), n)"
-"wip()" = "description(glob:'[WIP]*') | description(glob:'wip:*')"
+"wip()" = "description(glob:'wip:*')"
 
 [templates]
 log_node = """
