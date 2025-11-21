@@ -4,10 +4,6 @@
 ![GitHub last commit][last-commit-badge]
 [![GitHub License][license-badge]][license]
 
-> [!WARNING]
-> These dotfiles are a work in progress and not yet ready for public consumption.
-> There will be force pushes on the main branch. Check back at a later time.
-
 ![MacOS Terminal Preview](./assets/mac_os_terminal_preview.png)
 
 ## Installation
