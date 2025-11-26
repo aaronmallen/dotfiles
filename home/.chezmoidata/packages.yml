@@ -33,6 +33,7 @@ packages:
     - python-pygments
     - readline
     - runjs-bin
+    - steam
     - tailscale
     - telegram-desktop
     - vicinae
