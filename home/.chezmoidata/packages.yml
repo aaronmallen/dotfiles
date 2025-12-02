@@ -33,6 +33,8 @@ packages:
     - python-pygments
     - readline
     - runjs-bin
+    - syncthing
+    - syncthingtray-qt6
     - steam
     - tailscale
     - telegram-desktop

@@ -27,6 +27,7 @@ brew "pinentry-mac"
 brew "pkg-config" # needed for postgres
 brew "pygments"
 brew "readline" # needed for postgres# used by mise
+brew "syncthing"
 brew "xdg-ninja"
 brew "zlib" # needed for postgres
 
@@ -59,6 +60,7 @@ cask "runjs"
 cask "rustrover"
 cask "slack"
 cask "steam"
+cask "syncthing-app"
 cask "tailscale-app"
 cask "telegram"
 cask "warp"
