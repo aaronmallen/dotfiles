@@ -10,6 +10,7 @@ packages:
     - discord
     - docker
     - docker-desktop
+    - extra/syncthing
     - gcc
     - git
     - git-lfs
@@ -33,7 +34,6 @@ packages:
     - python-pygments
     - readline
     - runjs-bin
-    - syncthing
     - syncthingtray-qt6
     - steam
     - tailscale
