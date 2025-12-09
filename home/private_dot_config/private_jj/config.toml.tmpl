@@ -36,8 +36,6 @@ tracked="$(jj bookmark list -r ${closest} -t -T 'if(remote == "origin", name)')"
 
 [git]
 private-commits = "private() | wip()"
-push-new-bookmarks = true
-
 {{- if eq .email "hello@aaronmallen.me" }}
 
 [signing]
