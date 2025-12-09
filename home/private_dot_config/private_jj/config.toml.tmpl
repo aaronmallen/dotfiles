@@ -38,22 +38,6 @@ tracked="$(jj bookmark list -r ${closest} -t -T 'if(remote == "origin", name)')"
 private-commits = "private() | wip()"
 {{- if eq .email "hello@aaronmallen.me" }}
 
-[signing]
-behavior = "own"
-backend = "gpg"
-key = "87133702D8F60DD8"
-{{- end }}
-
-[ui]
-default-command = "log"
-diff-editor = "meld"
-diff-formatter = ":git"
-editor = "nvim"
-merge-editor = "meld"
-pager = "delta"
-paginate = "auto"
-show-cryptographic-signatures = true
-
 [revset-aliases]
 "closest_bookmark(to)" = "heads(::to & bookmarks())"
 "closest_pushable(to)" = "heads(::to & mutable() & ~description(exact:'') & (~empty() | merges()))"
@@ -64,33 +48,49 @@ show-cryptographic-signatures = true
 "stack(x, n)" = "ancestors(reachable(x, mutable()), n)"
 "wip()" = "description(glob:'wip:*')"
 
+[signing]
+behavior = "own"
+backend = "gpg"
+key = "87133702D8F60DD8"
+{{- end }}
+
 [templates]
 log_node = """
-label("node", coalesce(
-  if(!self, label("elided", "~")),
-  label(
-    separate(" ",
-      if(current_working_copy, "working_copy"),
-      if(conflict, "conflict"),
-      if(immutable, "immutable"),
-      if(description.starts_with("[WIP]"), "wip"),
-      if(description.starts_with("wip:"), "wip"),
-      if(description.starts_with("[PRIVATE]"), "private"),
-      if(description.starts_with("private:"), "private"),
-    ),
-    coalesce(
-      if(current_working_copy, "@"),
-      if(conflict, "x"),
-      if(immutable, "◆"),
-      if(description.starts_with("[WIP]"), "⚙"),
-      if(description.starts_with("wip:"), "⚙"),
-      if(description.starts_with("[PRIVATE]"), "◇"),
-      if(description.starts_with("private:"), "◇"),
-      "○",
+  label("node", coalesce(
+    if(!self, label("elided", "~")),
+    label(
+      separate(" ",
+        if(current_working_copy, "working_copy"),
+        if(conflict, "conflict"),
+        if(immutable, "immutable"),
+        if(description.starts_with("[WIP]"), "wip"),
+        if(description.starts_with("wip:"), "wip"),
+        if(description.starts_with("[PRIVATE]"), "private"),
+        if(description.starts_with("private:"), "private"),
+      ),
+      coalesce(
+        if(current_working_copy, "@"),
+        if(conflict, "x"),
+        if(immutable, "◆"),
+        if(description.starts_with("[WIP]"), "⚙"),
+        if(description.starts_with("wip:"), "⚙"),
+        if(description.starts_with("[PRIVATE]"), "◇"),
+        if(description.starts_with("private:"), "◇"),
+        "○",
+      )
     )
-  )
-))
-"""
+  ))
+  """
+
+[ui]
+default-command = "log"
+diff-editor = "meld"
+diff-formatter = ":git"
+editor = "nvim"
+merge-editor = "meld"
+pager = "delta"
+paginate = "auto"
+show-cryptographic-signatures = true
 
 [user]
 name = {{- .fullName | quote }}
