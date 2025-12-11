@@ -34,18 +34,24 @@ brew "zlib" # needed for postgres
 cask "1password"
 cask "1password-cli"
 cask "appcleaner"
+{{- if eq .profile "personal" }}
 cask "balenaetcher"
+{{ end -}}
 cask "bruno"
 cask "chatgpt"
 cask "claude"
 cask "claude-code"
+{{- if eq .profile "personal" }}
 cask "discord"
+{{ end -}}
 cask "figma"
 cask "github"
 cask "google-chrome"
 cask "google-drive"
 cask "jetbrains-toolbox"
+{{- if eq .profile "personal" }}
 cask "linear-linear"
+{{ end -}}
 cask "localsend"
 cask "logitech-g-hub"
 cask "meld"
@@ -53,12 +59,21 @@ cask "obsidian"
 cask "orbstack"
 cask "orangedrangon-android-messages"
 cask "raycast"
-cask "runjs"
+{{- if eq .profile "work" }}
 cask "slack"
+{{ end -}}
+{{- if eq .profile "personal" }}
 cask "steam"
+{{ end -}}
+{{- if eq .profile "personal" }}
 cask "syncthing-app"
+{{ end -}}
+{{- if eq .profile "personal" }}
 cask "tailscale-app"
+{{ end -}}
+{{- if eq .profile "personal" }}
 cask "telegram"
+{{ end -}}
 cask "warp"
 cask "zed"
 cask "zoom"

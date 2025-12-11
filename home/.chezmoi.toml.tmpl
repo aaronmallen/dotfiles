@@ -5,14 +5,18 @@
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   $packageManager = "brew" -}}
 {{- else if eq .chezmoi.os "linux" -}}
-{{-   $choices := list "brew" "paru" "yay" -}}
-{{-   $packageManager = promptChoiceOnce . "packageManager" "Which package manager should be used?" $choices -}}
+{{-   $packageManagers := list "brew" "paru" "yay" -}}
+{{-   $packageManager = promptChoiceOnce . "packageManager" "Which package manager should be used?" $packageManagers -}}
 {{- end -}}
+
+{{- $profiles := list "personal" "work" "container" -}}
+{{- $profile := promptChoiceOnce . "profile" "What profile should be used?" $profiles -}}
 
 [data]
 fullName = {{ $fullName | quote }}
 email = {{ $email | quote }}
 packageManager = {{ $packageManager | quote }}
+profile = {{ $profile | quote }}
 
 [git]
 autoCommit = true
