@@ -13,7 +13,7 @@ command -v brew > /dev/null \
 
 {{ if eq .packageManager "paru" -}}
 # Profile: {{ .profile }}
-# Packages hash: {{ include "dot_chezmoidata/packages.yml" | sha256sum }}
+# Packages hash: {{ include ".chezmoidata/packages.yml" | sha256sum }}
 paru -S --needed --noconfirm - <<EOF
 {{ range .packages.aur.default -}}
 {{ . }}
@@ -26,7 +26,7 @@ EOF
 
 {{ if eq .packageManager "yay" -}}
 # Profile: {{ .profile }}
-# Packages hash: {{ include "dot_chezmoidata/packages.yml" | sha256sum }}
+# Packages hash: {{ include ".chezmoidata/packages.yml" | sha256sum }}
 yay -S --needed --noconfirm - <<EOF
 {{ range .packages.aur.default -}}
 {{ . }}
