@@ -9,7 +9,6 @@ packages:
     - curl
     - discord
     - docker
-    - docker-desktop
     - extra/syncthing
     - gcc
     - git
@@ -30,6 +29,7 @@ packages:
     - mingw-w64-gcc
     - neovim
     - obsidian
+    - orbstack-bin
     - pkgconf
     - python-pygments
     - readline
