@@ -30,7 +30,6 @@ packages:
       - mingw-w64-gcc
       - neovim
       - obsidian
-      - orbstack-bin
       - pkgconf
       - python-pygments
       - readline
