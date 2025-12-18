@@ -7,81 +7,34 @@ set -e
 command -v brew > /dev/null \
   && brew update \
   && brew bundle --file="$HOME/.config/homebrew/Brewfile" \
-  && brew bundle cleanup --force --file="$HOME/.config/homebrew/Brewfile" \
   && brew upgrade \
   && brew cleanup
 {{ end -}}
 
 {{ if eq .packageManager "paru" -}}
 # Profile: {{ .profile }}
-# Packages hash: {{ include "private_dot_config/private_aur/packages.tmpl" | sha256sum }}
-INSTALLED_FILE="$HOME/.config/aur/.installed"
-
-# Desired packages from template
-DESIRED_PACKAGES=$(cat <<'PKGEOF'
-{{ include "private_dot_config/private_aur/packages.tmpl" }}
-PKGEOF
-)
-DESIRED_PACKAGES=$(echo "$DESIRED_PACKAGES" | grep -v '^$' | sort -u)
-
-# Read previously installed packages
-PREVIOUS_INSTALLED=""
-if [ -f "$INSTALLED_FILE" ]; then
-  PREVIOUS_INSTALLED=$(cat "$INSTALLED_FILE" | grep -v '^$' | sort -u)
-fi
-
-# Install desired packages
-echo "$DESIRED_PACKAGES" | paru -S --needed --noconfirm -
-
-# Find and remove packages no longer in list
-if [ -n "$PREVIOUS_INSTALLED" ]; then
-  PACKAGES_TO_REMOVE=$(comm -23 <(echo "$PREVIOUS_INSTALLED") <(echo "$DESIRED_PACKAGES") || true)
-  if [ -n "$PACKAGES_TO_REMOVE" ]; then
-    echo "Removing packages no longer in list:"
-    echo "$PACKAGES_TO_REMOVE"
-    echo "$PACKAGES_TO_REMOVE" | xargs -r paru -Rns --noconfirm || true
-  fi
-fi
-
-# Update installed packages list
-mkdir -p "$(dirname "$INSTALLED_FILE")"
-echo "$DESIRED_PACKAGES" > "$INSTALLED_FILE"
+# Packages hash: {{ include ".chezmoidata/packages.yml" | sha256sum }}
+paru -S --needed --noconfirm - <<EOF
+{{ range .packages.aur.default -}}
+{{ . }}
+{{ end -}}
+{{ range index .packages.aur .profile -}}
+{{ . }}
+{{ end -}}
+EOF
 {{ end -}}
 
 {{ if eq .packageManager "yay" -}}
 # Profile: {{ .profile }}
-# Packages hash: {{ include "private_dot_config/private_aur/packages.tmpl" | sha256sum }}
-INSTALLED_FILE="$HOME/.config/aur/.installed"
-
-# Desired packages from template
-DESIRED_PACKAGES=$(cat <<'PKGEOF'
-{{ include "private_dot_config/private_aur/packages.tmpl" }}
-PKGEOF
-)
-DESIRED_PACKAGES=$(echo "$DESIRED_PACKAGES" | grep -v '^$' | sort -u)
-
-# Read previously installed packages
-PREVIOUS_INSTALLED=""
-if [ -f "$INSTALLED_FILE" ]; then
-  PREVIOUS_INSTALLED=$(cat "$INSTALLED_FILE" | grep -v '^$' | sort -u)
-fi
-
-# Install desired packages
-echo "$DESIRED_PACKAGES" | yay -S --needed --noconfirm -
-
-# Find and remove packages no longer in list
-if [ -n "$PREVIOUS_INSTALLED" ]; then
-  PACKAGES_TO_REMOVE=$(comm -23 <(echo "$PREVIOUS_INSTALLED") <(echo "$DESIRED_PACKAGES") || true)
-  if [ -n "$PACKAGES_TO_REMOVE" ]; then
-    echo "Removing packages no longer in list:"
-    echo "$PACKAGES_TO_REMOVE"
-    echo "$PACKAGES_TO_REMOVE" | xargs -r yay -Rns --noconfirm || true
-  fi
-fi
-
-# Update installed packages list
-mkdir -p "$(dirname "$INSTALLED_FILE")"
-echo "$DESIRED_PACKAGES" > "$INSTALLED_FILE"
+# Packages hash: {{ include ".chezmoidata/packages.yml" | sha256sum }}
+yay -S --needed --noconfirm - <<EOF
+{{ range .packages.aur.default -}}
+{{ . }}
+{{ end -}}
+{{ range index .packages.aur .profile -}}
+{{ . }}
+{{ end -}}
+EOF
 {{ end -}}
 
 # Mise config hash: {{ include "private_dot_config/private_mise/config.toml" | sha256sum }}

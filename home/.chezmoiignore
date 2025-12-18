@@ -13,7 +13,3 @@
 {{ if ne .packageManager "brew" }}
 .config/homebrew
 {{ end }}
-
-{{ if and (ne .packageManager "paru") (ne .packageManager "yay") }}
-.config/aur
-{{ end }}
