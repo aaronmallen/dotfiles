@@ -3,8 +3,9 @@
 {{- if eq .packageManager "brew" }}
 
 command -v brew > /dev/null \
-  && brew bundle \
   && brew update \
+  && brew bundle --file="$HOME/.config/homebrew/Brewfile" \
+  && brew bundle cleanup --force --file="$HOME/.config/homebrew/Brewfile" \
   && brew upgrade \
   && brew cleanup \
   && brew doctor
@@ -12,10 +13,78 @@ command -v brew > /dev/null \
 
 {{- if eq .packageManager "paru" }}
 
-command -v paru > /dev/null \
-  && paru -Syu --noconfirm \
-  && paru -Sc --noconfirm \
-  && paru --clean --noconfirm
+PACKAGES_FILE="$HOME/.config/aur/packages"
+INSTALLED_FILE="$HOME/.config/aur/.installed"
+
+if command -v paru > /dev/null && [ -f "$PACKAGES_FILE" ]; then
+  DESIRED_PACKAGES=$(cat "$PACKAGES_FILE" | grep -v '^$' | sort -u)
+
+  # Read previously installed packages
+  PREVIOUS_INSTALLED=""
+  if [ -f "$INSTALLED_FILE" ]; then
+    PREVIOUS_INSTALLED=$(cat "$INSTALLED_FILE" | grep -v '^$' | sort -u)
+  fi
+
+  # Install/update desired packages
+  echo "$DESIRED_PACKAGES" | paru -S --needed --noconfirm -
+
+  # Find and remove packages no longer in list
+  if [ -n "$PREVIOUS_INSTALLED" ]; then
+    PACKAGES_TO_REMOVE=$(comm -23 <(echo "$PREVIOUS_INSTALLED") <(echo "$DESIRED_PACKAGES") || true)
+    if [ -n "$PACKAGES_TO_REMOVE" ]; then
+      echo "Removing packages no longer in list:"
+      echo "$PACKAGES_TO_REMOVE"
+      echo "$PACKAGES_TO_REMOVE" | xargs -r paru -Rns --noconfirm || true
+    fi
+  fi
+
+  # Update installed packages list
+  mkdir -p "$(dirname "$INSTALLED_FILE")"
+  echo "$DESIRED_PACKAGES" > "$INSTALLED_FILE"
+
+  # System update and cleanup
+  paru -Syu --noconfirm \
+    && paru -Sc --noconfirm \
+    && paru --clean --noconfirm
+fi
+{{- end }}
+
+{{- if eq .packageManager "yay" }}
+
+PACKAGES_FILE="$HOME/.config/aur/packages"
+INSTALLED_FILE="$HOME/.config/aur/.installed"
+
+if command -v yay > /dev/null && [ -f "$PACKAGES_FILE" ]; then
+  DESIRED_PACKAGES=$(cat "$PACKAGES_FILE" | grep -v '^$' | sort -u)
+
+  # Read previously installed packages
+  PREVIOUS_INSTALLED=""
+  if [ -f "$INSTALLED_FILE" ]; then
+    PREVIOUS_INSTALLED=$(cat "$INSTALLED_FILE" | grep -v '^$' | sort -u)
+  fi
+
+  # Install/update desired packages
+  echo "$DESIRED_PACKAGES" | yay -S --needed --noconfirm -
+
+  # Find and remove packages no longer in list
+  if [ -n "$PREVIOUS_INSTALLED" ]; then
+    PACKAGES_TO_REMOVE=$(comm -23 <(echo "$PREVIOUS_INSTALLED") <(echo "$DESIRED_PACKAGES") || true)
+    if [ -n "$PACKAGES_TO_REMOVE" ]; then
+      echo "Removing packages no longer in list:"
+      echo "$PACKAGES_TO_REMOVE"
+      echo "$PACKAGES_TO_REMOVE" | xargs -r yay -Rns --noconfirm || true
+    fi
+  fi
+
+  # Update installed packages list
+  mkdir -p "$(dirname "$INSTALLED_FILE")"
+  echo "$DESIRED_PACKAGES" > "$INSTALLED_FILE"
+
+  # System update and cleanup
+  yay -Syu --noconfirm \
+    && yay -Sc --noconfirm \
+    && yay --clean --noconfirm
+fi
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
