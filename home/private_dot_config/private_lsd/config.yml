@@ -1,24 +1,6 @@
 color:
   when: always
-
-date:
-  hour-old: "#97e123"
-  day-old: "#dfdfdf"
-  older: "#828282"
-
-git-status:
-  default: "#828282"
-  unmodified: "#828282"
-  ignored: "#828282"
-  new-in-index: "#97e123"
-  new-in-workdir: "#97e123"
-  typechange: "#fef20a"
-  deleted: "#fa2834"
-  renamed: "#0442fe"
-  modified: "#fef20a"
-  conflicted: "#fa2834"
-
-group: "#0442fe"
+  theme: custom
 
 icons:
   when: always
@@ -31,31 +13,3 @@ ignore-globs:
   - coverage
   - doc
   - node_modules
-
-inode:
-  valid: "#f5669c"
-  invalid: "#828282"
-
-links:
-  valid: "#f5669c"
-  invalid: "#fa2834"
-
-permission:
-  read: "#97e123"
-  write: "#fef20a"
-  exec: "#fa2834"
-  exec-sticky: "#fa2834"
-  no-access: "#828282"
-  octal: "#dfdfdf"
-  acl: "#f5669c"
-  context: "#f5669c"
-
-size:
-  none: "#828282"
-  small: "#97e123"
-  medium: "#fef20a"
-  large: "#fd9621"
-
-tree-edge: "#828282"
-
-user: "#97e123"
