@@ -25,7 +25,7 @@ fi
 # all of our .zsh files
 typeset -U config_files
 setopt extended_glob
-config_files=(${XDG_CONFIG_HOME:-$HOME/.config}/**/*.{sh,zsh}~*/claude/shell-snapshots/*)
+config_files=(${XDG_CONFIG_HOME:-$HOME/.config}/**/*.{sh,zsh}~*/claude/shell-snapshots/*~*/claude/plugins/*)
 
 # load the env files first
 for file in ${(M)config_files:#*/env.sh}
