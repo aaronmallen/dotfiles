@@ -29,6 +29,7 @@ packages:
       - mingw-w64-gcc
       - neovim
       - obsidian
+      - opencode
       - pkgconf
       - python-pygments
       - readline
