@@ -84,9 +84,9 @@ depends = ["format:rust", "format:toml"]
 1. **Always check for mise.toml first** when starting work on a project
 2. **List tasks** to understand what operations are available
 3. **Use mise tasks** instead of raw commands when tasks exist:
-   - Instead of `cargo build` → use `mise build`
-   - Instead of `npm test` → use `mise test`
-   - Instead of `rustfmt` → use `mise format`
+    - Instead of `cargo build` → use `mise build`
+    - Instead of `npm test` → use `mise test`
+    - Instead of `rustfmt` → use `mise format`
 4. **Read task descriptions** to understand what each task does
 5. **Check for task files** in directories like `mise-tasks/`, `bin/`, or `.mise/tasks/`
 
