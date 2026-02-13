@@ -7,15 +7,10 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "context_servers": {
-    "mcp-server-context7": {
-      "source": "extension",
-      "settings": {
-        "default_minimum_tokens": "10000"
-      }
-    }
-  },
+  "autosave": "on_focus_change",
+  "context_servers": {},
   "edit_predictions": {
+    "provider": "zed",
     "mode": "subtle",
     "copilot": {
       "proxy": null,
@@ -34,9 +29,6 @@
   "git_panel": {
     "dock": "right"
   },
-  "features": {
-    "edit_prediction_provider": "zed"
-  },
   "icon_theme": "Material Icon Theme",
   "ui_font_size": 16,
   "buffer_font_family": "FiraCode Nerd Font",
@@ -48,7 +40,7 @@
   "theme": {
     "mode": "system",
     "light": "KTRZ Monokai",
-    "dark": "Zedokai Darker Classic"
+    "dark": "Monokai Pro (CE)"
   },
   "wrap_guides": [80, 120]
 }

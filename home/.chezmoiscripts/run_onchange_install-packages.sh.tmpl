@@ -40,3 +40,5 @@ EOF
 # Mise config hash: {{ include "private_dot_config/private_mise/config.toml" | sha256sum }}
 command -v mise > /dev/null \
   && mise install
+
+ln -s $HOME/.config/agents/skills $HOME/.config/claude/skills
