@@ -69,8 +69,8 @@ truncate_to_repo = false
 "Downloads" = " "
 "Music" = "󰝚 "
 "Pictures" = " "
-"Developer" = "󰲻 "
-"src" = "󰲻 "
+"Developer" = " "
+"src" = " "
 
 [fill]
 symbol = " "
