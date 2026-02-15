@@ -25,7 +25,7 @@ palette = "monokai"
 
 [os]
 disabled = false
-format = "[ $symbol ]($style)"
+format = "[$symbol]($style)"
 style = "bg:pink fg:fg"
 
 [os.symbols]
@@ -55,7 +55,7 @@ RedHatEnterprise = "󱄛"
 show_always = true
 style_user = "bg:pink fg:fg"
 style_root = "bg:pink fg:fg"
-format = "[ $user]($style)"
+format = "[ $user ]($style)"
 
 [directory]
 style = "bg:cyan fg:bg"
@@ -115,7 +115,6 @@ command = '''jj log --no-graph --ignore-working-copy -r @ -T 'separate(" ", book
 format = "[](bg:green fg:cyan)[[  $output ](fg:bg bg:green)]($style)[ ](fg:green)"
 style = "bg:green"
 
-
 # --- Directory close (only when not in VCS) ---
 
 [custom.dir_close]
@@ -134,57 +133,57 @@ format = '[[ $symbol](fg:py bg:gutter)[( $version)(\($virtualenv\)) ](fg:fg bg:g
 [nodejs]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:node bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:node bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [bun]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:bun bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:bun bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [deno]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:deno bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:deno bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [golang]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:go bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:go bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [rust]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:rs bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:rs bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [ruby]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:rb bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:rb bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [java]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:java bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:java bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [elixir]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:elixir bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:elixir bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [erlang]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:erlang bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:erlang bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [lua]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:lua bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:lua bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [crystal]
 symbol = ""
 style = "bg:gutter"
-format = '[[ $symbol](fg:crystal bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)'
+format = "[[ $symbol](fg:crystal bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 
 [status]
 disabled = false
