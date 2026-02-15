@@ -1,5 +1,7 @@
 prefix=${XDG_DATA_HOME}/javascript/npm
 cache=${XDG_CACHE_HOME}/javascript/npm
+init-module=${XDG_CONFIG_HOME}/javascript/npm-init.js
+tmp=${XDG_RUNTIME_DIR}/npm
 
 @fortawesome:registry=https://npm.fontawesome.com/
 @awesome.me:registry=https://npm.fontawesome.com/
