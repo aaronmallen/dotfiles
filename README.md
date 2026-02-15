@@ -26,8 +26,8 @@ sh -c "$(curl -fsLS https://raw.githubusercontent.com/aaronmallen/dotfiles/refs/
 ### Shell & Terminal
 
 * [Warp](https://www.warp.dev) - Modern terminal
-* [Zsh](https://www.zsh.org) - Shell with Powerlevel10k prompt
-* [Powerlevel10k](https://github.com/romkatv/powerlevel10k) - Zsh theme
+* [Zsh](https://www.zsh.org) - Shell with Starship prompt
+* [Starship](https://starship.rs) - Cross-shell prompt
 * [Atuin](https://github.com/atuinsh/atuin) - Shell history sync
 * [Zoxide](https://github.com/ajeetdsouza/zoxide) - Smarter cd command
 

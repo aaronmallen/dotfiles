@@ -33,6 +33,7 @@ packages:
       - pkgconf
       - python-pygments
       - readline
+      - starship
       - vicinae
       - warp-terminal
       - xdg-ninja
