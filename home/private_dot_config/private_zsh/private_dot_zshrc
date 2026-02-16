@@ -1,0 +1,134 @@
+#!/usr/bin/env zsh
+
+if [[ "$ZSH_BENCHMARK" == "true" ]]; then
+  if [[ -z "$ZSH_START_TIME" ]]; then
+    ZSH_START_TIME=$(date +%s.%N)
+  fi
+fi
+
+# Print a debug message when ZSH_DEBUG=true.
+# Usage: _zsh_debug "initializing: mise"
+_zsh_debug() {
+  [[ "$ZSH_DEBUG" == "true" ]] && printf "%s\n" "$1"
+}
+
+# Load a zsh topic's configuration files from XDG_CONFIG_HOME.
+#
+# Handles dependency resolution, env/alias sourcing, and guards against
+# double-loading. Each topic lives in its own directory under XDG_CONFIG_HOME
+# and may contain env.sh, aliases.sh, and init.zsh files.
+#
+# Options:
+#   --source-env       Source the topic's env.sh file
+#   --source-aliases   Source the topic's aliases.sh file
+#   --deps <topic>     Load a dependency first (repeatable)
+#
+# Usage:
+#   _load_zsh_topic atuin --source-env --source-aliases --deps mise
+_load_zsh_topic() {
+  local topic=$1; shift
+
+  # Consume heredoc block from stdin immediately, before sourcing deps
+  # (prevents deps from accidentally reading our stdin)
+  local block
+  if [[ ! -t 0 ]]; then
+    block=$(command cat)
+  fi
+
+  [[ ":${ZSH_LOADED_TOPICS}:" == *":${topic}:"* ]] && return
+
+  _zsh_debug "initializing: ${topic}"
+
+  local -a deps source_env source_aliases
+  zparseopts -D -E -source-env=source_env -source-aliases=source_aliases -deps+:=deps
+
+  deps=(${deps:#--deps})
+  for dep in $deps; do
+    local init_file="${XDG_CONFIG_HOME:-$HOME/.config}/$dep/init.zsh"
+    [[ -f $init_file ]] && _zsh_debug "sourcing: ${init_file}" && source "${init_file}"
+  done
+
+  if [[ -n $source_env ]]; then
+    local env_file="${XDG_CONFIG_HOME:-$HOME/.config}/${topic}/env.sh"
+    [[ -f $env_file ]] && _zsh_debug "sourcing: ${env_file}" && source "$env_file"
+  fi
+
+  if [[ -n $source_aliases ]]; then
+    local alias_file="${XDG_CONFIG_HOME:-$HOME/.config}/${topic}/aliases.sh"
+    [[ -f $alias_file ]] && _zsh_debug "sourcing: ${alias_file}" && source "$alias_file"
+  fi
+
+  [[ -n $block ]] && eval "$block"
+
+  export ZSH_LOADED_TOPICS="${ZSH_LOADED_TOPICS}${topic}:"
+}
+
+# Load zsh-completions
+fpath+="${HOME}/.local/share/zsh-completions/src"
+
+# Add directories containing completion functions to fpath.
+for f in "${XDG_CONFIG_HOME:-$HOME/.config}"/*/_*(N); do
+  _zsh_debug "loading completions: ${f}"
+  fpath=("${f:h}" $fpath)
+done
+typeset -U fpath
+
+autoload -Uz compinit && compinit
+
+# Source all init.zsh files. Each file calls _load_zsh_topic to guard
+# against double-loading and resolve dependencies.
+for init in "${XDG_CONFIG_HOME:-$HOME/.config}"/*/init.zsh(N); do
+  _zsh_debug "sourcing: ${init}"
+  source "$init"
+done
+
+# zsh settings
+export LESSHISTFILE=$XDG_STATE_HOME/.lesshst
+HISTCONTROL=ignoreboth
+HISTFILE=${XDG_STATE_HOME}/.zsh_history
+HIST_STAMPS="yyyy-mm-dd"
+HISTSIZE=10000
+SAVEHIST=10000
+SHELL_SESSION_DIR=${XDG_STATE_HOME}/.zsh_sessions
+SHELL_SESSION_FILE="${SHELL_SESSION_DIR}/${TERM_SESSION_ID}.session"
+
+setopt NO_BG_NICE # don't nice background tasks
+setopt NO_HUP
+setopt NO_LIST_BEEP
+setopt LOCAL_OPTIONS # allow functions to have local options
+setopt LOCAL_TRAPS   # allow functions to have local traps
+setopt HIST_VERIFY
+setopt SHARE_HISTORY    # share history between sessions
+setopt EXTENDED_HISTORY # add timestamps to history
+setopt PROMPT_SUBST
+setopt CORRECT
+setopt COMPLETE_IN_WORD
+setopt IGNORE_EOF
+
+setopt APPEND_HISTORY                   # adds history
+setopt INC_APPEND_HISTORY SHARE_HISTORY # adds history incrementally and share it across sessions
+setopt HIST_IGNORE_ALL_DUPS             # don't record dupes in history
+setopt HIST_REDUCE_BLANKS
+
+# don't expand aliases _before_ completion has finished
+#   like: git comm-[tab]
+setopt complete_aliases
+
+# Load all plugins
+if [ -f "${HOME}/.local/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+  _zsh_debug "sourcing: ${HOME}/.local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  source "${HOME}/.local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
+
+if [ -f "${HOME}/.local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+  _zsh_debug "sourcing: ${HOME}/.local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  source "${HOME}/.local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
+
+if [[ "$ZSH_BENCHMARK" == "true" ]]; then
+  ZSH_END_TIME=$(date +%s.%N)
+  ZSH_LOAD_TIME=$(printf "%.2f" "$(echo "$ZSH_END_TIME - $ZSH_START_TIME" | bc)")
+  echo "zsh loaded in ${ZSH_LOAD_TIME} seconds"
+
+  unset ZSH_START_TIME ZSH_END_TIME ZSH_LOAD_TIME ZSH_BENCHMARK ZSH_DEBUG
+fi

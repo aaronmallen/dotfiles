@@ -1,0 +1,5 @@
+{{- if eq .email "hello@aaronmallen.me" }}
+#!/usr/bin/env sh
+
+export FONTAWESOME_PACKAGE_TOKEN={{ onepasswordRead "op://Private/so7ldgubcaxzbd4kzk6cf36aie/key" }}
+{{- end }}

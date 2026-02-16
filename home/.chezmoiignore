@@ -1,13 +1,17 @@
+**/README.md
+
 {{ if ne .chezmoi.os "darwin" }}
 .config/macos
 .config/pkgconfig
-.warp
 {{ end }}
 
 {{if ne .chezmoi.os "linux" }}
 .config/autostart
 .config/xorg
-.local/share/warp-terminal
+{{ end }}
+
+{{ if and (ne .packageManager "paru") (ne .packageManager "yay") }}
+.config/aur
 {{ end }}
 
 {{ if ne .packageManager "brew" }}

@@ -1,0 +1,2 @@
+exclude = ["bin/toml", "**/*.toml.tmpl"]
+include = ["**/*.toml"]

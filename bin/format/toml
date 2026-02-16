@@ -4,4 +4,4 @@
 
 set -e
 
-taplo format
+taplo format --config .config/taplo.toml

@@ -1,0 +1,18 @@
+[task_config]
+includes = ["bin"]
+
+[tasks.format]
+description = "Format all files"
+alias = ["fmt"]
+depends = ["format:**"]
+
+[tasks.lint]
+description = "Lint all files"
+alias = ["l"]
+depends = ["lint:**"]
+
+[tools]
+editorconfig-checker = "latest"
+markdownlint-cli2 = "latest"
+taplo = "latest"
+yamlfmt = "latest"

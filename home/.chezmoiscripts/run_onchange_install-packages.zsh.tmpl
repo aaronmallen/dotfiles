@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+{{ if eq .packageManager "brew" -}}
+# Brewfile hash: {{ include "private_dot_config/private_homebrew/private_brewfile.tmpl" | sha256sum }}
+command -v brew > /dev/null \
+  && brew update \
+  && brew bundle --file="$HOME/.config/homebrew/brewfile" \
+  && brew upgrade \
+  && brew cleanup
+{{ end -}}
+
+{{ if or (eq .packageManager "paru") (eq .packageManager "yay") -}}
+# Aurfile hash: {{ include "private_dot_config/private_aur/private_aurfile.tmpl" | sha256sum }}
+AURFILE="$HOME/.config/aur/aurfile"
+{{ .packageManager }} -S --needed --noconfirm - < "$AURFILE"
+comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "$AURFILE") | xargs -r {{ .packageManager }} -Rns --noconfirm
+{{ end -}}
+
+# Mise config hash: {{ include "private_dot_config/private_mise/private_config.toml" | sha256sum }}
+command -v mise > /dev/null \
+  && mise install

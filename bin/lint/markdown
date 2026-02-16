@@ -4,4 +4,4 @@
 
 set -e
 
-markdownlint-cli2 "*.md" "**/*.md" "$@"
+markdownlint-cli2 --config .config/.markdownlint.yml "*.md" "**/*.md" "$@"

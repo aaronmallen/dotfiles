@@ -1,0 +1,39 @@
+#!/usr/bin/env zsh
+
+{{- if eq .packageManager "brew" }}
+
+command -v brew > /dev/null \
+  && brew bundle \
+  && brew update \
+  && brew upgrade \
+  && brew cleanup \
+  && brew doctor
+{{- end }}
+
+{{- if or (eq .packageManager "paru") (eq .packageManager "yay") }}
+
+AURFILE="$HOME/.config/aur/aurfile"
+command -v {{ .packageManager }} > /dev/null \
+  && {{ .packageManager }} -S --needed --noconfirm - < "$AURFILE" \
+  && comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "$AURFILE") | xargs -r {{ .packageManager }} -Rns --noconfirm \
+  && {{ .packageManager }} -Syu --noconfirm \
+  && {{ .packageManager }} -Sc --noconfirm
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+
+command -v softwareupdate > /dev/null \
+  && softwareupdate -i --all
+{{- end }}
+
+command -v mise > /dev/null \
+  && mise upgrade
+
+command -v chezmoi > /dev/null \
+  && chezmoi apply
+
+{{- if eq .chezmoi.os "darwin" }}
+
+defaults write com.apple.dock ResetLaunchPad -bool true
+killall Dock
+{{- end }}

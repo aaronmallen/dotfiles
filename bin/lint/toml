@@ -4,4 +4,4 @@
 
 set -e
 
-taplo lint
+taplo lint --config .config/taplo.toml
