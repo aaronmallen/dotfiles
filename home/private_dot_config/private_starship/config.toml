@@ -33,7 +33,7 @@ symbol = ""
 [character]
 disabled = false
 error_symbol = "[❯](bold fg:pink)"
-success_symbol = "[❯](bold fg:green)"
+success_symbol = "[❯](bold fg:purple)"
 vimcmd_replace_one_symbol = "[❮](bold fg:purple)"
 vimcmd_replace_symbol = "[❮](bold fg:purple)"
 vimcmd_symbol = "[❮](bold fg:green)"
@@ -94,12 +94,12 @@ truncation_length = 0
 truncation_symbol = ""
 
 [directory.substitutions]
-"Developer" = " "
+"Developer" = "  "
 "Documents" = "󰈙 "
 "Downloads" = " "
 "Music" = "󰝚 "
 "Pictures" = " "
-"src" = " "
+"src" = "  "
 
 [elixir]
 format = "[[ $symbol](fg:elixir bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
