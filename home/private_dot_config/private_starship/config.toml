@@ -3,27 +3,145 @@ format = """
 [](pink)\
 $os\
 $username\
-[ ](bg:cyan fg:pink)\
+[ ](bg:cyan fg:pink)\
 $directory\
 $custom\
 $line_break\
 $character"""
+palette = "monokai"
 right_format = """
-[](fg:fg)\
+[](fg:gutter)\
+$status\
+[](fg:fg bg:gutter)\
 $time\
+[](fg:yellow bg:fg)\
 $cmd_duration\
-[](fg:gutter bg:fg)\
+[](fg:gutter bg:yellow)\
 $python\
 $nodejs\
 $golang\
 $rust\
 $java\
 $ruby\
-$status\
 """
-palette = "monokai"
 
-# --- Core ---
+[bun]
+format = "[[ $symbol](fg:bun bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[character]
+disabled = false
+error_symbol = "[❯](bold fg:pink)"
+success_symbol = "[❯](bold fg:green)"
+vimcmd_replace_one_symbol = "[❮](bold fg:purple)"
+vimcmd_replace_symbol = "[❮](bold fg:purple)"
+vimcmd_symbol = "[❮](bold fg:green)"
+vimcmd_visual_symbol = "[❮](bold fg:yellow)"
+
+[cmd_duration]
+disabled = false
+format = "[[ 󱦟 $duration ](bg:yellow fg:gutter)]($style)"
+min_time = 0
+show_milliseconds = true
+style = "bg:gutter"
+
+[crystal]
+format = "[[ $symbol](fg:crystal bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[custom.dir_close]
+command = "echo -n"
+description = "Directory closing cap when not in VCS"
+format = "[ ](fg:cyan)"
+when = "! git rev-parse --git-dir 2>/dev/null && ! jj root --ignore-working-copy 2>/dev/null"
+
+[custom.git]
+command = '''
+branch=$(git branch --show-current 2>/dev/null)
+[ -z "$branch" ] && branch=$(git rev-parse --short HEAD 2>/dev/null)
+dirty=""
+[ -n "$(git status --porcelain 2>/dev/null)" ] && dirty=" !"
+echo " $branch$dirty"
+'''
+description = "Git branch and status"
+format = "[](bg:green fg:cyan)[[ $output ](fg:bg bg:green)]($style)[ ](fg:green)"
+shell = ["bash", "--noprofile", "--norc"]
+style = "bg:green"
+when = "git rev-parse --git-dir 2>/dev/null && ! jj root --ignore-working-copy 2>/dev/null"
+
+[custom.jj]
+command = '''
+changeset=$(jj log --no-graph --ignore-working-copy -r @ -T 'separate(" ", bookmarks.join(", "), change_id.shortest(4), if(conflict, "x"), if(divergent, "divergent"), if(hidden, "hidden"))' 2>/dev/null)
+echo " $changeset"
+'''
+description = "Jujutsu VCS status"
+format = "[](bg:green fg:cyan)[[  $output ](fg:bg bg:green)]($style)[ ](fg:green)"
+style = "bg:green"
+when = "jj root --ignore-working-copy 2>/dev/null"
+
+[deno]
+format = "[[ $symbol](fg:deno bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[directory]
+format = "[ $path ]($style)"
+style = "bg:cyan fg:bg"
+truncate_to_repo = false
+truncation_length = 0
+truncation_symbol = ""
+
+[directory.substitutions]
+"Developer" = " "
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"src" = " "
+
+[elixir]
+format = "[[ $symbol](fg:elixir bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[erlang]
+format = "[[ $symbol](fg:erlang bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[fill]
+symbol = " "
+
+[git_branch]
+disabled = false
+
+[git_status]
+disabled = false
+
+[golang]
+format = "[[ $symbol](fg:go bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[java]
+format = "[[ $symbol](fg:java bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[line_break]
+disabled = false
+
+[lua]
+format = "[[ $symbol](fg:lua bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
+
+[nodejs]
+format = "[[ $symbol](fg:node bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+style = "bg:gutter"
+symbol = ""
 
 [os]
 disabled = false
@@ -31,16 +149,6 @@ format = "[$symbol]($style)"
 style = "bg:pink fg:fg"
 
 [os.symbols]
-Windows = ""
-Ubuntu = "󰕈"
-SUSE = ""
-Raspbian = "󰐿"
-Mint = "󰣭"
-Macos = "󰀵"
-Manjaro = ""
-Linux = "󰌽"
-Gentoo = "󰣨"
-Fedora = "󰣛"
 Alpine = ""
 Amazon = ""
 Android = ""
@@ -50,194 +158,71 @@ Artix = "󰣇"
 CachyOS = "󰣇"
 CentOS = ""
 Debian = "󰣚"
+Fedora = "󰣛"
+Gentoo = "󰣨"
+Linux = "󰌽"
+Macos = "󰀵"
+Manjaro = ""
+Mint = "󰣭"
+Raspbian = "󰐿"
 Redhat = "󱄛"
 RedHatEnterprise = "󱄛"
+SUSE = ""
+Ubuntu = "󰕈"
+Windows = ""
 
-[username]
-show_always = true
-style_user = "bg:pink fg:fg"
-style_root = "bg:pink fg:fg"
-format = "[ $user ]($style)"
-
-[directory]
-style = "bg:cyan fg:bg"
-format = "[ $path ]($style)"
-truncation_length = 0
-truncation_symbol = ""
-truncate_to_repo = false
-
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = "󰝚 "
-"Pictures" = " "
-"Developer" = " "
-"src" = " "
-
-[fill]
-symbol = " "
-
-[character]
-disabled = false
-success_symbol = "[❯](bold fg:green)"
-error_symbol = "[❯](bold fg:pink)"
-vimcmd_symbol = "[❮](bold fg:green)"
-vimcmd_replace_one_symbol = "[❮](bold fg:purple)"
-vimcmd_replace_symbol = "[❮](bold fg:purple)"
-vimcmd_visual_symbol = "[❮](bold fg:yellow)"
-
-# --- VCS: Git (only when NOT in a jj repo) ---
-
-[git_branch]
-disabled = false
-
-[git_status]
-disabled = false
-
-[custom.git]
-description = "Git branch and status"
-when = "git rev-parse --git-dir 2>/dev/null && ! jj root --ignore-working-copy 2>/dev/null"
-command = '''
-branch=$(git branch --show-current 2>/dev/null)
-[ -z "$branch" ] && branch=$(git rev-parse --short HEAD 2>/dev/null)
-dirty=""
-[ -n "$(git status --porcelain 2>/dev/null)" ] && dirty=" !"
-echo " $branch$dirty"
-'''
-shell = ["bash", "--noprofile", "--norc"]
-format = "[](bg:green fg:cyan)[[ $output ](fg:bg bg:green)]($style)[ ](fg:green)"
-style = "bg:green"
-
-# --- VCS: Jujutsu ---
-
-[custom.jj]
-description = "Jujutsu VCS status"
-when = "jj root --ignore-working-copy 2>/dev/null"
-command = '''
-changeset=$(jj log --no-graph --ignore-working-copy -r @ -T 'separate(" ", bookmarks.join(", "), change_id.shortest(4), if(conflict, "x"), if(divergent, "divergent"), if(hidden, "hidden"))' 2>/dev/null)
-echo " $changeset"
-'''
-format = "[](bg:green fg:cyan)[[  $output ](fg:bg bg:green)]($style)[ ](fg:green)"
-style = "bg:green"
-
-# --- Directory close (only when not in VCS) ---
-
-[custom.dir_close]
-description = "Directory closing cap when not in VCS"
-when = "! git rev-parse --git-dir 2>/dev/null && ! jj root --ignore-working-copy 2>/dev/null"
-command = "echo -n"
-format = "[ ](fg:cyan)"
-
-# --- Right side: Languages ---
+[palettes.monokai]
+bg = "#272822"
+bun = "#FBF0DF"
+comment = "#75715E"
+crystal = "#76B9ED"
+cyan = "#66D9EF"
+deno = "#01C2FF"
+elixir = "#9B59B6"
+erlang = "#E44D26"
+fg = "#F8F8F2"
+go = "#00ADD8"
+green = "#A6E22E"
+gutter = "#49483E"
+java = "#F89820"
+lua = "#7A7DCA"
+node = "#8CC84B"
+orange = "#FD971F"
+pink = "#F92672"
+purple = "#AE81FF"
+py = "#FFD43B"
+rb = "#CC342D"
+rs = "#FF6E4A"
+yellow = "#E6DB74"
 
 [python]
-symbol = ""
-style = "bg:gutter"
 format = '[[ $symbol](fg:py bg:gutter)[( $version)(\($virtualenv\)) ](fg:fg bg:gutter)]($style)'
-
-[nodejs]
-symbol = ""
 style = "bg:gutter"
-format = "[[ $symbol](fg:node bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[bun]
-symbol = ""
-style = "bg:gutter"
-format = "[[ $symbol](fg:bun bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[deno]
-symbol = ""
-style = "bg:gutter"
-format = "[[ $symbol](fg:deno bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[golang]
-symbol = ""
-style = "bg:gutter"
-format = "[[ $symbol](fg:go bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[rust]
-symbol = ""
-style = "bg:gutter"
-format = "[[ $symbol](fg:rs bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+symbol = ""
 
 [ruby]
-symbol = ""
-style = "bg:gutter"
 format = "[[ $symbol](fg:rb bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[java]
-symbol = ""
 style = "bg:gutter"
-format = "[[ $symbol](fg:java bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+symbol = ""
 
-[elixir]
-symbol = ""
+[rust]
+format = "[[ $symbol](fg:rs bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 style = "bg:gutter"
-format = "[[ $symbol](fg:elixir bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[erlang]
-symbol = ""
-style = "bg:gutter"
-format = "[[ $symbol](fg:erlang bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[lua]
-symbol = ""
-style = "bg:gutter"
-format = "[[ $symbol](fg:lua bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
-
-[crystal]
-symbol = ""
-style = "bg:gutter"
-format = "[[ $symbol](fg:crystal bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
+symbol = ""
 
 [status]
 disabled = false
 format = "[[ ✘ $status ](fg:pink bg:gutter)]($style)"
 style = "bg:gutter"
 
-# --- Time ---
-
 [time]
 disabled = false
+format = "[[  $time ](fg:bg bg:fg)]($style)"
 style = "bg:fg"
-format = "[[  $time ](fg:bg bg:fg)]($style)"
 time_format = "%H:%M"
 
-# --- Cmd duration ---
-
-[cmd_duration]
-show_milliseconds = true
-format = "[[  $duration ](bg:yellow fg:gutter)]($style)"
-style = "bg:gutter"
-disabled = false
-min_time = 2_000
-
-[line_break]
-disabled = false
-
-# --- Palette ---
-
-[palettes.monokai]
-pink = "#F92672"
-orange = "#FD971F"
-yellow = "#E6DB74"
-green = "#A6E22E"
-cyan = "#66D9EF"
-purple = "#AE81FF"
-fg = "#F8F8F2"
-bg = "#272822"
-comment = "#75715E"
-gutter = "#49483E"
-# language brand colors
-py = "#FFD43B"
-node = "#8CC84B"
-bun = "#FBF0DF"
-deno = "#01C2FF"
-go = "#00ADD8"
-rs = "#FF6E4A"
-rb = "#CC342D"
-java = "#F89820"
-elixir = "#9B59B6"
-erlang = "#E44D26"
-lua = "#7A7DCA"
-crystal = "#76B9ED"
+[username]
+format = "[ $user ]($style)"
+show_always = true
+style_root = "bg:pink fg:fg"
+style_user = "bg:pink fg:fg"
