@@ -66,6 +66,7 @@ for file in ${(M)config_files:#*/completion.zsh}
 do
   zsh_debug "completion" "$file"
   fpath=(${file:h} $fpath)
+  source $file
 done
 
 unset config_files
