@@ -57,15 +57,20 @@ for secrets in zsh/secrets zsh/secrets.local; do
   fi
 done
 
+# add completion directories to fpath before compinit
+for file in ${(M)config_files:#*/completion.zsh}
+do
+  fpath=(${file:h} $fpath)
+done
+
 # initialize autocomplete here, otherwise functions won't be loaded
 autoload -Uz compinit
 compinit -d "${XDG_CONFIG_HOME:-$HOME/.config}"/zsh/zcompdump-"$ZSH_VERSION"
 
-# load every completion after autocomplete loads
+# source every completion after autocomplete loads
 for file in ${(M)config_files:#*/completion.zsh}
 do
   zsh_debug "completion" "$file"
-  fpath=(${file:h} $fpath)
   source $file
 done
 
