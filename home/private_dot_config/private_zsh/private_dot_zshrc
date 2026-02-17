@@ -10,6 +10,7 @@ fi
 # Usage: _zsh_debug "initializing: mise"
 _zsh_debug() {
   [[ "$ZSH_DEBUG" == "true" ]] && printf "%s\n" "$1"
+  return 0
 }
 
 # Load a zsh topic's configuration files from XDG_CONFIG_HOME.
@@ -25,6 +26,8 @@ _zsh_debug() {
 #
 # Usage:
 #   _load_zsh_topic atuin --source-env --source-aliases --deps mise
+ZSH_LOADED_TOPICS=""
+
 _load_zsh_topic() {
   local topic=$1; shift
 
@@ -60,7 +63,7 @@ _load_zsh_topic() {
 
   [[ -n $block ]] && eval "$block"
 
-  export ZSH_LOADED_TOPICS="${ZSH_LOADED_TOPICS}${topic}:"
+  ZSH_LOADED_TOPICS="${ZSH_LOADED_TOPICS}${topic}:"
 }
 
 # Load zsh-completions
@@ -127,7 +130,7 @@ fi
 
 if [[ "$ZSH_BENCHMARK" == "true" ]]; then
   ZSH_END_TIME=$(date +%s.%N)
-  ZSH_LOAD_TIME=$(printf "%.2f" "$(echo "$ZSH_END_TIME - $ZSH_START_TIME" | bc)")
+  ZSH_LOAD_TIME=$(printf "%.2f" "$((ZSH_END_TIME - ZSH_START_TIME))")
   echo "zsh loaded in ${ZSH_LOAD_TIME} seconds"
 
   unset ZSH_START_TIME ZSH_END_TIME ZSH_LOAD_TIME ZSH_BENCHMARK ZSH_DEBUG
