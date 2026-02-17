@@ -13,7 +13,7 @@
 ## Installation
 
 ```sh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply aaronmallen
+curl -fsSL https://raw.githubusercontent.com/aaronmallen/dotfiles/main/install | sh
 ```
 
 ## Supported Operating Systems
