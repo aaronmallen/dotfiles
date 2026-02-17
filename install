@@ -34,7 +34,7 @@ prompt_1password_configuration() {
   echo "    4. Enable 'Connect with 1Password CLI'"
   echo ""
   printf "Press Enter once you have completed these steps..."
-  read -r
+  read -r < /dev/tty
 }
 
 

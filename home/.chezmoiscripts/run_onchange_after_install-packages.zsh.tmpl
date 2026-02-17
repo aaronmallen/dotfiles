@@ -12,8 +12,10 @@ command -v brew > /dev/null \
 {{ if or (eq .packageManager "paru") (eq .packageManager "yay") -}}
 # Aurfile hash: {{ include "private_dot_config/private_aur/private_aurfile.tmpl" | sha256sum }}
 AURFILE="$HOME/.config/aur/aurfile"
-{{ .packageManager }} -S --needed --noconfirm - < "$AURFILE"
-comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "$AURFILE") | xargs -r {{ .packageManager }} -Rns --noconfirm
+if [[ -f "$AURFILE" ]]; then
+  {{ .packageManager }} -S --needed --noconfirm - < "$AURFILE"
+  comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "$AURFILE") | xargs -r {{ .packageManager }} -Rns --noconfirm
+fi
 {{ end -}}
 
 # Mise config hash: {{ include "private_dot_config/private_mise/private_config.toml" | sha256sum }}

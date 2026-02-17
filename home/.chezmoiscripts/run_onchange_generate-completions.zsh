@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+: ${XDG_CONFIG_HOME:=$HOME/.config}
+
 mkdir -p ${XDG_CONFIG_HOME}/{atuin,bat,bun,caddy,chezmoi,delta,deno,docker,doctl,gh,jj,kubectl,minikube,mise,op,opencode,ripgrep,starship,watchexec}
 
 atuin gen-completions --shell zsh > ${XDG_CONFIG_HOME}/atuin/_atuin
