@@ -31,13 +31,6 @@ ZSH_LOADED_TOPICS=""
 _load_zsh_topic() {
   local topic=$1; shift
 
-  # Consume heredoc block from stdin immediately, before sourcing deps
-  # (prevents deps from accidentally reading our stdin)
-  local block
-  if [[ ! -t 0 ]] && read -t 0; then
-    block=$(command cat)
-  fi
-
   [[ ":${ZSH_LOADED_TOPICS}:" == *":${topic}:"* ]] && return
 
   _zsh_debug "initializing: ${topic}"
@@ -60,8 +53,6 @@ _load_zsh_topic() {
     local alias_file="${XDG_CONFIG_HOME:-$HOME/.config}/${topic}/aliases.sh"
     [[ -f $alias_file ]] && _zsh_debug "sourcing: ${alias_file}" && source "$alias_file"
   fi
-
-  [[ -n $block ]] && eval "$block"
 
   ZSH_LOADED_TOPICS="${ZSH_LOADED_TOPICS}${topic}:"
 }

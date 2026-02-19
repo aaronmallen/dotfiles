@@ -25,16 +25,15 @@ curl -fsSL https://raw.githubusercontent.com/aaronmallen/dotfiles/main/install |
 
 Each tool's configuration lives in its own topic directory under `~/.config/`.
 Topics are loaded by `_load_zsh_topic` in `.zshrc`, which handles dependency
-resolution, environment/alias sourcing, and optional init blocks:
+resolution and environment/alias sourcing:
 
 ```zsh
 # Simple topic — just source env and aliases
 _load_zsh_topic "bat" --source-env --source-aliases --deps xdg --deps mise
 
-# Topic with custom init block
-_load_zsh_topic "starship" --source-env --deps xdg --deps mise <<'BLOCK'
-  eval "$(starship init zsh)"
-BLOCK
+# Topic with shell activation
+_load_zsh_topic "starship" --source-env --deps xdg --deps mise
+eval "$(starship init zsh)"
 ```
 
 Each topic directory may contain:

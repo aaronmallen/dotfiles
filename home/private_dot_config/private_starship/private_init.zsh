@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh
 
-_load_zsh_topic "starship" --source-env --deps mise --deps xdg <<'BLOCK'
-  eval "$(starship init zsh)"
-BLOCK
+_load_zsh_topic "starship" --source-env --deps mise --deps xdg
+eval "$(starship init zsh)"
