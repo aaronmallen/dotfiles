@@ -34,7 +34,7 @@ _load_zsh_topic() {
   # Consume heredoc block from stdin immediately, before sourcing deps
   # (prevents deps from accidentally reading our stdin)
   local block
-  if [[ ! -t 0 ]]; then
+  if [[ ! -t 0 ]] && read -t 0; then
     block=$(command cat)
   fi
 
