@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+{{- if eq .email "hello@aaronmallen.me" }}
+export CARGO_REGISTRY_TOKEN={{ onepasswordRead "op://Private/deflzgla7gbnjrirszqjgaw7fe/key" }}
+{{- end }}
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
