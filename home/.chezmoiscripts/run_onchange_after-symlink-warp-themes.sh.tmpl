@@ -1,7 +1,7 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env sh
 
-{{- range (glob (joinPath .chezmoi.sourceDir "private_dot_config/private_warp-terminal/**/*")) }}
+{{- range (glob (joinPath .chezmoi.sourceDir "private_dot_local/private_share/private_warp-terminal/**/*")) }}
 {{-   if not (index (stat .) "isDir") }}
 # {{ include . | sha256sum }}
 {{-   end }}
@@ -10,5 +10,5 @@
 set -e
 
 rm -rf ~/.warp
-ln -s ~/.config/warp-terminal ~/.warp
+ln -s ~/.local/share/warp-terminal ~/.warp
 {{ end -}}
