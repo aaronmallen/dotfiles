@@ -13,7 +13,7 @@
 ## Installation
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/aaronmallen/dotfiles/main/install | sh
+curl -fsSL https://raw.githubusercontent.com/aaronmallen/dotfiles/main/scripts/install | sh
 ```
 
 ## Supported Operating Systems

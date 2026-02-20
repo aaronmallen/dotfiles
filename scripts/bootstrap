@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env zsh
 
 set -e
 
@@ -7,7 +7,6 @@ OS="$(uname -s)"
 apply_dotfiles() {
   echo "==> Applying dotfiles"
   mise exec chezmoi -- chezmoi init aaronmallen --apply
-  (cd "${HOME}/.local/share/chezmoi" && git remote remove origin 2>/dev/null || true && git remote add origin git@git.aaronmallen.dev:aaron/dotfiles.git && git remote add github git@github.com:aaronmallen/dotfiles.git)
 }
 
 install_chezmoi() {
@@ -36,10 +35,19 @@ login_atuin() {
   || echo "==> Atuin login failed. Please try again later with 'atuin login'."
 }
 
-source_mise() {
-  echo "==> Sourcing Mise"
-  eval "$(mise activate zsh)"
-  eval "$(atuin init zsh)"
+set_chezmoi_remotes() {
+  [ "$(chezmoi execute-template '{{ .email }}')" = "hello@aaronmallen.me" ] || return 0
+
+  echo "==> Setting chezmoi source"
+
+  cd "${HOME}/.local/share/chezmoi" &&
+    git remote remove origin 2>/dev/null || true &&
+    git remote add origin git@git.aaronmallen.dev:aaron/dotfiles.git &&
+    git remote add github git@github.com:aaronmallen/dotfiles.git
+}
+
+source_zsh() {
+  source "${HOME}/.config/zsh/.zshrc"
 }
 
 prompt_1password_configuration() {
@@ -76,11 +84,11 @@ Darwin)
   install_mise
   install_chezmoi
   apply_dotfiles
-  source_mise
+  source_zsh
   login_atuin
+  set_chezmoi_remotes
 
   echo "==> Setup Complete"
-  exec zsh
   ;;
 Linux)
   if [ -f /etc/os-release ]; then
@@ -104,11 +112,11 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
-      source_mise
+      source_zsh
       login_atuin
+      set_chezmoi_remotes
 
       echo "==> Setup Complete"
-      exec zsh
       ;;
     debian|ubuntu|pop|linuxmint|elementary|neon|zorin)
       if ! command -v op >/dev/null 2>&1; then
@@ -130,11 +138,11 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
-      source_mise
+      source_zsh
       login_atuin
+      set_chezmoi_remotes
 
       echo "==> Setup Complete"
-      exec zsh
       ;;
     *)
       case "$ID_LIKE" in
@@ -158,11 +166,11 @@ Linux)
         install_mise
         install_chezmoi
         apply_dotfiles
-        source_mise
+        source_zsh
         login_atuin
+        set_chezmoi_remotes
 
         echo "==> Setup Complete"
-        exec zsh
         ;;
       *)
         echo "Unsupported Linux distribution: $ID"
