@@ -46,6 +46,7 @@ set_chezmoi_remotes() {
   echo "==> Setting chezmoi source"
 
   cd "${HOME}/.local/share/chezmoi" &&
+    mise trust &&
     git remote remove origin 2>/dev/null || true &&
     git remote add origin git@git.aaronmallen.dev:aaron/dotfiles.git &&
     git remote add github git@github.com:aaronmallen/dotfiles.git
