@@ -7,7 +7,7 @@ OS="$(uname -s)"
 apply_dotfiles() {
   echo "==> Applying dotfiles"
   mise exec chezmoi -- chezmoi init aaronmallen --apply
-  (cd $HOME/.local/share/chezmoi && git remote remove origin 2>/dev/null || true && git remote add origin git@github.com:aaronmallen/dotfiles.git)
+  (cd "${HOME}/.local/share/chezmoi" && git remote remove origin 2>/dev/null || true && git remote add origin git@git.aaronmallen.dev:aaron/dotfiles.git && git remote add github git@github.com:aaronmallen/dotfiles.git)
 }
 
 install_chezmoi() {
@@ -21,18 +21,25 @@ install_mise() {
   if ! command -v mise >/dev/null 2>&1; then
     echo "==> Installing mise"
     curl https://mise.run | sh
-    export PATH="$HOME/.local/bin:$PATH"
+    export PATH="${HOME}/.local/bin:${PATH}"
   fi
 }
 
 login_atuin() {
   [ "$(chezmoi execute-template '{{ .email }}')" = "hello@aaronmallen.me" ] || return 0
+  echo "==> Logging in to Atuin"
   command -v atuin > /dev/null || return 0
   command -v op > /dev/null || return 0
   atuin login --username "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/username')" \
               --password "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/password')" \
               --key "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/key')" \
   || echo "==> Atuin login failed. Please try again later with 'atuin login'."
+}
+
+source_mise() {
+  echo "==> Sourcing Mise"
+  eval "$(mise activate zsh)"
+  eval "$(atuin init zsh)"
 }
 
 prompt_1password_configuration() {
@@ -69,10 +76,11 @@ Darwin)
   install_mise
   install_chezmoi
   apply_dotfiles
-  source "${HOME}/.config/zsh/.zshrc"
+  source_mise
   login_atuin
 
-  echo "Setup Complete"
+  echo "==> Setup Complete"
+  exec zsh
   ;;
 Linux)
   if [ -f /etc/os-release ]; then
@@ -96,10 +104,11 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
-      source "${HOME}/.config/zsh/.zshrc"
+      source_mise
       login_atuin
 
-      echo "Setup Complete"
+      echo "==> Setup Complete"
+      exec zsh
       ;;
     debian|ubuntu|pop|linuxmint|elementary|neon|zorin)
       if ! command -v op >/dev/null 2>&1; then
@@ -121,10 +130,11 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
-      source "${HOME}/.config/zsh/.zshrc"
+      source_mise
       login_atuin
 
-      echo "Setup Complete"
+      echo "==> Setup Complete"
+      exec zsh
       ;;
     *)
       case "$ID_LIKE" in
@@ -148,10 +158,11 @@ Linux)
         install_mise
         install_chezmoi
         apply_dotfiles
-        source "${HOME}/.config/zsh/.zshrc"
+        source_mise
         login_atuin
 
-        echo "Setup Complete"
+        echo "==> Setup Complete"
+        exec zsh
         ;;
       *)
         echo "Unsupported Linux distribution: $ID"
