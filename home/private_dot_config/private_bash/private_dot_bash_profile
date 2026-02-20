@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+
+if [[ "$BASH_BENCHMARK" == "true" ]]; then
+  if [[ -z "$BASH_START_TIME" ]]; then
+    BASH_START_TIME=$(date +%s.%N)
+  fi
+fi
+
+# Print a debug message when BASH_DEBUG=true.
+# Usage: _bash_debug "initializing: mise"
+_bash_debug() {
+  [[ "$BASH_DEBUG" == "true" ]] && printf "%s\n" "$1"
+  return 0
+}
+
+# Load a bash topic's configuration files from XDG_CONFIG_HOME.
+#
+# Handles dependency resolution, env/alias sourcing, and guards against
+# double-loading. Each topic lives in its own directory under XDG_CONFIG_HOME
+# and may contain env.sh, aliases.sh, and init.bash files.
+#
+# Options:
+#   --source-env       Source the topic's env.sh file
+#   --source-aliases   Source the topic's aliases.sh file
+#   --deps <topic>     Load a dependency first (repeatable)
+#
+# Usage:
+#   _load_bash_topic atuin --source-env --source-aliases --deps mise
+BASH_LOADED_TOPICS=""
+
+_load_bash_topic() {
+  local topic=$1; shift
+
+  [[ ":${BASH_LOADED_TOPICS}:" == *":${topic}:"* ]] && return
+
+  _bash_debug "initializing: ${topic}"
+
+  local source_env="" source_aliases=""
+  local -a deps=()
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --source-env) source_env=1; shift ;;
+      --source-aliases) source_aliases=1; shift ;;
+      --deps) deps+=("$2"); shift 2 ;;
+      *) shift ;;
+    esac
+  done
+
+  for dep in "${deps[@]}"; do
+    local init_file="${XDG_CONFIG_HOME:-$HOME/.config}/$dep/init.bash"
+    [[ -f "$init_file" ]] && _bash_debug "sourcing: ${init_file}" && source "${init_file}"
+  done
+
+  if [[ -n "$source_env" ]]; then
+    local env_file="${XDG_CONFIG_HOME:-$HOME/.config}/${topic}/env.sh"
+    [[ -f "$env_file" ]] && _bash_debug "sourcing: ${env_file}" && source "$env_file"
+  fi
+
+  if [[ -n "$source_aliases" ]]; then
+    local alias_file="${XDG_CONFIG_HOME:-$HOME/.config}/${topic}/aliases.sh"
+    [[ -f "$alias_file" ]] && _bash_debug "sourcing: ${alias_file}" && source "$alias_file"
+  fi
+
+  BASH_LOADED_TOPICS="${BASH_LOADED_TOPICS}${topic}:"
+}
+
+# Source bash completions
+if [[ -f /opt/homebrew/etc/profile.d/bash_completion.sh ]]; then
+  source /opt/homebrew/etc/profile.d/bash_completion.sh
+elif [[ -f /usr/local/etc/profile.d/bash_completion.sh ]]; then
+  source /usr/local/etc/profile.d/bash_completion.sh
+elif [[ -f /usr/share/bash-completion/bash_completion ]]; then
+  source /usr/share/bash-completion/bash_completion
+elif [[ -f /etc/bash_completion ]]; then
+  source /etc/bash_completion
+fi
+
+# Source all init.bash files. Each file calls _load_bash_topic to guard
+# against double-loading and resolve dependencies.
+shopt -s nullglob
+for init in "${XDG_CONFIG_HOME:-$HOME/.config}"/*/init.bash; do
+  _bash_debug "sourcing: ${init}"
+  source "$init"
+done
+shopt -u nullglob
+
+# bash settings
+export LESSHISTFILE="${XDG_STATE_HOME}/.lesshst"
+HISTCONTROL=ignoreboth
+HISTFILE="${XDG_STATE_HOME}/.bash_history"
+HISTSIZE=10000
+HISTFILESIZE=10000
+
+shopt -s histappend     # append to history, don't overwrite
+shopt -s cmdhist        # save multi-line commands as single entry
+shopt -s cdspell        # autocorrect minor cd typos
+shopt -s checkwinsize   # update LINES and COLUMNS after each command
+shopt -s nocaseglob     # case-insensitive globbing
+shopt -s no_empty_cmd_completion # don't complete on empty line
+
+# bash 4+ options
+if ((BASH_VERSINFO[0] >= 4)); then
+  shopt -s dirspell     # autocorrect minor directory typos
+  shopt -s globstar     # enable ** recursive glob
+fi
+
+if [[ "$BASH_BENCHMARK" == "true" ]]; then
+  BASH_END_TIME=$(date +%s.%N)
+  BASH_LOAD_TIME=$(awk "BEGIN {printf \"%.2f\", $BASH_END_TIME - $BASH_START_TIME}")
+  echo "bash loaded in ${BASH_LOAD_TIME} seconds"
+
+  unset BASH_START_TIME BASH_END_TIME BASH_LOAD_TIME BASH_BENCHMARK BASH_DEBUG
+fi
