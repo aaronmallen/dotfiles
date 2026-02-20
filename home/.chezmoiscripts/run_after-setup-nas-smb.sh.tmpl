@@ -1,0 +1,60 @@
+{{ if and (eq .profile "personal") (eq .email "hello@aaronmallen.me") -}}
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env sh
+set -eu
+
+FSTAB="/etc/fstab"
+MARKER="# TrueNAS SMB shares"
+
+if ! grep -qF "$MARKER" "$FSTAB"; then
+  # Create mount points
+  sudo mkdir -p /mnt/truenas/documents /mnt/truenas/gitlab /mnt/truenas/code
+
+  # Append SMB entries to fstab
+  sudo tee -a "$FSTAB" > /dev/null << 'EOF'
+
+# TrueNAS SMB shares
+//truenas.local/documents /mnt/truenas/documents cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
+//truenas.local/gitlab    /mnt/truenas/gitlab    cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
+//truenas.local/code      /mnt/truenas/code      cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
+EOF
+  sudo echo {{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file"}} > /etc/smbcredentials-truenas
+  sudo mount -a
+fi
+{{ else if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env sh
+set -eu
+
+AUTO_MASTER="/etc/auto_master"
+AUTO_MAP="/etc/auto_smb_truenas"
+MARKER="/Volumes/truenas"
+
+# Store SMB credentials in the system keychain for automount
+SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2)
+if ! security find-internet-password -s truenas.local -a aaron /Library/Keychains/System.keychain > /dev/null 2>&1; then
+  sudo security add-internet-password -a aaron -s truenas.local -D "Network Password" -r "smb " -w "$SMB_PASS" /Library/Keychains/System.keychain
+  echo "SMB credentials added to system keychain"
+fi
+
+# Create the automount map file if it doesn't exist
+if [ ! -f "$AUTO_MAP" ]; then
+  sudo tee "$AUTO_MAP" > /dev/null << 'EOF'
+documents -fstype=smbfs ://aaron@truenas.local/documents
+gitlab    -fstype=smbfs ://aaron@truenas.local/gitlab
+code      -fstype=smbfs ://aaron@truenas.local/code
+EOF
+  sudo chmod 644 "$AUTO_MAP"
+fi
+
+# Add entry to auto_master if not present
+if ! grep -qF "$MARKER" "$AUTO_MASTER"; then
+  echo "/Volumes/truenas auto_smb_truenas" | sudo tee -a "$AUTO_MASTER" > /dev/null
+  echo "TrueNAS automount entry added to $AUTO_MASTER"
+fi
+
+# Reload automountd
+sudo automount -vc
+
+echo "TrueNAS SMB shares configured via automount"
+{{ end -}}
+{{ end -}}
