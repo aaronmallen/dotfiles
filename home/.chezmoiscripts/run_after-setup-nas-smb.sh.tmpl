@@ -6,7 +6,7 @@ set -eu
 FSTAB="/etc/fstab"
 MARKER="# TrueNAS SMB shares"
 
-if ! grep -qF "$MARKER" "$FSTAB"; then
+if ! sudo grep -qF "$MARKER" "$FSTAB"; then
   # Create mount points
   sudo mkdir -p /mnt/truenas/documents /mnt/truenas/gitlab /mnt/truenas/code
 
@@ -29,7 +29,7 @@ AUTO_MASTER="/etc/auto_master"
 AUTO_MAP="/etc/auto_smb_truenas"
 MARKER="/Volumes/truenas"
 
-if ! grep -qF "$MARKER" "$AUTO_MASTER"; then
+if ! sudo grep -qF "$MARKER" "$AUTO_MASTER"; then
   # Store SMB credentials in the system keychain for automount
   SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2)
   if ! security find-internet-password -s truenas.local -a aaron /Library/Keychains/System.keychain > /dev/null 2>&1; then
