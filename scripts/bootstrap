@@ -35,6 +35,11 @@ login_atuin() {
   || echo "==> Atuin login failed. Please try again later with 'atuin login'."
 }
 
+minimally_source_zsh() {
+  eval "$(mise activate zsh)"
+  eval "$(atuin init zsh)"
+}
+
 set_chezmoi_remotes() {
   [ "$(chezmoi execute-template '{{ .email }}')" = "hello@aaronmallen.me" ] || return 0
 
@@ -44,10 +49,6 @@ set_chezmoi_remotes() {
     git remote remove origin 2>/dev/null || true &&
     git remote add origin git@git.aaronmallen.dev:aaron/dotfiles.git &&
     git remote add github git@github.com:aaronmallen/dotfiles.git
-}
-
-source_zsh() {
-  source "${HOME}/.config/zsh/.zshrc"
 }
 
 prompt_1password_configuration() {
@@ -84,7 +85,7 @@ Darwin)
   install_mise
   install_chezmoi
   apply_dotfiles
-  source_zsh
+  minimally_source_zsh
   login_atuin
   set_chezmoi_remotes
 
@@ -112,7 +113,7 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
-      source_zsh
+      minimally_source_zsh
       login_atuin
       set_chezmoi_remotes
 
@@ -138,7 +139,7 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
-      source_zsh
+      minimally_source_zsh
       login_atuin
       set_chezmoi_remotes
 
@@ -166,7 +167,7 @@ Linux)
         install_mise
         install_chezmoi
         apply_dotfiles
-        source_zsh
+        minimally_source_zsh
         login_atuin
         set_chezmoi_remotes
 
