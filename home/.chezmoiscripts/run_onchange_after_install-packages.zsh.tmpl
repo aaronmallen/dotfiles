@@ -9,6 +9,17 @@ command -v brew > /dev/null \
   && brew cleanup
 {{ end -}}
 
+{{ if eq .packageManager "apt" -}}
+# Aptfile hash: {{ include "private_dot_config/private_apt/private_aptfile.tmpl" | sha256sum }}
+APTFILE="$HOME/.config/apt/aptfile"
+if [[ -f "$APTFILE" ]]; then
+  sudo apt-get update
+  xargs -a "$APTFILE" sudo apt-get install -y
+  comm -23 <(apt-mark showmanual | sort) <(sort "$APTFILE") | xargs -r sudo apt-get remove -y
+  sudo apt-get autoremove -y
+fi
+{{ end -}}
+
 {{ if or (eq .packageManager "paru") (eq .packageManager "yay") -}}
 # Aurfile hash: {{ include "private_dot_config/private_aur/private_aurfile.tmpl" | sha256sum }}
 AURFILE="$HOME/.config/aur/aurfile"

@@ -14,6 +14,10 @@
 .config/aur
 {{ end }}
 
+{{ if ne .packageManager "apt" }}
+.config/apt
+{{ end }}
+
 {{ if ne .packageManager "brew" }}
 .config/homebrew
 {{ end }}

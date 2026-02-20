@@ -20,6 +20,7 @@ curl -fsSL https://raw.githubusercontent.com/aaronmallen/dotfiles/main/install |
 
 - macOS
 - Arch Linux
+- Debian/Ubuntu
 
 ## Structure
 
@@ -48,6 +49,8 @@ Each topic directory may contain:
 
 - **macOS**: [Homebrew](https://brew.sh) with `~/.config/homebrew/brewfile`
 - **Arch**: [Paru](https://github.com/Morganamilo/paru)/[Yay](https://github.com/Jguer/yay) with `~/.config/aur/aurfile`
+  (auto-prunes unlisted packages)
+- **Debian/Ubuntu**: [APT](https://wiki.debian.org/Apt) with `~/.config/apt/aptfile`
   (auto-prunes unlisted packages)
 - **All**: [Mise](https://mise.jdx.dev) for language runtimes and CLI tools
 
