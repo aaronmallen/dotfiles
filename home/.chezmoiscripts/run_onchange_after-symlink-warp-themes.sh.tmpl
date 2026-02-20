@@ -1,0 +1,8 @@
+{{- if eq .chezmoi.os "darwin" }}
+#!/usr/bin/env sh
+
+set -e
+
+rm -rf ~/.warp
+ln -s ~/.config/warp-terminal ~/.warp
+{{- end }}
