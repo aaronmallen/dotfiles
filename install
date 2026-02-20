@@ -25,6 +25,16 @@ install_mise() {
   fi
 }
 
+login_atuin() {
+  [ "$(chezmoi execute-template '{{ .email }}')" = "hello@aaronmallen.me" ] || return 0
+  command -v atuin > /dev/null || return 0
+  command -v op > /dev/null || return 0
+  atuin login --username "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/username')" \
+              --password "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/password')" \
+              --key "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/key')" \
+  || echo "==> Atuin login failed. Please try again later with 'atuin login'."
+}
+
 prompt_1password_configuration() {
   echo ""
   echo "==> Please complete the following steps:"
@@ -59,9 +69,10 @@ Darwin)
   install_mise
   install_chezmoi
   apply_dotfiles
+  source "${HOME}/.config/zsh/.zshrc"
+  login_atuin
 
   echo "Setup Complete"
-  exec zsh
   ;;
 Linux)
   if [ -f /etc/os-release ]; then
@@ -85,9 +96,10 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
+      source "${HOME}/.config/zsh/.zshrc"
+      login_atuin
 
       echo "Setup Complete"
-      exec zsh
       ;;
     debian|ubuntu|pop|linuxmint|elementary|neon|zorin)
       if ! command -v op >/dev/null 2>&1; then
@@ -109,9 +121,10 @@ Linux)
       install_mise
       install_chezmoi
       apply_dotfiles
+      source "${HOME}/.config/zsh/.zshrc"
+      login_atuin
 
       echo "Setup Complete"
-      exec zsh
       ;;
     *)
       case "$ID_LIKE" in

@@ -1,8 +1,0 @@
-{{ if eq .email "hello@aaronmallen.me" -}}
-#!/usr/bin/env sh
-
-command -v atuin >/dev/null &&
-  atuin login --username {{ onepasswordRead "op://Private/bspumr7wtvze6nbooz7gt7krlu/username" }} \
-              --password {{ onepasswordRead "op://Private/bspumr7wtvze6nbooz7gt7krlu/password" }} \
-              --key "{{ onepasswordRead "op://Private/bspumr7wtvze6nbooz7gt7krlu/key" }}"
-{{ end -}}
