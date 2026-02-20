@@ -148,9 +148,10 @@ Linux)
         install_mise
         install_chezmoi
         apply_dotfiles
+        source "${HOME}/.config/zsh/.zshrc"
+        login_atuin
 
         echo "Setup Complete"
-        exec zsh
         ;;
       *)
         echo "Unsupported Linux distribution: $ID"
