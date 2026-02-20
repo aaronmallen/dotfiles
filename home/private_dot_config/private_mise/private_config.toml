@@ -37,5 +37,14 @@ yarn = "latest"
 zoxide = "latest"
 
 [settings]
-idiomatic_version_file_enable_tools = ["ruby"]
 experimental = true
+idiomatic_version_file_enable_tools = [
+  "crystal",
+  "elixir",
+  "go",
+  "node",
+  "python",
+  "ruby",
+  "yarn"
+]
+lockfile = true
