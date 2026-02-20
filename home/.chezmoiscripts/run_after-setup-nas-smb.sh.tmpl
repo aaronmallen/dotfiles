@@ -18,8 +18,7 @@ if ! grep -qF "$MARKER" "$FSTAB"; then
 //truenas.local/gitlab    /mnt/truenas/gitlab    cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
 //truenas.local/code      /mnt/truenas/code      cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
 EOF
-  echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | sudo tee /etc/smbcredentials-truenas > /dev/null
-  sudo chmod 600 /etc/smbcredentials-truenas
+  echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | sudo install -m 600 /dev/stdin /etc/smbcredentials-truenas
   sudo mount -a
 fi
 {{ else if eq .chezmoi.os "darwin" -}}
