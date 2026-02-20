@@ -45,6 +45,6 @@ idiomatic_version_file_enable_tools = [
   "node",
   "python",
   "ruby",
-  "yarn"
+  "yarn",
 ]
 lockfile = true

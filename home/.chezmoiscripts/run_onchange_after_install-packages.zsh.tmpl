@@ -2,6 +2,8 @@
 
 {{ if eq .packageManager "brew" -}}
 # Brewfile hash: {{ include "private_dot_config/private_homebrew/private_brewfile.tmpl" | sha256sum }}
+# {{ output "sw_vers" "-productVersion" | trim }}
+# {{ output "sw_vers" "-buildVersion" | trim }}
 command -v brew > /dev/null \
   && brew update \
   && brew bundle --file="$HOME/.config/homebrew/brewfile" \
@@ -11,6 +13,7 @@ command -v brew > /dev/null \
 
 {{ if eq .packageManager "apt" -}}
 # Aptfile hash: {{ include "private_dot_config/private_apt/private_aptfile.tmpl" | sha256sum }}
+# {{ output "cat" "/etc/os-release" | trim }}
 APTFILE="$HOME/.config/apt/aptfile"
 if [[ -f "$APTFILE" ]]; then
   sudo apt-get update
@@ -22,6 +25,7 @@ fi
 
 {{ if or (eq .packageManager "paru") (eq .packageManager "yay") -}}
 # Aurfile hash: {{ include "private_dot_config/private_aur/private_aurfile.tmpl" | sha256sum }}
+# {{ output "cat" "/etc/os-release" | trim }}
 AURFILE="$HOME/.config/aur/aurfile"
 if [[ -f "$AURFILE" ]]; then
   {{ .packageManager }} -S --needed --noconfirm - < "$AURFILE"
