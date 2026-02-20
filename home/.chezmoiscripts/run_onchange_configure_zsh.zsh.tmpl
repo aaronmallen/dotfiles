@@ -1,17 +1,20 @@
 #!/usr/bin/env zsh
 
 {{- if eq .chezmoi.os "darwin" }}
-  if ! sudo grep -q 'export ZDOTDIR=' /etc/zshrc 2>/dev/null; then
-    echo 'export ZDOTDIR="${HOME}/.config/zsh"' | sudo tee -a /etc/zshrc > /dev/null
-  fi
+# {{ output "sw_vers" "-productVersion" | trim }}
+# {{ output "sw_vers" "-buildVersion" | trim }}
+if ! sudo grep -q 'export ZDOTDIR=' /etc/zshrc 2>/dev/null; then
+  echo 'export ZDOTDIR="${HOME}/.config/zsh"' | sudo tee -a /etc/zshrc > /dev/null
+fi
 {{- end }}
 
 {{- if eq .chezmoi.os "linux" }}
-  sudo mkdir -p /etc/zsh
+# {{ output "cat" "/etc/os-release" | trim }}
+sudo mkdir -p /etc/zsh
 
-  if ! sudo grep -q 'export ZDOTDIR=' /etc/zsh/zshenv 2>/dev/null; then
-      echo 'export ZDOTDIR="$HOME/.config/zsh"' | sudo tee -a /etc/zsh/zshenv > /dev/null
-  fi
+if ! sudo grep -q 'export ZDOTDIR=' /etc/zsh/zshenv 2>/dev/null; then
+    echo 'export ZDOTDIR="$HOME/.config/zsh"' | sudo tee -a /etc/zsh/zshenv > /dev/null
+fi
 {{- end }}
 
 sudo chsh -s "$(which zsh)" $USER

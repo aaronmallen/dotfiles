@@ -30,32 +30,29 @@ AUTO_MASTER="/etc/auto_master"
 AUTO_MAP="/etc/auto_smb_truenas"
 MARKER="/Volumes/truenas"
 
-# Store SMB credentials in the system keychain for automount
-SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2)
-if ! security find-internet-password -s truenas.local -a aaron /Library/Keychains/System.keychain > /dev/null 2>&1; then
-  sudo security add-internet-password -a aaron -s truenas.local -D "Network Password" -r "smb " -w "$SMB_PASS" /Library/Keychains/System.keychain
-  echo "SMB credentials added to system keychain"
-fi
+if ! grep -qF "$MARKER" "$AUTO_MASTER"; then
+  # Store SMB credentials in the system keychain for automount
+  SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2)
+  if ! security find-internet-password -s truenas.local -a aaron /Library/Keychains/System.keychain > /dev/null 2>&1; then
+    sudo security add-internet-password -a aaron -s truenas.local -D "Network Password" -r "smb " -w "$SMB_PASS" /Library/Keychains/System.keychain
+    echo "SMB credentials added to system keychain"
+  fi
 
-# Create the automount map file if it doesn't exist
-if [ ! -f "$AUTO_MAP" ]; then
+  # Create the automount map file
   sudo tee "$AUTO_MAP" > /dev/null << 'EOF'
 documents -fstype=smbfs ://aaron@truenas.local/documents
 gitlab    -fstype=smbfs ://aaron@truenas.local/gitlab
 code      -fstype=smbfs ://aaron@truenas.local/code
 EOF
   sudo chmod 644 "$AUTO_MAP"
-fi
 
-# Add entry to auto_master if not present
-if ! grep -qF "$MARKER" "$AUTO_MASTER"; then
+  # Add entry to auto_master
   echo "/Volumes/truenas auto_smb_truenas" | sudo tee -a "$AUTO_MASTER" > /dev/null
-  echo "TrueNAS automount entry added to $AUTO_MASTER"
+
+  # Reload automountd
+  sudo automount -vc
+
+  echo "TrueNAS SMB shares configured via automount"
 fi
-
-# Reload automountd
-sudo automount -vc
-
-echo "TrueNAS SMB shares configured via automount"
 {{ end -}}
 {{ end -}}
