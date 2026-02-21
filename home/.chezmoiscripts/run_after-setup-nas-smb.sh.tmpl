@@ -27,7 +27,7 @@ set -eu
 
 AUTO_MASTER="/etc/auto_master"
 AUTO_MAP="/etc/auto_smb_truenas"
-MARKER="/Volumes/truenas"
+MARKER="/Volumes/nas"
 
 if ! sudo grep -qF "$MARKER" "$AUTO_MASTER"; then
   # Store SMB credentials in the system keychain for automount
@@ -45,8 +45,11 @@ code      -fstype=smbfs ://aaron@truenas.local/code
 EOF
   sudo chmod 644 "$AUTO_MAP"
 
+  # Create the mount point (automount requires it to exist)
+  sudo mkdir -p /Volumes/nas
+
   # Add entry to auto_master
-  echo "/Volumes/truenas auto_smb_truenas" | sudo tee -a "$AUTO_MASTER" > /dev/null
+  echo "/Volumes/nas	auto_smb_truenas" | sudo tee -a "$AUTO_MASTER" > /dev/null
 
   # Reload automountd
   sudo automount -vc
