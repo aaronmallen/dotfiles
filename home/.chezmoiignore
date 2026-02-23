@@ -8,6 +8,7 @@
 
 {{if ne .chezmoi.os "linux" }}
 .config/autostart
+.config/vicinae
 .config/xorg
 {{ end }}
 
