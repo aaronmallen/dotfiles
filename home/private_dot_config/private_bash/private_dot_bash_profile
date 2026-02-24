@@ -48,8 +48,10 @@ _load_bash_topic() {
   done
 
   for dep in "${deps[@]}"; do
-    local init_file="${XDG_CONFIG_HOME:-$HOME/.config}/$dep/init.bash"
-    [[ -f "$init_file" ]] && _bash_debug "sourcing: ${init_file}" && source "${init_file}"
+    if [[ ":${BASH_LOADED_TOPICS}:" != *":${dep}:"* ]]; then
+      local init_file="${XDG_CONFIG_HOME:-$HOME/.config}/${dep}/init.bash"
+      [[ -f "$init_file" ]] && _bash_debug "sourcing: ${init_file}" && source "${init_file}"
+    fi
   done
 
   if [[ -n "$source_env" ]]; then

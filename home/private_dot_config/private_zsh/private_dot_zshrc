@@ -40,8 +40,10 @@ _load_zsh_topic() {
 
   deps=(${deps:#--deps})
   for dep in $deps; do
-    local init_file="${XDG_CONFIG_HOME:-$HOME/.config}/$dep/init.zsh"
-    [[ -f $init_file ]] && _zsh_debug "sourcing: ${init_file}" && source "${init_file}"
+    if [[ ":${ZSH_LOADED_TOPICS}:" != *":${dep}:"* ]]; then
+      local init_file="${XDG_CONFIG_HOME:-$HOME/.config}/$dep/init.zsh"
+      [[ -f $init_file ]] && _zsh_debug "sourcing: ${init_file}" && source "${init_file}"
+    fi
   done
 
   if [[ -n $source_env ]]; then
