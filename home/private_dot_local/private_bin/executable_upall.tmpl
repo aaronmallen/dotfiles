@@ -12,20 +12,20 @@ command -v brew > /dev/null \
 
 {{- if eq .packageManager "apt" }}
 
-APTFILE="$HOME/.config/apt/aptfile"
+APTFILE="${HOME}/.config/apt/aptfile"
 sudo apt-get update \
-  && xargs -a "$APTFILE" sudo apt-get install -y \
-  && comm -23 <(apt-mark showmanual | sort) <(sort "$APTFILE") | xargs -r sudo apt-get remove -y \
+  && xargs -a "${APTFILE}" sudo apt-get install -y \
+  && comm -23 <(apt-mark showmanual | sort) <(sort "${APTFILE}") | xargs -r sudo apt-get remove -y \
   && sudo apt-get autoremove -y \
   && sudo apt-get upgrade -y
 {{- end }}
 
 {{- if or (eq .packageManager "paru") (eq .packageManager "yay") }}
 
-AURFILE="$HOME/.config/aur/aurfile"
+AURFILE="${HOME}/.config/aur/aurfile"
 command -v {{ .packageManager }} > /dev/null \
-  && {{ .packageManager }} -S --needed --noconfirm - < "$AURFILE" \
-  && comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "$AURFILE") | xargs -r {{ .packageManager }} -Rns --noconfirm \
+  && {{ .packageManager }} -S --needed --noconfirm - < "${AURFILE}" \
+  && comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "${AURFILE}") | xargs -r {{ .packageManager }} -Rns --noconfirm \
   && {{ .packageManager }} -Syu --noconfirm \
   && {{ .packageManager }} -Sc --noconfirm
 {{- end }}

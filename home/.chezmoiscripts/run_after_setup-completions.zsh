@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-: ${XDG_CONFIG_HOME:=$HOME/.config}
+: ${XDG_CONFIG_HOME:=${HOME}/.config}
 
 command -v atuin     >/dev/null && mkdir -p ${XDG_CONFIG_HOME}/atuin     && atuin gen-completions --shell zsh > ${XDG_CONFIG_HOME}/atuin/_atuin
 command -v bat       >/dev/null && mkdir -p ${XDG_CONFIG_HOME}/bat       && bat --completion zsh > ${XDG_CONFIG_HOME}/bat/_bat

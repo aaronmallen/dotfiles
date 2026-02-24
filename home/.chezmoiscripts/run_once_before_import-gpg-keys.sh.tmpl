@@ -4,8 +4,8 @@ set -e
 
 export GNUPGHOME="${HOME}/.local/share/gnupg"
 
-mkdir -p "$GNUPGHOME"
-chmod 700 "$GNUPGHOME"
+mkdir -p "${GNUPGHOME}"
+chmod 700 "${GNUPGHOME}"
 
 {{- if eq .email "hello@aaronmallen.me" }}
 
