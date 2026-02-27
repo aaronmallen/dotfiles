@@ -1,7 +1,13 @@
+.cargo
 .claude
 .DS_Store
+.gtkrc-2.0
 .java
 .junie
 .mozilla
+.nv
 .pki
+.pulse-cookie
+.rustup
 .swiftpm
+.var
