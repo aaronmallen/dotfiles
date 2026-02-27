@@ -37,6 +37,7 @@ command -v softwareupdate > /dev/null \
 {{- end }}
 
 command -v mise > /dev/null \
+  && mise self-update \
   && mise upgrade
 
 command -v chezmoi > /dev/null \
