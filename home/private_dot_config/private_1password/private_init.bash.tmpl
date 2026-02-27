@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+{{- if eq .chezmoi.os "darwin" }}
+_load_bash_topic "1password" --deps "homebrew"
+{{- else }}
+_load_bash_topic "1password"
+{{- end }}
+eval "$(op signin)"
