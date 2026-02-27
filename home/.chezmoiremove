@@ -8,6 +8,7 @@
 .npm
 .nv
 .pki
+.profile
 .pulse-cookie
 .rustup
 .swiftpm
