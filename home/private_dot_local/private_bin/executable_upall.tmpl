@@ -40,7 +40,7 @@ command -v mise > /dev/null \
   && mise upgrade
 
 command -v chezmoi > /dev/null \
-  && chezmoi apply
+  && chezmoi update --apply
 
 {{- if eq .chezmoi.os "darwin" }}
 
