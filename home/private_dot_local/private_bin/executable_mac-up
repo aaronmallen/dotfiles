@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+command -v softwareupdate > /dev/null && softwareupdate -i --all
+defaults write com.apple.dock ResetLaunchPad -bool true
+killall Dock

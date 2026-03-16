@@ -3,6 +3,7 @@
 {{ if ne .chezmoi.os "darwin" }}
 .config/macos
 .config/pkgconfig
+.local/bin/mac-up
 .warp
 {{ end }}
 
@@ -18,8 +19,10 @@
 
 {{ if ne .packageManager "apt" }}
 .config/apt
+.local/bin/apt-up
 {{ end }}
 
 {{ if ne .packageManager "brew" }}
 .config/homebrew
+.local/bin/brew-up
 {{ end }}

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+command -v mise > /dev/null \
+  && mise self-update --yes \
+  && mise upgrade

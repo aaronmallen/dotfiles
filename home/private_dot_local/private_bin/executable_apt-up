@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+APTFILE="${HOME}/.config/apt/aptfile"
+sudo apt-get update \
+  && xargs -a "${APTFILE}" sudo apt-get install -y \
+  && comm -23 <(apt-mark showmanual | sort) <(sort "${APTFILE}") | xargs -r sudo apt-get remove -y \
+  && sudo apt-get autoremove -y \
+  && sudo apt-get upgrade -y
