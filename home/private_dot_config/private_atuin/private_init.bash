@@ -2,3 +2,4 @@
 
 _load_bash_topic "atuin" --deps mise
 eval "$(atuin init bash)"
+eval "$(atuin ai init)"

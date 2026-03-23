@@ -2,3 +2,4 @@
 
 _load_zsh_topic "atuin" --deps mise
 eval "$(atuin init zsh)"
+eval "$(atuin ai init)"
