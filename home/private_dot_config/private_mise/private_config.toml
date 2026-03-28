@@ -49,4 +49,3 @@ idiomatic_version_file_enable_tools = [
   "ruby",
   "yarn",
 ]
-lockfile = true
