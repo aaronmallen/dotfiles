@@ -156,6 +156,9 @@ enter_accept = true
 [ai]
 enabled = true
 
+[logs]
+dir = "{{ env "XDG_STATE_HOME" }}/atuin/logs"
+
 [stats]
 # #Set commands where we should consider the subcommand for statistics. Eg, kubectl get vs just kubectl
 common_subcommands = [
