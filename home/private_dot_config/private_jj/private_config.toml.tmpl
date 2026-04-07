@@ -2,11 +2,21 @@
 
 [aliases]
 ll = ["log", "--template", "builtin_log_detailed"]
+# Bring the closest bookmark up to the closest pushable change
+tug = ["util", "exec", "--", "sh", "-c", """
+if [ "x$1" = "x" ]; then
+  jj bookmark move --from "closest_bookmark(@)" --to "closest_pushable(@)"
+else
+  jj bookmark move --to "closest_pushable(@)" "$@"
+fi
+""", ""]
 
 [git]
 private-commits = "private() | wip()"
 
 [revset-aliases]
+'closest_bookmark(to)' = 'heads(::to & bookmarks())'
+'closest_pushable(to)' = 'heads(::to & mutable() & ~description(exact:"") & (~empty() | merges()))'
 "mine()" = "author(exact:'{{- .fullName }}') | author(exact:'{{- .email }}')"
 "private()" = "description(glob:'private:*')"
 "wip()" = "description(glob:'wip:*')"
