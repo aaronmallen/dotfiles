@@ -5,6 +5,6 @@ AURFILE="${HOME}/.config/aur/aurfile"
 command -v {{ .packageManager }} > /dev/null \
   && {{ .packageManager }} -S --needed --noconfirm - < "${AURFILE}" \
   && comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "${AURFILE}") | xargs -r {{ .packageManager }} -Rns --noconfirm \
-  && {{ .packageManager }} -Syu --noconfirm \
+  && {{ .packageManager }} -Syu --noconfirm --rebuild --cleanafter \
   && {{ .packageManager }} -Sc --noconfirm
 {{- end }}
