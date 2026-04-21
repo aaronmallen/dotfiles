@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
 command -v mise > /dev/null \
+  && mise cache clear
   && mise self-update --yes \
   && mise upgrade
+  && mise install
