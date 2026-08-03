@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+find . -type f -name Cargo.toml -execdir sh -c '
+  test -d target && rm -rf target
+  test -d coverage && rm -rf coverage
+' \;
