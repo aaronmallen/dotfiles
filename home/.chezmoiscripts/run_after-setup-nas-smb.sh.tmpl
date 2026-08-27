@@ -8,14 +8,13 @@ MARKER="# TrueNAS SMB shares"
 
 if ! sudo grep -qF "${MARKER}" "${FSTAB}"; then
   # Create mount points
-  sudo mkdir -p /mnt/truenas/documents /mnt/truenas/gitlab /mnt/truenas/code
+  sudo mkdir -p /mnt/truenas/documents /mnt/truenas/code
 
   # Append SMB entries to fstab
   sudo tee -a "${FSTAB}" > /dev/null << 'EOF'
 
 # TrueNAS SMB shares
 //truenas.local/documents /mnt/truenas/documents cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
-//truenas.local/gitlab    /mnt/truenas/gitlab    cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
 //truenas.local/code      /mnt/truenas/code      cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
 EOF
   echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | sudo install -m 600 /dev/stdin /etc/smbcredentials-truenas
@@ -40,7 +39,6 @@ if ! sudo grep -qF "${MARKER}" "${AUTO_MASTER}"; then
   # Create the automount map file
   sudo tee "${AUTO_MAP}" > /dev/null << 'EOF'
 documents -fstype=smbfs ://aaron@truenas.local/documents
-gitlab    -fstype=smbfs ://aaron@truenas.local/gitlab
 code      -fstype=smbfs ://aaron@truenas.local/code
 EOF
   sudo chmod 644 "${AUTO_MAP}"
