@@ -118,6 +118,19 @@ setopt HIST_REDUCE_BLANKS
 #   like: git comm-[tab]
 setopt complete_aliases
 
+# Expand aliases inline as you type, the way Warp's alias_expansion did.
+# compinit registers _expand_alias (bound to ^Xa on its own); wrapping
+# self-insert runs it on every space instead. This relies on
+# complete_aliases above -- without it zsh substitutes the alias before the
+# widget ever sees the word. ^V<space> still inserts a bare space.
+expand-alias-space() {
+  zle _expand_alias
+  zle self-insert
+}
+zle -N expand-alias-space
+bindkey ' ' expand-alias-space
+bindkey -M isearch ' ' magic-space # leave incremental search alone
+
 # Load all plugins
 if [ -f "${HOME}/.local/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
   _zsh_debug "sourcing: ${HOME}/.local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
