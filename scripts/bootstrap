@@ -45,11 +45,16 @@ set_chezmoi_remotes() {
 
   echo "==> Setting chezmoi source"
 
+  # `chezmoi init` clones over https as `origin`; replace it with the ssh
+  # remote so pushes work without a token, and repoint main at it so
+  # chezmoi's autoPush has a valid upstream.
   cd "${HOME}/.local/share/chezmoi" &&
     mise trust &&
     git remote remove origin 2>/dev/null || true &&
-    git remote add origin git@git.aaronmallen.dev:aaron/dotfiles.git &&
-    git remote add github git@github.com:aaronmallen/dotfiles.git
+    git remote remove github 2>/dev/null || true &&
+    git remote add github git@github.com:aaronmallen/dotfiles.git &&
+    git fetch github &&
+    git branch --set-upstream-to=github/main main
 }
 
 prompt_1password_configuration() {
