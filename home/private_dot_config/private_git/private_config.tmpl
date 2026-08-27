@@ -3,11 +3,11 @@ fucked = !git reset && git checkout . && git clean -df
 
 [commit]
 gpgsign = true
-template = {{- env "XDG_CONFIG_HOME" }}/git/commit_template
+template = {{ .chezmoi.homeDir }}/.config/git/commit_template
 
 [core]
 editor = nvim
-excludesfile = {{- env "XDG_CONFIG_HOME" }}/git/ignore
+excludesfile = {{ .chezmoi.homeDir }}/.config/git/ignore
 pager = delta
 
 [delta]
@@ -36,8 +36,8 @@ branch = false
 tag = false
 
 [user]
-name = {{- .fullName }}
-email = {{- .email }}
+name = {{ .fullName }}
+email = {{ .email }}
 {{- if eq .email "hello@aaronmallen.me" }}
 signingKey = 87133702D8F60DD8
 {{- end }}

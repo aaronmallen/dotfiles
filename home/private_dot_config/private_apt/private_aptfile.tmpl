@@ -10,9 +10,11 @@ gcc
 git
 git-lfs
 gh
-{{- /* Ghostty entered the Ubuntu archive in 26.04; Debian has no official
-       package, so it is left out there rather than failing the whole
-       `apt-get install` run. See ../ghostty/README.md. */}}
+{{- /*
+  Ghostty entered the Ubuntu archive in 26.04; Debian has no official
+  package, so it is left out there rather than failing the whole
+  `apt-get install` run. See ../ghostty/README.md.
+*/}}
 {{- $osID := dig "id" "" .chezmoi.osRelease }}
 {{- $osVer := dig "versionID" "0" .chezmoi.osRelease }}
 {{- if and (eq $osID "ubuntu") (ge (float64 $osVer) 26.04) }}

@@ -1,4 +1,4 @@
 #!/usr/bin/env zsh
 
-_load_zsh_topic "homebrew" --source-env --deps xdg
+_load_zsh_topic "homebrew" --source-env --deps xdg || return 0
 eval "$(brew shellenv)"

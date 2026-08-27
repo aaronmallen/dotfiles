@@ -30,7 +30,7 @@ MARKER="/Volumes/nas"
 
 if ! sudo grep -qF "${MARKER}" "${AUTO_MASTER}"; then
   # Store SMB credentials in the system keychain for automount
-  SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2)
+  SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2-)
   if ! security find-internet-password -s truenas.local -a aaron /Library/Keychains/System.keychain > /dev/null 2>&1; then
     sudo security add-internet-password -a aaron -s truenas.local -D "Network Password" -r "smb " -w "${SMB_PASS}" /Library/Keychains/System.keychain
     echo "SMB credentials added to system keychain"

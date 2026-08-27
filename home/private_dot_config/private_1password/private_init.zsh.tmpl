@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
 {{- if eq .chezmoi.os "darwin" }}
-_load_zsh_topic "1password" --deps "homebrew"
+_load_zsh_topic "1password" --deps "homebrew" || return 0
 {{- else }}
-_load_zsh_topic "1password"
+_load_zsh_topic "1password" || return 0
 {{- end }}
 eval "$(op signin)"

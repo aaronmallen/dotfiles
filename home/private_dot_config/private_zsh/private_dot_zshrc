@@ -1,8 +1,10 @@
 #!/usr/bin/env zsh
 
 if [[ "$ZSH_BENCHMARK" == "true" ]]; then
+  # EPOCHREALTIME rather than `date +%s.%N`; BSD date has no %N.
+  zmodload zsh/datetime
   if [[ -z "$ZSH_START_TIME" ]]; then
-    ZSH_START_TIME=$(date +%s.%N)
+    ZSH_START_TIME=$EPOCHREALTIME
   fi
 fi
 
@@ -26,12 +28,17 @@ _zsh_debug() {
 #
 # Usage:
 #   _load_zsh_topic atuin --source-env --source-aliases --deps mise
+#
+# Returns 1 if the topic was already loaded, so init.zsh files can skip
+# any `eval` that follows:
+#
+#   _load_zsh_topic mise --source-env || return 0
 ZSH_LOADED_TOPICS=""
 
 _load_zsh_topic() {
   local topic=$1; shift
 
-  [[ ":${ZSH_LOADED_TOPICS}:" == *":${topic}:"* ]] && return
+  [[ ":${ZSH_LOADED_TOPICS}:" == *":${topic}:"* ]] && return 1
 
   _zsh_debug "initializing: ${topic}"
 
@@ -39,6 +46,7 @@ _load_zsh_topic() {
   zparseopts -D -E -source-env=source_env -source-aliases=source_aliases -deps+:=deps
 
   deps=(${deps:#--deps})
+  local dep
   for dep in $deps; do
     if [[ ":${ZSH_LOADED_TOPICS}:" != *":${dep}:"* ]]; then
       local init_file="${XDG_CONFIG_HOME:-$HOME/.config}/$dep/init.zsh"
@@ -79,13 +87,13 @@ for init in "${XDG_CONFIG_HOME:-$HOME/.config}"/*/init.zsh(N); do
 done
 
 # zsh settings
-export LESSHISTFILE=$XDG_STATE_HOME/.lesshst
+export LESSHISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/.lesshst"
 HISTCONTROL=ignoreboth
-HISTFILE=${XDG_STATE_HOME}/.zsh_history
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/.zsh_history"
 HIST_STAMPS="yyyy-mm-dd"
 HISTSIZE=10000
 SAVEHIST=10000
-SHELL_SESSION_DIR=${XDG_STATE_HOME}/.zsh_sessions
+SHELL_SESSION_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/.zsh_sessions"
 SHELL_SESSION_FILE="${SHELL_SESSION_DIR}/${TERM_SESSION_ID}.session"
 
 setopt NO_BG_NICE # don't nice background tasks
@@ -122,7 +130,7 @@ if [ -f "${HOME}/.local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 fi
 
 if [[ "$ZSH_BENCHMARK" == "true" ]]; then
-  ZSH_END_TIME=$(date +%s.%N)
+  ZSH_END_TIME=$EPOCHREALTIME
   ZSH_LOAD_TIME=$(printf "%.2f" "$((ZSH_END_TIME - ZSH_START_TIME))")
   echo "zsh loaded in ${ZSH_LOAD_TIME} seconds"
 

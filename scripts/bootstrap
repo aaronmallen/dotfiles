@@ -9,6 +9,24 @@ apply_dotfiles() {
   mise exec chezmoi -- chezmoi init aaronmallen --apply
 }
 
+install_1password_debian() {
+  command -v op >/dev/null 2>&1 && return 0
+
+  echo "==> Installing 1Password CLI"
+  curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+    sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | \
+    sudo tee /etc/apt/sources.list.d/1password.list
+  sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22/
+  curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | \
+    sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
+  sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
+  curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+    sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+  sudo apt-get update && sudo apt-get install -y 1password 1password-cli
+  prompt_1password_configuration
+}
+
 install_chezmoi() {
   if ! command -v chezmoi >/dev/null 2>&1; then
     echo "==> Installing chezmoi"
@@ -19,16 +37,16 @@ install_chezmoi() {
 install_mise() {
   if ! command -v mise >/dev/null 2>&1; then
     echo "==> Installing mise"
-    curl https://mise.run | sh
+    curl -fsSL https://mise.run | sh
     export PATH="${HOME}/.local/bin:${PATH}"
   fi
 }
 
 login_atuin() {
   [ "$(chezmoi execute-template '{{ .email }}')" = "hello@aaronmallen.me" ] || return 0
-  echo "==> Logging in to Atuin"
   command -v atuin > /dev/null || return 0
   command -v op > /dev/null || return 0
+  echo "==> Logging in to Atuin"
   atuin login --username "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/username')" \
               --password "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/password')" \
               --key "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/key')" \
@@ -48,13 +66,13 @@ set_chezmoi_remotes() {
   # `chezmoi init` clones over https as `origin`; replace it with the ssh
   # remote so pushes work without a token, and repoint main at it so
   # chezmoi's autoPush has a valid upstream.
-  cd "${HOME}/.local/share/chezmoi" &&
-    mise trust &&
-    git remote remove origin 2>/dev/null || true &&
-    git remote remove github 2>/dev/null || true &&
-    git remote add github git@github.com:aaronmallen/dotfiles.git &&
-    git fetch github &&
-    git branch --set-upstream-to=github/main main
+  cd "${HOME}/.local/share/chezmoi" || return 1
+  mise trust
+  git remote remove origin 2>/dev/null || true
+  git remote remove github 2>/dev/null || true
+  git remote add github git@github.com:aaronmallen/dotfiles.git
+  git fetch github
+  git branch --set-upstream-to=github/main main
 }
 
 prompt_1password_configuration() {
@@ -126,21 +144,7 @@ Linux)
       echo "==> Setup Complete"
       ;;
     debian|ubuntu|pop|linuxmint|elementary|neon|zorin)
-      if ! command -v op >/dev/null 2>&1; then
-        echo "==> Installing 1Password CLI"
-        curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
-          sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | \
-          sudo tee /etc/apt/sources.list.d/1password.list
-        sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22/
-        curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | \
-          sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
-        sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
-        curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
-          sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-        sudo apt-get update && sudo apt-get install -y 1password 1password-cli
-        prompt_1password_configuration
-      fi
+      install_1password_debian
 
       install_mise
       install_chezmoi
@@ -154,21 +158,7 @@ Linux)
     *)
       case "$ID_LIKE" in
       *debian*|*ubuntu*)
-        if ! command -v op >/dev/null 2>&1; then
-          echo "==> Installing 1Password CLI"
-          curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
-            sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | \
-            sudo tee /etc/apt/sources.list.d/1password.list
-          sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22/
-          curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | \
-            sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
-          sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
-          curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
-            sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-          sudo apt-get update && sudo apt-get install -y 1password 1password-cli
-          prompt_1password_configuration
-        fi
+        install_1password_debian
 
         install_mise
         install_chezmoi

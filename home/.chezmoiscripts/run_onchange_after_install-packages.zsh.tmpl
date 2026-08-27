@@ -29,7 +29,8 @@ fi
 AURFILE="${HOME}/.config/aur/aurfile"
 if [[ -f "${AURFILE}" ]]; then
   {{ .packageManager }} -S --needed --noconfirm - < "${AURFILE}"
-  comm -23 <({{ .packageManager }} -Qeq | sort) <(sort "${AURFILE}") | xargs -r {{ .packageManager }} -Rns --noconfirm
+  comm -23 <({{ .packageManager }} -Qeq | sort) <(sed 's|^[^/]*/||' "${AURFILE}" | sort) |
+    xargs -r {{ .packageManager }} -Rns --noconfirm
 fi
 {{ end -}}
 

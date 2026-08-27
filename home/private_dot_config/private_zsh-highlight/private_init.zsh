@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-_load_zsh_topic "zsh-highlight"
+_load_zsh_topic "zsh-highlight" || return 0
 
 # Monokai color palette for zsh-syntax-highlighting
 #
