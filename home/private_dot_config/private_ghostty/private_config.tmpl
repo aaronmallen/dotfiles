@@ -1,0 +1,46 @@
+# Ghostty configuration
+#
+# Mirrors the Warp setup in .local/share/warp-terminal/settings.toml.
+# Managed by chezmoi -- edit the source, not ~/.config/ghostty/config.
+
+# ── Font ──────────────────────────────────────────────────────────────
+# The Mono variant is required: Ghostty only accepts a strictly-monospace
+# family as the primary font, and plain "FiraCode Nerd Font" ships
+# double-width icon glyphs. Ligatures are identical between the two.
+font-family = FiraCode Nerd Font Mono
+font-size = 13
+
+# Ligatures. Ghostty applies a font's default features (`calt` is what
+# drives Fira Code's ligatures); these are explicit so the intent survives
+# any future change to that default.
+font-feature = calt
+font-feature = liga
+font-feature = clig
+
+# ── Theme ─────────────────────────────────────────────────────────────
+theme = monokai-pro-spectrum
+
+# ── Cursor ────────────────────────────────────────────────────────────
+cursor-style = underline
+cursor-style-blink = true
+
+# ── Shell / session ───────────────────────────────────────────────────
+{{- $zsh := lookPath "zsh" }}
+{{- if $zsh }}
+command = {{ $zsh }}
+{{- end }}
+window-save-state = never
+quit-after-last-window-closed = true
+confirm-close-surface = true
+
+# ── Bell ──────────────────────────────────────────────────────────────
+bell-features = system,attention,title
+
+# ── Misc ──────────────────────────────────────────────────────────────
+window-padding-x = 8
+window-padding-y = 8
+mouse-hide-while-typing = true
+{{ if eq .chezmoi.os "darwin" }}
+# ── macOS ─────────────────────────────────────────────────────────────
+macos-option-as-alt = true
+{{- end }}
