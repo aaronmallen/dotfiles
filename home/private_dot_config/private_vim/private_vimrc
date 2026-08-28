@@ -1,9 +1,10 @@
+" Leader has to be set before anything that maps against it.
+let mapleader = " "
+
 if empty(glob("$XDG_CONFIG_HOME/vim/autoload/plug.vim"))
   silent! execute '!curl --create-dirs -fsSLo $XDG_CONFIG_HOME/vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * silent! PlugInstall
 endif
-
-set viminfo+=n$XDG_DATA_HOME/vim/viminfo
 
 call plug#begin()
 Plug 'airblade/vim-gitgutter'
@@ -13,10 +14,91 @@ Plug 'vim-airline/vim-airline-themes'
 call plug#end()
 
 syntax on
-filetype on
-set number
+filetype plugin indent on
 set termguicolors
 colorscheme monokai_pro
+
+" ##############################
+" Editor Behavior
+" ##############################
+" Carried over from the NvChad config this replaced. Two groups: what
+" NvChad set on top of Neovim, and the Neovim defaults vanilla vim does
+" not set on its own.
+
+" Indenting
+set expandtab
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2
+set autoindent
+set smartindent
+
+" Searching
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+
+" UI
+set number
+set numberwidth=2
+set noruler    " airline carries the position
+set noshowmode " ...and the mode
+set cursorline
+set cursorlineopt=number
+set signcolumn=yes
+set laststatus=2 " vim has no laststatus=3; 2 is the closest it offers
+set showcmd
+set wildmenu
+set wildoptions=pum
+set display=lastline
+set shortmess+=I " skip the intro screen
+
+" Behavior
+set mouse=a
+set hidden
+set autoread
+set backspace=indent,eol,start
+set splitbelow
+set splitright
+set timeoutlen=400
+set ttimeoutlen=50
+set updatetime=250
+set history=10000
+set encoding=utf-8
+set belloff=all
+set formatoptions+=j
+set nrformats-=octal
+
+if has("clipboard")
+  set clipboard^=unnamed,unnamedplus
+endif
+
+" ##############################
+" State Files
+" ##############################
+" vim will not create these itself: a missing directory makes persistent
+" undo and the viminfo write fail silently rather than error.
+let s:data = empty($XDG_DATA_HOME) ? $HOME . "/.local/share" : $XDG_DATA_HOME
+let s:state = empty($XDG_STATE_HOME) ? $HOME . "/.local/state" : $XDG_STATE_HOME
+
+for s:dir in [s:data . "/vim", s:state . "/vim/undo", s:state . "/vim/swap", s:state . "/vim/backup"]
+  if !isdirectory(s:dir)
+    call mkdir(s:dir, "p", 0700)
+  endif
+endfor
+
+set viminfo+=n$XDG_DATA_HOME/vim/viminfo
+set undofile
+let &undodir = s:state . "/vim/undo"
+let &directory = s:state . "/vim/swap//"
+let &backupdir = s:state . "/vim/backup//"
+
+" ##############################
+" Mappings
+" ##############################
+nnoremap ; :
+inoremap jk <Esc>
 
 " ##############################
 " Airline Configuration

@@ -1,3 +1,3 @@
 #!/usr/bin/env zsh
 
-_load_zsh_topic "vim" --source-env --deps xdg
+_load_zsh_topic "vim" --source-env --source-aliases --deps xdg
