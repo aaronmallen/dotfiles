@@ -4,7 +4,6 @@
 .config/macos
 .config/pkgconfig
 .local/bin/mac-up
-.warp
 {{ end }}
 
 {{if ne .chezmoi.os "linux" }}
