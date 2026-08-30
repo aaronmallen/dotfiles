@@ -1,6 +1,6 @@
 ---
 name: grill-me
-description: 'Relentlessly interview the user about a plan, decision, or idea until you reach a shared understanding. Use when the user wants to stress-test their thinking, or says "grill me", "grill this", or "poke holes in this".'
+description: 'Relentlessly interview the user about a plan, decision, or idea, one question at a time, until you reach a shared understanding. Use when the user wants to stress-test their thinking, or says "grill me", "grill this", or "poke holes in this".'
 license: MIT
 metadata:
   tags: "Planning, Design, Interview, Productivity"
@@ -10,48 +10,74 @@ metadata:
 
 # grill-me
 
-Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision
+Interview the user until you reach a shared understanding. Map the subject as a **design tree**: every decision
 branches into the decisions that hang off it.
 
-## Rounds
+## One question at a time
 
-Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled: the questions
-you can ask _now_ without guessing at answers you have not heard yet.
+Ask one question. Wait for the answer. Ask the next.
 
-Ask the whole frontier in one round. Number each question and give your recommended answer. Then wait for the user's
-answers before the next round.
+Never stack. No second question after the recommendation, no "and while I have you", no list of things you will ask
+later. One question is the whole message.
 
-Format a round like so:
+Batching feels efficient and is not. The user has to hold five open threads at once, answers get skipped, and the
+answer to the first question usually changes the fourth before they reach it.
+
+## Choosing the next question
+
+The **frontier** is every decision whose prerequisites are settled: what you can ask now without guessing at an answer
+you have not heard.
+
+Recompute the frontier after every answer, not every few. Then pick one question from it:
+
+- Prefer the question the last answer just reshaped. That is where the user's thinking is already pointed.
+- Otherwise take the question that unblocks the most of the tree.
+- A question that depends on something still open is not on the frontier. Hold it.
+
+Keep the rest of the tree in your head. Do not recite it.
+
+## Format
 
 ```text
-❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
+✅ **Settled**: <one line on what the last answer fixed>
 
-➡️ <your recommended answer>
+❓ **<question title>**
 
----
+<the tension: what makes this a real question, and what breaks either way>
 
-❓ **Q2** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
+<two to four named options>
 
-➡️ <your recommended answer>
+➡️ <your recommendation, and the reason it wins>
+
+<the strongest case against your recommendation>
 ```
 
-Each round of answers reshapes the tree: settled decisions push the frontier outward and unblock questions that depended
-on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open
-in this round belongs to a _later_ round, not this one.
+Lead with what the last answer settled so the user watches the tree close behind them. Skip that line on the first
+question.
+
+Always recommend. A question with no recommendation makes the user do the work twice.
+
+Then argue against yourself. If you cannot state a real cost of your own recommendation, you have not understood the
+decision well enough to ask about it.
 
 ## Facts are yours, decisions are theirs
 
-Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem,
-git history, tools, the web), go find it; dispatch a sub-agent if the search is broad. Never ask the user for something
-you could look up yourself.
+Finding _facts_ is your job, never the user's. When a question needs a fact from the environment (filesystem, git
+history, tools, the web), go and find it before you ask.
 
-Do not block on it. A running exploration is an unsettled prerequisite, so only the questions downstream of it wait for
-the result; ask the rest of the frontier now.
+Read the documents the user points you at, and the ones next to them. When two of their own documents disagree, say so
+plainly and ask which one is current. That contradiction is usually the best question you have.
 
-The _decisions_ are the user's. Put each one to them and wait.
+The _decisions_ are the user's. Put one to them and wait.
+
+## Stopping early
+
+The user may cut the session short. When they do, hand back every decision that got settled, in one short list, and
+offer to write it down where it belongs. Otherwise the whole session lives only in the transcript.
 
 ## Done
 
-The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed.
+The session ends when the frontier is empty: every branch visited, nothing silently assumed.
 
 Do not act on the plan until the user confirms you have reached a shared understanding.
+
