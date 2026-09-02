@@ -4,6 +4,7 @@
 .gtkrc-2.0
 .java
 .junie
+.local/bin/cargo-clean
 .mozilla
 .npm
 .nv
