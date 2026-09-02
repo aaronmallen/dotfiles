@@ -1,6 +1,12 @@
 #!/usr/bin/env sh
 
-find . -type f -name Cargo.toml -execdir sh -c '
-  test -d target && rm -rf target
-  test -d coverage && rm -rf coverage
-' \;
+# Remove Rust build artifacts under the given paths (default: cwd).
+#
+# Directories are pruned before removal so find never descends into a path it
+# has just deleted. Traversal errors are ignored: scanning from $HOME always
+# hits directories macOS protects, and that is not a failure to clean.
+find "${@:-.}" -type d \( -name target -o -name coverage \) \
+  -exec test -e '{}/../Cargo.toml' \; \
+  -prune -exec rm -rf {} + 2> /dev/null
+
+exit 0
