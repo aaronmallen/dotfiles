@@ -1,0 +1,21 @@
+# Output styles from https://github.com/alexgreensh/attention-span (AGPL-3.0).
+# Fetched at apply time rather than vendored, so no AGPL content lands in this
+# MIT-licensed repo. Claude Code reads user styles from $CLAUDE_CONFIG_DIR.
+
+[".config/claude/output-styles/attention-kind.md"]
+private = true
+refreshPeriod = "168h"
+type = "file"
+url = "https://raw.githubusercontent.com/alexgreensh/attention-span/main/output-styles/attention-kind.md"
+
+[".config/claude/output-styles/rundown.md"]
+private = true
+refreshPeriod = "168h"
+type = "file"
+url = "https://raw.githubusercontent.com/alexgreensh/attention-span/main/output-styles/rundown.md"
+
+[".config/claude/output-styles/spartan.md"]
+private = true
+refreshPeriod = "168h"
+type = "file"
+url = "https://raw.githubusercontent.com/alexgreensh/attention-span/main/output-styles/spartan.md"
