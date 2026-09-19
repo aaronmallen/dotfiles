@@ -1,0 +1,169 @@
+#!/usr/bin/env sh
+#
+# Usage: extract ARCHIVE...
+#
+# Picks the tool from the extension, falling back to `file` when the name
+# gives nothing away. Each archive lands in the current directory as a single
+# entry: a lone top-level item is moved out as-is, anything else goes into a
+# directory named after the archive, so tarbombs never spill into $PWD.
+# Archives are never deleted.
+
+set -eu
+
+die() {
+  printf '%s: %s\n' "${0##*/}" "$*" >&2
+  exit 1
+}
+
+# Print the first of the given tools that is installed.
+need() {
+  for tool in "$@"; do
+    command -v "$tool" > /dev/null && printf '%s\n' "$tool" && return
+  done
+  die "needs one of: $*"
+}
+
+# Print $1, or $1-N if something already has that name.
+unique() {
+  name=$1
+  n=1
+  while [ -e "$name" ] || [ -L "$name" ]; do
+    name="$1-$n"
+    n=$((n + 1))
+  done
+  printf '%s\n' "$name"
+}
+
+kind_of() {
+  case $(printf '%s' "$1" | tr '[:upper:]' '[:lower:]') in
+    *.tar | *.tar.gz | *.tgz | *.tar.bz2 | *.tbz | *.tbz2 | *.tar.xz | *.txz | *.tar.z | *.taz) echo tar ;;
+    *.tar.zst | *.tzst) echo tar.zst ;;
+    *.tar.lz4) echo tar.lz4 ;;
+    *.zip | *.jar | *.war | *.whl | *.epub | *.vsix) echo zip ;;
+    *.7z) echo 7z ;;
+    *.rar) echo rar ;;
+    *.gz) echo gz ;;
+    *.bz2) echo bz2 ;;
+    *.xz) echo xz ;;
+    *.zst) echo zst ;;
+    *.lz4) echo lz4 ;;
+    *.z) echo z ;;
+    *)
+      # -z looks through the compression, so a nameless .tar.gz is a tar.
+      if [ "$(file -bz --mime-type "$1")" = application/x-tar ]; then
+        case $(file -b --mime-type "$1") in
+          application/zstd) echo tar.zst ;;
+          *) echo tar ;;
+        esac
+        return
+      fi
+      case $(file -b --mime-type "$1") in
+        application/x-tar) echo tar ;;
+        application/zip) echo zip ;;
+        application/x-7z-compressed) echo 7z ;;
+        application/x-rar | application/vnd.rar) echo rar ;;
+        application/gzip | application/x-gzip) echo gz ;;
+        application/x-bzip2) echo bz2 ;;
+        application/x-xz) echo xz ;;
+        application/zstd) echo zst ;;
+        *) echo unknown ;;
+      esac
+      ;;
+  esac
+}
+
+extract_one() {
+  [ -f "$1" ] || die "$1: no such file"
+  case $1 in
+    /*) archive=$1 ;;
+    *) archive="$PWD/$1" ;;
+  esac
+  base=${1##*/}
+  case $base in
+    *.tar.* | *.TAR.*) stem=${base%.[tT][aA][rR].*} ;;
+    *.*) stem=${base%.*} ;;
+    *) stem="$base.out" ;;
+  esac
+  kind=$(kind_of "$1")
+
+  # Single-stream compression: there is no directory tree, just one file.
+  case $kind in
+    gz | bz2 | xz | zst | lz4 | z)
+      case $kind in
+        gz | z) tool=gzip ;;
+        bz2) tool=bzip2 ;;
+        xz) tool=$(need xz) ;;
+        zst) tool=$(need zstd) ;;
+        lz4) tool=$(need lz4) ;;
+      esac
+      dest=$(unique "$stem")
+      "$tool" -dc "$archive" > "$dest" || {
+        rm -f "$dest"
+        die "$1: $tool failed"
+      }
+      printf '%s -> %s\n' "$1" "$dest"
+      return
+      ;;
+  esac
+
+  tmp=$(mktemp -d "$PWD/.extract.XXXXXX")
+  case $kind in
+    tar) tar -xf "$archive" -C "$tmp" ;;
+    tar.zst)
+      tool=$(need zstd)
+      "$tool" -dc "$archive" | tar -xf - -C "$tmp"
+      ;;
+    tar.lz4)
+      tool=$(need lz4)
+      "$tool" -dc "$archive" | tar -xf - -C "$tmp"
+      ;;
+    zip)
+      tool=$(need unzip bsdtar 7zz 7z)
+      case $tool in
+        unzip) unzip -q "$archive" -d "$tmp" ;;
+        bsdtar) bsdtar -xf "$archive" -C "$tmp" ;;
+        *) "$tool" x -bd -y -o"$tmp" "$archive" > /dev/null ;;
+      esac
+      ;;
+    # 7zz (the 7zip mise tool) reads RAR too, so no need for unrar.
+    7z | rar)
+      tool=$(need 7zz 7z)
+      "$tool" x -bd -y -o"$tmp" "$archive" > /dev/null
+      ;;
+    *) die "$1: don't know how to extract this" ;;
+  esac
+
+  # Names with newlines would miscount here; not worth the complexity.
+  case $(find "$tmp" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ') in
+    0)
+      rmdir "$tmp"
+      printf '%s: empty archive\n' "$1" >&2
+      ;;
+    1)
+      entry=$(basename -- "$(find "$tmp" -mindepth 1 -maxdepth 1)")
+      dest=$(unique "$entry")
+      mv "$tmp/$entry" "$dest"
+      rmdir "$tmp"
+      printf '%s -> %s\n' "$1" "$dest"
+      ;;
+    *)
+      dest=$(unique "$stem")
+      mv "$tmp" "$dest"
+      printf '%s -> %s/\n' "$1" "$dest"
+      ;;
+  esac
+  tmp=
+}
+
+[ $# -gt 0 ] || {
+  printf 'usage: %s ARCHIVE...\n' "${0##*/}" >&2
+  exit 2
+}
+
+tmp=
+trap 'if [ -n "$tmp" ]; then rm -rf "$tmp"; fi' EXIT
+trap 'exit 130' INT TERM
+
+for file in "$@"; do
+  extract_one "$file"
+done

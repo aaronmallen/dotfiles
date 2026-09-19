@@ -1,0 +1,118 @@
+#!/usr/bin/env sh
+#
+# Usage: compress ARCHIVE FILE...
+#        compress FILE           (shorthand for FILE.tar.gz)
+#
+# The archive's extension picks the format and tool. Inputs are stored by
+# their basename, so `compress out.zip ~/Downloads/foo` archives `foo/`, not
+# `Users/aaron/Downloads/foo/`. Refuses to overwrite an existing archive, and
+# removes a half-written one if anything fails.
+
+set -eu
+
+die() {
+  printf '%s: %s\n' "${0##*/}" "$*" >&2
+  exit 1
+}
+
+# Print the first of the given tools that is installed.
+need() {
+  for tool in "$@"; do
+    command -v "$tool" > /dev/null && printf '%s\n' "$tool" && return
+  done
+  die "needs one of: $*"
+}
+
+absdir() {
+  (cd "$(dirname -- "$1")" && pwd)
+}
+
+usage() {
+  printf 'usage: %s ARCHIVE FILE...\n       %s FILE\n' "${0##*/}" "${0##*/}" >&2
+  exit 2
+}
+
+case $# in
+  0) usage ;;
+  1)
+    [ -e "$1" ] || usage
+    set -- "$(basename -- "$1").tar.gz" "$1"
+    ;;
+esac
+
+out=$1
+shift
+[ -e "$out" ] || [ -L "$out" ] && die "$out already exists"
+for input in "$@"; do
+  [ -e "$input" ] || die "$input: no such file or directory"
+done
+case $out in
+  /*) ;;
+  *) out="$PWD/$out" ;;
+esac
+
+done=
+trap 'if [ -z "$done" ]; then rm -f "$out"; fi' EXIT
+trap 'exit 130' INT TERM
+
+# Single-stream formats compress exactly one file, no directory tree.
+single() {
+  [ $# -eq 1 ] && [ -f "$1" ] || die "${out##*/} holds one file; use a .tar.* archive for more"
+  "$tool" -c "$1" > "$out"
+}
+
+# Rewrite the inputs as `-C DIR NAME` pairs so tar stores bare names. The
+# dirs are absolute because GNU tar resolves each -C relative to the last.
+tar_c() {
+  for input in "$@"; do
+    shift
+    set -- "$@" -C "$(absdir "$input")" "$(basename -- "$input")"
+  done
+  tar ${taropt:+"$taropt"} -cf "$out" "$@"
+}
+
+lower=$(printf '%s' "$out" | tr '[:upper:]' '[:lower:]')
+case $lower in
+  *.tar) tar_c "$@" ;;
+  *.tar.gz | *.tgz) taropt=-z tar_c "$@" ;;
+  *.tar.bz2 | *.tbz | *.tbz2) taropt=-j tar_c "$@" ;;
+  *.tar.xz | *.txz) taropt=-J tar_c "$@" ;;
+  *.tar.zst | *.tzst)
+    need zstd > /dev/null
+    taropt=--use-compress-program=zstd tar_c "$@"
+    ;;
+  *.zip)
+    tool=$(need zip 7zz 7z)
+    if [ "$tool" = zip ]; then
+      for input in "$@"; do
+        (cd "$(absdir "$input")" && zip -qry "$out" "$(basename -- "$input")" -x '*.DS_Store')
+      done
+    else
+      "$tool" a -tzip -bd "$out" "$@" > /dev/null
+    fi
+    ;;
+  *.7z)
+    tool=$(need 7zz 7z)
+    "$tool" a -bd "$out" "$@" > /dev/null
+    ;;
+  *.gz)
+    tool=gzip
+    single "$@"
+    ;;
+  *.bz2)
+    tool=bzip2
+    single "$@"
+    ;;
+  *.xz)
+    tool=$(need xz)
+    single "$@"
+    ;;
+  *.zst)
+    tool=$(need zstd)
+    single "$@"
+    ;;
+  *) die "${out##*/}: unknown format (try .tar.gz, .tar.zst, .zip, .7z, ...)" ;;
+esac
+
+done=1
+printf '%s\n' "${out#"$PWD"/}"

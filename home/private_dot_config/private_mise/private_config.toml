@@ -1,4 +1,5 @@
 [tools]
+"7zip" = "latest"
 age = "latest"
 atuin = "latest"
 aube = "latest"
