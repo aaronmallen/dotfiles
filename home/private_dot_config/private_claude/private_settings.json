@@ -1,0 +1,41 @@
+{
+  "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.local/bin/starship-claude",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "starship-claude@starship-claude": true,
+    "ponytail@ponytail": true
+  },
+  "extraKnownMarketplaces": {
+    "starship-claude": {
+      "source": {
+        "source": "github",
+        "repo": "martinemde/starship-claude"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  },
+  "outputStyle": "Attention-kind",
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {}
+  },
+  "tui": "fullscreen",
+  "voice": {
+    "enabled": false,
+    "mode": "hold"
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": false
+}
