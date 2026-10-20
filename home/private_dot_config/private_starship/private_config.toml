@@ -5,12 +5,7 @@ $os\
 $username\
 [ ](bg:cyan fg:pink)\
 $directory\
-$custom.dir_close\
-$custom.git\
-$jj_change\
-$jj_bookmark\
-$jj_status\
-$custom.jj\
+$custom\
 $line_break\
 $character"""
 palette = "monokai"
@@ -83,9 +78,13 @@ style = "bg:green"
 when = "git rev-parse --git-dir 2>/dev/null && ! jj root --ignore-working-copy 2>/dev/null"
 
 [custom.jj]
-command = "jj op log --no-graph --ignore-working-copy --limit 1 -T 'id.short(8)' 2>/dev/null"
-description = "Jujutsu operation id"
-format = "[[ $output ](fg:bg bg:green)]($style)[ ](fg:green)"
+command = '''
+change_id=$(jj log --no-graph --ignore-working-copy -r @ -T 'separate(" ", bookmarks.join(", "), change_id.shortest(8), if(conflict, "x"), if(divergent, "divergent"), if(hidden, "hidden"))' 2>/dev/null)
+op_id=$(jj op log --no-graph --ignore-working-copy --limit 1 -T 'id.short(8)' 2>/dev/null)
+echo " $change_id  $op_id"
+'''
+description = "Jujutsu VCS status"
+format = "[](bg:green fg:cyan)[[  $output ](fg:bg bg:green)]($style)[ ](fg:green)"
 style = "bg:green"
 when = "jj root --ignore-working-copy 2>/dev/null"
 
@@ -137,21 +136,6 @@ symbol = ""
 format = "[[ $symbol](fg:java bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)"
 style = "bg:gutter"
 symbol = ""
-
-[jj_bookmark]
-format = '[$bookmark(@$remote)$diverged( \(+$overflow_count\)) ]($style)'
-style = "bg:green fg:bg"
-symbol = ""
-
-[jj_change]
-change_hash_length = 8
-format = "[](bg:green fg:cyan)[  ](bg:green fg:bg)$change[ ](bg:green)"
-prefix_style = "bg:green fg:bg bold"
-suffix_style = "bg:green fg:bg"
-
-[jj_status]
-format = "([$all ]($style))"
-style = "bg:green fg:bg"
 
 [line_break]
 disabled = false
