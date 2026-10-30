@@ -1,0 +1,37 @@
+{
+  "mcp": {
+    "servers": {
+      "aaronmallen": {
+        "type": "remote",
+        "url": "https://aaronmallen.me/mcp"
+      },
+      "cloudflare": {
+        "type": "remote",
+        "url": "https://bindings.mcp.cloudflare.com/mcp"
+      },
+      "linear-aaronmallen": {
+        "type": "remote",
+        "url": "https://mcp.linear.app/mcp"
+      },
+      "linear-complish": {
+        "type": "remote",
+        "url": "https://mcp.linear.app/mcp"
+      },
+      "gmail": {
+        "type": "remote",
+        "url": "https://gmailmcp.googleapis.com/mcp/v1"
+      },
+      "google-calendar": {
+        "type": "remote",
+        "url": "https://calendarmcp.googleapis.com/mcp/v1"
+      },
+      "google-drive": {
+        "type": "remote",
+        "url": "https://drivemcp.googleapis.com/mcp/v1"
+      }
+    }
+  },
+  "permission": {
+    "*": "allow"
+  }
+}
