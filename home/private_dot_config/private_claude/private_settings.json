@@ -68,20 +68,13 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "starship-claude@starship-claude": true,
-    "ponytail@ponytail": true
+    "starship-claude@starship-claude": true
   },
   "extraKnownMarketplaces": {
     "starship-claude": {
       "source": {
         "source": "github",
         "repo": "martinemde/starship-claude"
-      }
-    },
-    "ponytail": {
-      "source": {
-        "source": "github",
-        "repo": "DietrichGebert/ponytail"
       }
     }
   },
