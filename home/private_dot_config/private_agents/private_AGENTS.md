@@ -1,12 +1,12 @@
 ## Memory, Artifacts and Sessions
 
-Use the `aaronmallen-me` MCP server for memory, artifacts and sessions, in place of Claude Code's own memory files and
-local notes.
+Use the aaronmallen.me MCP server for memory, artifacts and sessions, in place of your own memory files and local
+notes. Its name varies by tool, such as `aaronmallen-me` or `aaronmallen`.
 
-**The site always wins.** When a memory or artifact on aaronmallen.me disagrees with a local memory file, `CLAUDE.md`
-memory note or local plan, follow the site's and fix or delete the local copy.
+**The site always wins.** When a memory or artifact on aaronmallen.me disagrees with a local memory file, memory note
+or local plan, follow the site's and fix or delete the local copy.
 
-- **Start every run with `start_session`.** Name yourself with agent and model slugs, such as `claude-code` and
+- **Start every run with `start_session`.** Name yourself with slugs for your agent and model, such as `claude-code` and
   `claude-opus-5-5`, and pass the repo as `owner/name` and any project or task you know. It returns an index of your
   memory files: one line each with its ID, scope, path, description and fact count, and no facts. Pass the
   `session_id` it returns on every memory read and every memory and artifact write, and call `end_session` when the
