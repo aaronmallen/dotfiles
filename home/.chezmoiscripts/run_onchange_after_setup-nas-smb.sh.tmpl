@@ -4,22 +4,21 @@
 set -eu
 
 FSTAB="/etc/fstab"
-MARKER="# TrueNAS SMB shares"
+sudo mkdir -p /mnt/truenas/documents /mnt/truenas/code
+echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | sudo install -m 600 /dev/stdin /etc/smbcredentials-truenas
 
-if ! sudo grep -qF "${MARKER}" "${FSTAB}"; then
-  # Create mount points
-  sudo mkdir -p /mnt/truenas/documents /mnt/truenas/code
-
-  # Append SMB entries to fstab
-  sudo tee -a "${FSTAB}" > /dev/null << 'EOF'
-
+TEMP_FSTAB=$(mktemp)
+trap 'rm -f "${TEMP_FSTAB}"' EXIT
+sudo awk '$0 != "# TrueNAS SMB shares" && $1 != "//truenas.local/documents" && $1 != "//truenas.local/code"' "${FSTAB}" > "${TEMP_FSTAB}"
+cat >> "${TEMP_FSTAB}" << 'EOF'
 # TrueNAS SMB shares
 //truenas.local/documents /mnt/truenas/documents cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
-//truenas.local/code      /mnt/truenas/code      cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
+//truenas.local/code /mnt/truenas/code cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
 EOF
-  echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | sudo install -m 600 /dev/stdin /etc/smbcredentials-truenas
-  sudo mount -a
+if ! sudo cmp -s "${TEMP_FSTAB}" "${FSTAB}"; then
+  sudo tee "${FSTAB}" < "${TEMP_FSTAB}" > /dev/null
 fi
+sudo mount -a
 {{ else if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env sh
 set -eu
@@ -28,13 +27,10 @@ AUTO_MASTER="/etc/auto_master"
 AUTO_MAP="/etc/auto_smb_truenas"
 MARKER="/Volumes/nas"
 
-if ! sudo grep -qF "${MARKER}" "${AUTO_MASTER}"; then
-  # Store SMB credentials in the system keychain for automount
-  SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2-)
-  if ! security find-internet-password -s truenas.local -a aaron /Library/Keychains/System.keychain > /dev/null 2>&1; then
-    sudo security add-internet-password -a aaron -s truenas.local -D "Network Password" -r "smb " -w "${SMB_PASS}" /Library/Keychains/System.keychain
-    echo "SMB credentials added to system keychain"
-  fi
+SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2-)
+if [ "$(sudo security find-internet-password -s truenas.local -a aaron -w /Library/Keychains/System.keychain 2>/dev/null || true)" != "${SMB_PASS}" ]; then
+  sudo security add-internet-password -U -a aaron -s truenas.local -D "Network Password" -r "smb " -w "${SMB_PASS}" /Library/Keychains/System.keychain
+fi
 
   # Create the automount map file
   sudo tee "${AUTO_MAP}" > /dev/null << 'EOF'
@@ -46,13 +42,9 @@ EOF
   # Create the mount point (automount requires it to exist)
   sudo mkdir -p /Volumes/nas
 
-  # Add entry to auto_master
+if ! sudo grep -qF "${MARKER}" "${AUTO_MASTER}"; then
   echo "/Volumes/nas	auto_smb_truenas" | sudo tee -a "${AUTO_MASTER}" > /dev/null
-
-  # Reload automountd
-  sudo automount -vc
-
-  echo "TrueNAS SMB shares configured via automount"
 fi
+sudo automount -vc
 {{ end -}}
 {{ end -}}
