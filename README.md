@@ -47,7 +47,7 @@ Each topic directory may contain:
 
 ## Package Management
 
-- **macOS**: [Homebrew](https://brew.sh) with `~/.config/homebrew/brewfile`
+- **macOS**: [Homebrew](https://brew.sh) with `~/.config/homebrew/Brewfile`
 - **Arch**: [Paru](https://github.com/Morganamilo/paru)/[Yay](https://github.com/Jguer/yay) with `~/.config/aur/aurfile`
   (auto-prunes unlisted packages)
 - **Debian/Ubuntu**: [APT](https://wiki.debian.org/Apt) with `~/.config/apt/aptfile`

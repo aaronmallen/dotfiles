@@ -3,12 +3,14 @@ set -e
 set -o pipefail
 
 {{ if eq .packageManager "brew" -}}
-# Brewfile hash: {{ include "private_dot_config/private_homebrew/private_brewfile.tmpl" | sha256sum }}
+# Brewfile hash: {{ include "private_dot_config/private_homebrew/private_Brewfile.tmpl" | sha256sum }}
+{{ if eq .chezmoi.os "darwin" -}}
 # {{ output "sw_vers" "-productVersion" | trim }}
 # {{ output "sw_vers" "-buildVersion" | trim }}
+{{ end -}}
 command -v brew > /dev/null \
   && brew update \
-  && brew bundle --file="${HOME}/.config/homebrew/brewfile" \
+  && brew bundle --file="${HOME}/.config/homebrew/Brewfile" \
   && brew upgrade \
   && brew cleanup
 {{ end -}}
