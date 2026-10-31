@@ -47,9 +47,11 @@ login_atuin() {
   command -v atuin > /dev/null || return 0
   command -v op > /dev/null || return 0
   echo "==> Logging in to Atuin"
-  atuin login --username "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/username')" \
-              --password "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/password')" \
-              --key "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/key')" \
+  local atuin_password atuin_key
+  atuin_password=$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/password') || return 1
+  atuin_key=$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/key') || return 1
+  ATUIN_ENCRYPTION_KEY="${atuin_key}" atuin login --username "$(op read 'op://Private/bspumr7wtvze6nbooz7gt7krlu/username')" \
+              --password - <<< "${atuin_password}" \
   || echo "==> Atuin login failed. Please try again later with 'atuin login'."
 }
 

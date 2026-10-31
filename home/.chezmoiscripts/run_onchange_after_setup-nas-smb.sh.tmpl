@@ -29,7 +29,8 @@ MARKER="/Volumes/nas"
 
 SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2-)
 if [ "$(sudo security find-internet-password -s truenas.local -a aaron -w /Library/Keychains/System.keychain 2>/dev/null || true)" != "${SMB_PASS}" ]; then
-  sudo security add-internet-password -U -a aaron -s truenas.local -D "Network Password" -r "smb " -w "${SMB_PASS}" /Library/Keychains/System.keychain
+  echo "Enter the TrueNAS SMB password when prompted."
+  sudo security add-internet-password -U -a aaron -s truenas.local -D "Network Password" -r "smb " /Library/Keychains/System.keychain -w
 fi
 
   # Create the automount map file
