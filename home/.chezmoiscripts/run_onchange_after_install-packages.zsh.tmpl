@@ -1,4 +1,6 @@
 #!/usr/bin/env zsh
+set -e
+set -o pipefail
 
 {{ if eq .packageManager "brew" -}}
 # Brewfile hash: {{ include "private_dot_config/private_homebrew/private_brewfile.tmpl" | sha256sum }}
