@@ -1,5 +1,6 @@
 .cargo
 .claude
+.config/claude/output-styles/attention-kind.md
 .DS_Store
 .gtkrc-2.0
 .java
