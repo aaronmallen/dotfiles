@@ -7,6 +7,7 @@
 {{- range .fonts.nerd_fonts }}
 
 ["{{ $fontDir }}/{{ .name }}"]
+private = true
 refreshPeriod = "168h"
 type = "archive"
 url = {{ gitHubLatestReleaseAssetURL "ryanoasis/nerd-fonts" .file | quote }}
