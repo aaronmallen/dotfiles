@@ -6,10 +6,14 @@
   },
   "animations": true,
   "session": {
-    "thinking": "show"
+    "thinking": "show",
+    "permissions": "autoaccept",
+    "sidebar": "auto"
   },
   "tabs": {
-    "mode": "auto"
+    "mode": "auto",
+    "layout": "vertical",
+    "indicators": "status"
   },
   "attention": {
     "notifications": true,
