@@ -29,6 +29,8 @@ ai:
         codex: [--context=codex]
         opencode: [--context=ide]
   plugins:
+    opencode-loop:
+      opencode: "@prevalentware/opencode-loop-plugin"
     ponytail:
       marketplace: ponytail
       repo: DietrichGebert/ponytail

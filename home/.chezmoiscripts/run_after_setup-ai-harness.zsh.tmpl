@@ -5,7 +5,9 @@ set -o pipefail
 # plugin, marketplace, GitHub repo
 plugins=(
 {{- range $name, $plugin := .ai.plugins }}
+{{-   if hasKey $plugin "marketplace" }}
   {{ $name | squote }} {{ $plugin.marketplace | squote }} {{ $plugin.repo | squote }}
+{{-   end }}
 {{- end }}
 )
 
