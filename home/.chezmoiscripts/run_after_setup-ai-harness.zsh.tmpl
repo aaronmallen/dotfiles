@@ -57,7 +57,11 @@ codex_server() {
   else
     local -a auth=()
     [[ -n $2 ]] && auth=(--bearer-token-env-var "$2")
-    codex mcp add "$name" --url "$1" "${auth[@]}"
+    # Codex signs in right after adding a server and exits non-zero when that fails, even though the server was saved.
+    if ! codex mcp add "$name" --url "$1" "${auth[@]}"; then
+      codex mcp list --json | jq -e --arg name "$name" 'any(.[]; .name == $name)' >/dev/null || exit 1
+      echo "Codex added MCP server $name but could not sign in; run: codex mcp login $name" >&2
+    fi
   fi
 }
 

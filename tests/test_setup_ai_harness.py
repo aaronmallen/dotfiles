@@ -51,6 +51,8 @@ else:
     raise SystemExit(f'Unexpected command: {args}')
 if 'add' in args or 'install' in args: state['changes'] += 1
 state_file.write_text(json.dumps(state))
+if args[:4] == ['codex', 'mcp', 'add', 'gmail']:
+    raise SystemExit('Error: Dynamic client registration not supported')
 '''
 
 
