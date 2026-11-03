@@ -3,6 +3,7 @@
 .idea
 *.iml
 .project-abbr
+.serena
 *.log
 cscope.out
 
