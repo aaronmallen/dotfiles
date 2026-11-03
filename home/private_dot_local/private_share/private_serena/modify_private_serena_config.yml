@@ -1,5 +1,6 @@
 {{- /* chezmoi:modify-template */ -}}
 {{- $settings := `
+agent_interface: tools
 base_modes:
   - interactive
   - editing
