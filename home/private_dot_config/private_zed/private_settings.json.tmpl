@@ -54,5 +54,11 @@
     "light": "Monokai Pro (CE)",
     "dark": "Monokai Pro (CE)"
   },
+  "lsp": {
+    "lemminx": {
+      "initialization_options": { "settings": { "xml": { "server": { "workDir": "{{ if eq .chezmoi.os "darwin" }}{{ .chezmoi.homeDir }}/Library/Caches{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}/lemminx" } } } },
+      "settings": { "xml": { "server": { "workDir": "{{ if eq .chezmoi.os "darwin" }}{{ .chezmoi.homeDir }}/Library/Caches{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}/lemminx" } } }
+    }
+  },
   "wrap_guides": [80, 120]
 }
