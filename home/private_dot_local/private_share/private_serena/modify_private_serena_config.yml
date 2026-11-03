@@ -11,4 +11,7 @@ web_dashboard_open_on_launch: false
 {{- if .chezmoi.stdin -}}
 {{-   $config = fromYaml .chezmoi.stdin -}}
 {{- end -}}
+{{- if not (hasKey $config "projects") -}}
+{{-   $_ := set $config "projects" list -}}
+{{- end -}}
 {{- mergeOverwrite $config $settings | toYaml -}}
