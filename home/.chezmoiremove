@@ -1,10 +1,13 @@
+.atuin
 .cargo
 .claude
+.claude.json
 .config/claude/output-styles/attention-kind.md
 .DS_Store
 .gtkrc-2.0
 .java
 .junie
+.kube
 .local/bin/cargo-clean
 .mozilla
 .npm
@@ -13,5 +16,9 @@
 .profile
 .pulse-cookie
 .rustup
+.serena
+.shiv
 .swiftpm
 .var
+.zsh_history
+Library/LaunchAgents/sh.atuin.daemon.plist

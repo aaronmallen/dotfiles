@@ -3,9 +3,10 @@
 {{- if eq .chezmoi.os "darwin" }}
 # {{ output "sw_vers" "-productVersion" | trim }}
 # {{ output "sw_vers" "-buildVersion" | trim }}
-if ! sudo grep -q 'export ZDOTDIR=' /etc/zshrc 2>/dev/null; then
-  echo 'export ZDOTDIR="${HOME}/.config/zsh"' | sudo tee -a /etc/zshrc > /dev/null
+if ! sudo grep -q 'export ZDOTDIR=' /etc/zshenv 2>/dev/null; then
+  echo 'export ZDOTDIR="${HOME}/.config/zsh"' | sudo tee -a /etc/zshenv > /dev/null
 fi
+sudo sed -i '' '/^export ZDOTDIR=/d' /etc/zshrc
 {{- end }}
 
 {{- if eq .chezmoi.os "linux" }}

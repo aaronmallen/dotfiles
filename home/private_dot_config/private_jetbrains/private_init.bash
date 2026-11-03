@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-_load_bash_topic "jetbrains" --source-env --source-aliases
+_load_bash_topic "jetbrains" --source-env --source-aliases --deps xdg
