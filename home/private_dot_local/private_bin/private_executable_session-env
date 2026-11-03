@@ -1,0 +1,55 @@
+#!/usr/bin/env zsh
+set -eu
+
+skip=(HOME USER LOGNAME SHELL TMPDIR TERM SHLVL PWD OLDPWD _ FPATH GPG_TTY
+  MISE_SHELL ATUIN_SESSION ATUIN_SHLVL STARSHIP_SHELL STARSHIP_SESSION_KEY
+  XDG_RUNTIME_DIR DISPLAY WAYLAND_DISPLAY DBUS_SESSION_BUS_ADDRESS)
+
+env_file=$(mktemp)
+trap 'rm -f "$env_file"' EXIT
+
+env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" \
+  "$(command -v zsh)" -l -i -c "env -0 > ${(q)env_file}" </dev/null >/dev/null 2>&1 || true
+
+typeset -A vars
+while IFS= read -r -d '' pair; do
+  name=${pair%%=*}
+  [[ $name =~ '^[A-Za-z_][A-Za-z0-9_]*$' ]] || continue
+  [[ $name == __* ]] && continue
+  (( ${skip[(Ie)$name]} )) && continue
+  vars[$name]=${pair#*=}
+done < "$env_file"
+
+case $OSTYPE in
+  darwin*)
+    for name value in "${(@kv)vars}"; do
+      launchctl setenv "$name" "$value"
+    done
+    if [[ ${1:-} == --login ]]; then
+      launchctl kickstart -k "gui/$(id -u)/com.jetbrains.toolbox" 2>/dev/null || true
+    fi
+    ;;
+  linux*)
+    conf_dir="${XDG_CONFIG_HOME:-$HOME/.config}/environment.d"
+    mkdir -p "$conf_dir"
+    conf=$(mktemp "$conf_dir/.session-env.XXXXXX")
+    pairs=()
+    for name in "${(@ko)vars}"; do
+      value=${vars[$name]}
+      [[ $value == *$'\n'* ]] && continue
+      value=${value//\\/\\\\}
+      value=${value//\"/\\\"}
+      value=${value//\$/\\\$}
+      value=${value//\`/\\\`}
+      print -r -- "$name=\"$value\"" >> "$conf"
+      pairs+=("$name=${vars[$name]}")
+    done
+    chmod 600 "$conf"
+    mv "$conf" "$conf_dir/50-session-env.conf"
+    if command -v dbus-update-activation-environment >/dev/null; then
+      dbus-update-activation-environment --systemd "${pairs[@]}" 2>/dev/null || true
+    elif command -v systemctl >/dev/null; then
+      systemctl --user set-environment "${pairs[@]}" 2>/dev/null || true
+    fi
+    ;;
+esac

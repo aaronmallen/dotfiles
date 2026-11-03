@@ -1,0 +1,21 @@
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+#!/usr/bin/env zsh
+set -eu
+
+# session-env: {{ include "private_dot_local/private_bin/private_executable_session-env" | sha256sum }}
+{{- range (glob (joinPath .chezmoi.sourceDir "private_dot_config/*/private_env.sh*")) }}
+# {{ base (dir .) }}: {{ include . | sha256sum }}
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+
+agent="gui/$(id -u)/com.aaron.session-env"
+if ! launchctl print "$agent" >/dev/null 2>&1; then
+  launchctl bootstrap "gui/$(id -u)" "${HOME}/Library/LaunchAgents/com.aaron.session-env.plist"
+else
+  "${HOME}/.local/bin/session-env"
+fi
+{{- else }}
+
+"${HOME}/.local/bin/session-env"
+{{- end }}
+{{ end -}}
