@@ -19,5 +19,5 @@
     "notifications": true,
     "sound": true
   },
-  "plugins": ["@prevalentware/opencode-loop-plugin"]
+  "plugins": ["@prevalentware/opencode-loop-plugin", "opencode-subagents-sidebar"]
 }
