@@ -1,0 +1,20 @@
+{{- $servers := dict -}}
+{{- range $name, $server := .ai.mcp_servers -}}
+{{-   if hasKey $server "url" -}}
+{{-     $remote := dict "type" "remote" "url" $server.url -}}
+{{-     if hasKey $server "bearer_token_env_var" -}}
+{{-       $_ := set $remote "oauth" false -}}
+{{-       $_ := set $remote "headers" (dict "Authorization" (printf "Bearer {env:%s}" $server.bearer_token_env_var)) -}}
+{{-     end -}}
+{{-     $_ := set $servers $name $remote -}}
+{{-   else -}}
+{{-     $_ := set $servers $name (dict "type" "local" "command" (concat $server.command (dig "args" "opencode" list $server))) -}}
+{{-   end -}}
+{{- end -}}
+{{- $plugins := list -}}
+{{- range .ai.plugins -}}
+{{-   if hasKey . "opencode" -}}
+{{-     $plugins = append $plugins .opencode -}}
+{{-   end -}}
+{{- end -}}
+{{- dict "mcp" (dict "servers" $servers) "permission" (dict "*" "allow") "plugins" $plugins | toPrettyJson }}

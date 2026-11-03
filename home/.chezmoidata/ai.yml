@@ -1,0 +1,35 @@
+ai:
+  mcp_servers:
+    aaronmallen:
+      url: https://aaronmallen.me/mcp
+      claude_name: aaronmallen-me
+    chrome-devtools:
+      command: [npx, -y, chrome-devtools-mcp@latest]
+    cloudflare:
+      url: https://mcp.cloudflare.com/mcp
+    context7:
+      url: https://mcp.context7.com/mcp
+    github:
+      url: https://api.githubcopilot.com/mcp/
+      bearer_token_env_var: GITHUB_MCP_TOKEN
+    gmail:
+      url: https://gmailmcp.googleapis.com/mcp/v1
+    google-calendar:
+      url: https://calendarmcp.googleapis.com/mcp/v1
+    google-drive:
+      url: https://drivemcp.googleapis.com/mcp/v1
+    linear-aaronmallen:
+      url: https://mcp.linear.app/mcp
+    linear-complish:
+      url: https://mcp.linear.app/mcp
+    serena:
+      command: [serena, start-mcp-server, --project-from-cwd]
+      args:
+        claude: [--context=claude-code]
+        codex: [--context=codex]
+        opencode: [--context=ide]
+  plugins:
+    ponytail:
+      marketplace: ponytail
+      repo: DietrichGebert/ponytail
+      opencode: "@dietrichgebert/ponytail"

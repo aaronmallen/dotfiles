@@ -1,0 +1,52 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /* Codex and other tools write hooks here, so swap in Serena's hooks and keep the rest. */ -}}
+{{- $serena := `{
+  "PreToolUse": [
+    {
+      "matcher": "Bash",
+      "hooks": [{ "type": "command", "command": "serena-hooks remind --client=codex", "statusMessage": "Checking Serena tool usage", "timeout": 5 }]
+    },
+    {
+      "matcher": "^mcp__serena__",
+      "hooks": [{ "type": "command", "command": "serena-hooks plan-guard --client=codex", "statusMessage": "Checking Serena plan-mode permissions", "timeout": 5 }]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": "^mcp__serena__.*$",
+      "hooks": [{ "type": "command", "command": "serena-hooks reset --client=codex" }]
+    }
+  ],
+  "SessionStart": [
+    {
+      "matcher": "startup|resume",
+      "hooks": [{ "type": "command", "command": "serena-hooks activate --client=codex", "statusMessage": "Activating Serena project", "timeout": 5 }]
+    }
+  ],
+  "UserPromptSubmit": [
+    {
+      "hooks": [{ "type": "command", "command": "serena-hooks plan-context --client=codex", "statusMessage": "Applying Serena plan context", "timeout": 5 }]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "hooks": [{ "type": "command", "command": "serena-hooks cleanup --client=codex", "statusMessage": "Cleaning up Serena hook state", "timeout": 3 }]
+    }
+  ]
+}` | fromJson -}}
+{{- $config := dict -}}
+{{- if .chezmoi.stdin -}}
+{{-   $config = fromJson .chezmoi.stdin -}}
+{{- end -}}
+{{- $hooks := get $config "hooks" | default dict -}}
+{{- range $event, $groups := $serena -}}
+{{-   $kept := list -}}
+{{-   range get $hooks $event | default list -}}
+{{-     if not (contains "serena-hooks" (toJson .)) -}}
+{{-       $kept = append $kept . -}}
+{{-     end -}}
+{{-   end -}}
+{{-   $_ := set $hooks $event (concat $kept $groups) -}}
+{{- end -}}
+{{- $_ := set $config "hooks" $hooks -}}
+{{- toPrettyJson $config }}

@@ -1,0 +1,120 @@
+#!/usr/bin/env zsh
+set -e
+set -o pipefail
+
+# plugin, marketplace, GitHub repo
+plugins=(
+{{- range $name, $plugin := .ai.plugins }}
+  {{ $name | squote }} {{ $plugin.marketplace | squote }} {{ $plugin.repo | squote }}
+{{- end }}
+)
+
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+# claude_server NAME URL [TOKEN_VAR]
+# claude_server NAME -- COMMAND...
+claude_server() {
+  local name=$1 filter
+  shift
+  if [[ $1 == -- ]]; then
+    shift
+    filter='.type == "stdio" and .command == $ARGS.positional[0] and .args == $ARGS.positional[1:]'
+  else
+    filter='.type == "http" and .url == $ARGS.positional[0] and .headers.Authorization == (if $ARGS.positional[1] then "Bearer ${\($ARGS.positional[1])}" else null end)'
+  fi
+  if jq -e --arg name "$name" 'has($name)' <<<"$claude_servers" >/dev/null; then
+    jq -e --arg name "$name" ".[\$name] | $filter" --args -- "$@" <<<"$claude_servers" >/dev/null || {
+      echo "Claude MCP server $name has a different configuration" >&2
+      exit 1
+    }
+  elif [[ $filter == *stdio* ]]; then
+    claude mcp add --scope user "$name" -- "$@"
+  else
+    local -a auth=()
+    [[ -n $2 ]] && auth=(--header "Authorization: Bearer \${$2}")
+    claude mcp add --scope user --transport http "$name" "$1" "${auth[@]}"
+  fi
+}
+
+# codex_server NAME URL [TOKEN_VAR]
+# codex_server NAME -- COMMAND...
+codex_server() {
+  local name=$1 filter
+  shift
+  if [[ $1 == -- ]]; then
+    shift
+    filter='.transport.type == "stdio" and .transport.command == $ARGS.positional[0] and .transport.args == $ARGS.positional[1:]'
+  else
+    filter='.transport.url == $ARGS.positional[0] and .transport.bearer_token_env_var == $ARGS.positional[1]'
+  fi
+  if jq -e --arg name "$name" 'any(.[]; .name == $name)' <<<"$codex_servers" >/dev/null; then
+    jq -e --arg name "$name" "any(.[]; .name == \$name and $filter)" --args -- "$@" <<<"$codex_servers" >/dev/null || {
+      echo "Codex MCP server $name has a different configuration" >&2
+      exit 1
+    }
+  elif [[ $filter == *stdio* ]]; then
+    codex mcp add "$name" -- "$@"
+  else
+    local -a auth=()
+    [[ -n $2 ]] && auth=(--bearer-token-env-var "$2")
+    codex mcp add "$name" --url "$1" "${auth[@]}"
+  fi
+}
+
+if command -v claude >/dev/null; then
+  claude_config="${CLAUDE_CONFIG_DIR:-$config_home/claude}/.claude.json"
+  if [[ -f "$claude_config" ]]; then
+    claude_servers=$(jq -c '.mcpServers // {}' "$claude_config")
+  else
+    claude_servers='{}'
+  fi
+{{- range $name, $server := .ai.mcp_servers }}
+{{-   $claude_name := get $server "claude_name" | default $name }}
+{{-   if hasKey $server "url" }}
+  claude_server {{ $claude_name | squote }} {{ $server.url | squote }}{{ with get $server "bearer_token_env_var" }} {{ . | squote }}{{ end }}
+{{-   else }}
+  claude_server {{ $claude_name | squote }} --{{ range concat $server.command (dig "args" "claude" list $server) }} {{ . | squote }}{{ end }}
+{{-   end }}
+{{- end }}
+
+  claude_plugins=$(claude plugin list --json)
+  for plugin marketplace repo in "${plugins[@]}"; do
+    if ! jq -e --arg id "$plugin@$marketplace" 'any(.[]; .id == $id and .scope == "user")' <<<"$claude_plugins" >/dev/null; then
+      claude plugin install --scope user "$plugin" --marketplace "$repo"
+    fi
+  done
+else
+  echo 'Claude not found; AI harness setup skipped for Claude' >&2
+fi
+
+if command -v codex >/dev/null; then
+  codex_servers=$(codex mcp list --json)
+{{- range $name, $server := .ai.mcp_servers }}
+{{-   if hasKey $server "url" }}
+  codex_server {{ $name | squote }} {{ $server.url | squote }}{{ with get $server "bearer_token_env_var" }} {{ . | squote }}{{ end }}
+{{-   else }}
+  codex_server {{ $name | squote }} --{{ range concat $server.command (dig "args" "codex" list $server) }} {{ . | squote }}{{ end }}
+{{-   end }}
+{{- end }}
+
+  for plugin marketplace repo in "${plugins[@]}"; do
+    marketplaces=$(codex plugin marketplace list --json)
+    if ! jq -e --arg name "$marketplace" 'any(.marketplaces[]; .name == $name)' <<<"$marketplaces" >/dev/null; then
+      codex plugin marketplace add "$repo"
+    else
+      jq -e --arg name "$marketplace" --arg source "https://github.com/$repo" \
+        'any(.marketplaces[]; .name == $name and (.marketplaceSource.source | rtrimstr(".git")) == $source)' <<<"$marketplaces" >/dev/null || {
+        echo "Codex $marketplace marketplace has a different source" >&2
+        exit 1
+      }
+      marketplace_root=$(jq -r --arg name "$marketplace" '.marketplaces[] | select(.name == $name) | .root' <<<"$marketplaces")
+      [[ -f "$marketplace_root/.agents/plugins/marketplace.json" ]] || codex plugin marketplace upgrade "$marketplace"
+    fi
+    codex_plugins=$(codex plugin list --marketplace "$marketplace" --json)
+    if ! jq -e --arg id "$plugin@$marketplace" 'any(.installed[]; .pluginId == $id and .enabled)' <<<"$codex_plugins" >/dev/null; then
+      codex plugin add "$plugin@$marketplace"
+    fi
+  done
+else
+  echo 'Codex not found; AI harness setup skipped for Codex' >&2
+fi

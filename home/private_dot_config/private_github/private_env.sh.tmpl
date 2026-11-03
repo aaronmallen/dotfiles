@@ -1,3 +1,5 @@
 #!/usr/bin/env sh
 
-export GITHUB_TOKEN={{- onepasswordRead "op://Private/t5yz2ot5b2kcufxkguljhcwhvy/system" -}}
+export GITHUB_TOKEN={{- onepasswordRead "op://Private/t5yz2ot5b2kcufxkguljhcwhvy/system" }}
+# Claude Code won't send GITHUB_TOKEN to remote MCP servers, so the GitHub MCP server reads this copy.
+export GITHUB_MCP_TOKEN="${GITHUB_TOKEN}"

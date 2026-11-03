@@ -1,0 +1,13 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $settings := `
+base_modes:
+  - interactive
+  - editing
+  - no-memories
+web_dashboard_open_on_launch: false
+` | fromYaml -}}
+{{- $config := dict -}}
+{{- if .chezmoi.stdin -}}
+{{-   $config = fromYaml .chezmoi.stdin -}}
+{{- end -}}
+{{- mergeOverwrite $config $settings | toYaml -}}
