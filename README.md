@@ -74,7 +74,8 @@ Each topic directory may contain:
 
 - [JetBrains IDEs](https://www.jetbrains.com) - Primary
 - [Zed](https://zed.dev) - Lightweight editor
-- [Vim](https://www.vim.org) - Terminal editor
+- [Neovim](https://neovim.io) - Terminal editor
+- [Vim](https://www.vim.org) - Fallback terminal editor
 
 ### CLI Utilities
 
