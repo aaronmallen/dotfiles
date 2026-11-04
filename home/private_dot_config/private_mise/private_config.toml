@@ -36,7 +36,7 @@ pitchfork = "latest"
 postgres = "18"
 python = "latest"
 ripgrep = "latest"
-ruby = "latest"
+ruby = { version = "latest", postinstall = 'xargs gem install < "${XDG_CONFIG_HOME:-$HOME/.config}/ruby/default_gems"' }
 rust = "latest"
 shellcheck = "latest"
 sqlite = "latest"
