@@ -6,6 +6,9 @@ Fast, native, GPU-accelerated terminal emulator
 
 ## Notes
 
+- `themes/monokai-pro` is the classic Monokai Pro palette, with the cursor
+  and selection colors from the RustRover scheme. Rex imports its theme from
+  this file.
 - The font family is `FiraCode Nerd Font Mono`, not `FiraCode Nerd Font`.
   Ghostty only accepts strictly-monospace families as the primary font, and the
   non-Mono variant carries double-width Nerd Font glyphs. Both are installed by
