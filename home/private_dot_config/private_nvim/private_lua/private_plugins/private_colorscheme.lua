@@ -99,6 +99,24 @@ local highlights = {
   TreeFolderText = { fg = text },
 }
 
+local tree = {
+  NeoTreeNormal = text,
+  NeoTreeNormalNC = text,
+  NeoTreeDirectoryName = text,
+  NeoTreeFileName = text,
+  NeoTreeDotfile = "#c1c0c0",
+  NeoTreeHiddenByName = "#c1c0c0",
+  NeoTreeGitIgnored = grey,
+}
+
+local function apply_tree()
+  for name, fg in pairs(tree) do
+    local spec = vim.api.nvim_get_hl(0, { name = name, link = false })
+    spec.fg = fg
+    vim.api.nvim_set_hl(0, name, spec)
+  end
+end
+
 return {
   {
     "loctvl842/monokai-pro.nvim",
@@ -124,14 +142,21 @@ return {
     },
     config = function(_, opts)
       require("monokai-pro").setup(opts)
+      local group = vim.api.nvim_create_augroup("aaron_colors", { clear = true })
       vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = "monokai-pro",
-        group = vim.api.nvim_create_augroup("aaron_colors", { clear = true }),
+        group = group,
         callback = function()
           for name, spec in pairs(highlights) do
             vim.api.nvim_set_hl(0, name, spec)
           end
+          apply_tree()
         end,
+      })
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "neo-tree",
+        group = group,
+        callback = apply_tree,
       })
       vim.cmd.colorscheme "monokai-pro"
     end,

@@ -34,6 +34,21 @@ local folders = {
   [".vscode"] = { "\u{f107d}", "TreeFolderGrey" },
 }
 
+local width_file = vim.fn.stdpath "state" .. "/neo-tree-width"
+local width = tonumber(vim.fn.filereadable(width_file) == 1 and vim.fn.readfile(width_file)[1]) or 36
+
+local function save_width()
+  for _, win in ipairs(vim.v.event.windows) do
+    if vim.api.nvim_win_is_valid(win) and vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "neo-tree" then
+      local current = vim.api.nvim_win_get_width(win)
+      if current ~= width then
+        width = current
+        vim.fn.writefile({ tostring(width) }, width_file)
+      end
+    end
+  end
+end
+
 local function icon_provider(icon, node)
   if node.type == "directory" then
     local folder = folders[node.name]
@@ -67,6 +82,10 @@ return {
       { "<leader>be", "<cmd>Neotree float buffers<cr>", desc = "Buffer tree" },
     },
     init = function()
+      vim.api.nvim_create_autocmd("WinResized", {
+        group = vim.api.nvim_create_augroup("aaron_neotree_width", { clear = true }),
+        callback = save_width,
+      })
       vim.api.nvim_create_autocmd("VimEnter", {
         group = vim.api.nvim_create_augroup("aaron_neotree_start", { clear = true }),
         callback = function()
@@ -99,7 +118,9 @@ return {
       },
       window = {
         position = "left",
-        width = 36,
+        width = function()
+          return width
+        end,
         mappings = {
           ["l"] = "open",
           ["h"] = "close_node",
