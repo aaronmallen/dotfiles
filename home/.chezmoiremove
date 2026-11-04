@@ -2,6 +2,8 @@
 .cargo
 .claude
 .claude.json
+.config/1password/init.bash
+.config/1password/init.zsh
 .config/claude/output-styles/attention-kind.md
 .config/ghostty/themes/monokai-pro-spectrum
 .config/npm/default_npm_packages
