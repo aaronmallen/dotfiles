@@ -37,9 +37,24 @@ local folders = {
 local width_file = vim.fn.stdpath "state" .. "/neo-tree-width"
 local width = tonumber(vim.fn.filereadable(width_file) == 1 and vim.fn.readfile(width_file)[1]) or 36
 
+local function is_sidebar(win)
+  if not vim.api.nvim_win_is_valid(win) or vim.api.nvim_win_get_config(win).relative ~= "" then
+    return false
+  end
+  if vim.bo[vim.api.nvim_win_get_buf(win)].filetype ~= "neo-tree" then
+    return false
+  end
+  for _, other in ipairs(vim.api.nvim_tabpage_list_wins(vim.api.nvim_win_get_tabpage(win))) do
+    if other ~= win and vim.api.nvim_win_get_config(other).relative == "" then
+      return true
+    end
+  end
+  return false
+end
+
 local function save_width()
   for _, win in ipairs(vim.v.event.windows) do
-    if vim.api.nvim_win_is_valid(win) and vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "neo-tree" then
+    if is_sidebar(win) then
       local current = vim.api.nvim_win_get_width(win)
       if current ~= width then
         width = current
@@ -47,6 +62,25 @@ local function save_width()
       end
     end
   end
+end
+
+local function open_match(state)
+  local node = state.tree:get_node()
+  if not node or node.type ~= "file" then
+    node = require("neo-tree.ui.renderer").select_nodes(state.tree, function(candidate)
+      return candidate.type == "file"
+    end, 1)[1]
+  end
+  if not node then
+    require("neo-tree.sources.filesystem").reset_search(state, true, true)
+    return
+  end
+  local path = node:get_id()
+  vim.cmd "stopinsert"
+  vim.api.nvim_win_close(0, true)
+  vim.schedule(function()
+    require("neo-tree.utils").open_file(state, path)
+  end)
 end
 
 local function icon_provider(icon, node)
@@ -119,7 +153,7 @@ return {
       window = {
         position = "left",
         width = function()
-          return width
+          return math.min(width, math.floor(vim.o.columns / 2))
         end,
         mappings = {
           ["l"] = "open",
@@ -138,6 +172,12 @@ return {
       },
       filesystem = {
         bind_to_cwd = false,
+        window = {
+          fuzzy_finder_mappings = {
+            ["<cr>"] = open_match,
+            { n = { ["<cr>"] = open_match } },
+          },
+        },
         follow_current_file = { enabled = true },
         use_libuv_file_watcher = true,
         hijack_netrw_behavior = "open_default",
