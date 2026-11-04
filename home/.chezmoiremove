@@ -3,6 +3,7 @@
 .claude
 .claude.json
 .config/claude/output-styles/attention-kind.md
+.config/ghostty/themes/monokai-pro-spectrum
 .DS_Store
 .gtkrc-2.0
 .java
