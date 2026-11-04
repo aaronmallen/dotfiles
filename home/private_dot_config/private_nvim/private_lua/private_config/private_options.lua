@@ -19,7 +19,6 @@ opt.relativenumber = true
 opt.numberwidth = 2
 opt.cursorline = true
 opt.signcolumn = "yes"
-opt.colorcolumn = "121"
 opt.laststatus = 3
 opt.showmode = false
 opt.ruler = false

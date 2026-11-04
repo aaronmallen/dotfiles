@@ -1,6 +1,11 @@
 return {
   { "nvim-tree/nvim-web-devicons", opts = {} },
   {
+    "lukas-reineke/virt-column.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = { char = "│", virtcolumn = "81,121", highlight = "VirtColumn" },
+  },
+  {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {

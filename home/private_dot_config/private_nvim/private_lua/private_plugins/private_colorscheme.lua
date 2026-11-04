@@ -1,6 +1,7 @@
 local highlights = {
   MatchParen = { bg = "#3b514d", bold = true },
   CursorLine = { bg = "#3b3539" },
+  VirtColumn = { fg = "#5b595c" },
   TreeFolderRed = { fg = "#ff6188" },
   TreeFolderOrange = { fg = "#fc9867" },
   TreeFolderYellow = { fg = "#ffd866" },
