@@ -1,5 +1,6 @@
 local red = "#ff6188"
 local orange = "#fc9867"
+local yellow = "#ffd866"
 local green = "#a9dc76"
 local cyan = "#78dce8"
 local purple = "#ab9df2"
@@ -88,6 +89,14 @@ local highlights = {
   ["@punctuation.bracket"] = { fg = grey },
   MatchParen = { bg = "#3b514d", bold = true },
   CursorLine = { bg = "#3b3539" },
+  TreeFolderRed = { fg = red },
+  TreeFolderOrange = { fg = orange },
+  TreeFolderYellow = { fg = yellow },
+  TreeFolderGreen = { fg = green },
+  TreeFolderCyan = { fg = cyan },
+  TreeFolderPurple = { fg = purple },
+  TreeFolderGrey = { fg = grey },
+  TreeFolderText = { fg = text },
 }
 
 return {

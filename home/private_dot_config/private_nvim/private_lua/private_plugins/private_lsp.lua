@@ -133,6 +133,8 @@ return {
           },
           typescript = {
             updateImportsOnFileMove = { enabled = "always" },
+            referencesCodeLens = { enabled = true, showOnAllFunctions = true },
+            implementationsCodeLens = { enabled = true },
             suggest = { completeFunctionCalls = true },
             inlayHints = {
               enumMemberValues = { enabled = true },
@@ -205,6 +207,16 @@ return {
             ["rust-analyzer"] = {
               cargo = { allFeatures = true, buildScripts = { enable = true } },
               check = { command = "clippy" },
+              lens = {
+                debug = { enable = false },
+                implementations = { enable = false },
+                references = {
+                  adt = { enable = true },
+                  enumVariant = { enable = true },
+                  method = { enable = true },
+                  trait = { enable = true },
+                },
+              },
               procMacro = { enable = true },
               imports = { granularity = { group = "crate" }, prefix = "crate" },
               inlayHints = {
