@@ -3,6 +3,7 @@
 {{ if ne .chezmoi.os "darwin" }}
 .config/macos
 .config/pkgconfig
+.config/rex/themes
 .local/bin/mac-up
 Library
 {{ end }}
