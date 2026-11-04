@@ -20,8 +20,20 @@ while IFS= read -r -d '' pair; do
   vars[$name]=${pair#*=}
 done < "$env_file"
 
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/session-env"
+state="$state_dir/names"
+stale=()
+if [[ -f $state ]]; then
+  for name in ${(f)"$(<$state)"}; do
+    (( ${+vars[$name]} )) || stale+=("$name")
+  done
+fi
+
 case $OSTYPE in
   darwin*)
+    for name in "${stale[@]}"; do
+      launchctl unsetenv "$name"
+    done
     for name value in "${(@kv)vars}"; do
       launchctl setenv "$name" "$value"
     done
@@ -51,5 +63,11 @@ case $OSTYPE in
     elif command -v systemctl >/dev/null; then
       systemctl --user set-environment "${pairs[@]}" 2>/dev/null || true
     fi
+    if (( ${#stale} )) && command -v systemctl >/dev/null; then
+      systemctl --user unset-environment "${stale[@]}" 2>/dev/null || true
+    fi
     ;;
 esac
+
+mkdir -p "$state_dir"
+print -rl -- "${(@ko)vars}" > "$state"
