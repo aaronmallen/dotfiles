@@ -13,8 +13,10 @@ ai:
       url: https://mcp.context7.com/mcp
     datadog:
       url: https://mcp.datadoghq.com/v1/mcp
+      profiles: [work]
     everflow:
       url: https://mcp.eflow.team
+      profiles: [work]
       header_env_vars:
         X-Api-Key: EVERFLOW_API_KEY
     github:
@@ -39,6 +41,7 @@ ai:
     # Slack does not let clients register themselves; this is the client ID of Slack's own Claude plugin.
     slack:
       url: https://mcp.slack.com/mcp
+      profiles: [work]
       oauth_client_id: "1601185624273.8899143856786"
       oauth_callback_port: 3118
   plugins:

@@ -60,6 +60,7 @@ if command -v claude >/dev/null; then
     claude_servers='{}'
   fi
 {{- range $name, $server := .ai.mcp_servers }}
+{{-   if and (hasKey $server "profiles") (not (has $.profile $server.profiles)) }}{{ continue }}{{ end }}
 {{-   $claude_name := get $server "claude_name" | default $name }}
 {{-   if hasKey $server "url" }}
 {{-     $want := dict "type" "http" "url" $server.url }}
@@ -94,6 +95,7 @@ fi
 if command -v codex >/dev/null; then
   codex_servers=$(codex mcp list --json)
 {{- range $name, $server := .ai.mcp_servers }}
+{{-   if and (hasKey $server "profiles") (not (has $.profile $server.profiles)) }}{{ continue }}{{ end }}
 {{-   if hasKey $server "url" }}
 {{-     $want := dict "type" "streamable_http" "url" $server.url }}
 {{-     $add := list "--url" $server.url }}

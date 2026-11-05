@@ -8,10 +8,13 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / 'home/.chezmoiscripts/run_after_setup-ai-harness.zsh.tmpl'
+OPENCODE = ROOT / 'home/private_dot_config/private_opencode/private_opencode.json.tmpl'
+WORK_SERVERS = {'datadog', 'everflow', 'slack'}
 
 
-def render(template):
-    return subprocess.run(['chezmoi', '--source', str(ROOT), 'execute-template', template], capture_output=True, text=True, check=True).stdout
+def render(template, profile='work'):
+    command = ['chezmoi', '--source', str(ROOT), '--override-data', json.dumps({'profile': profile}), 'execute-template', template]
+    return subprocess.run(command, capture_output=True, text=True, check=True).stdout
 
 FAKE_CLI = '''#!/usr/bin/env python3
 import json, os, pathlib, sys, tomllib
@@ -94,6 +97,15 @@ class SetupTest(unittest.TestCase):
                 result = subprocess.run(['zsh', str(script)], env=env, capture_output=True, text=True)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn(f'Codex MCP server {name} has a different configuration', result.stderr)
+
+    def test_work_servers_only_render_for_the_work_profile(self):
+        for profile in ('work', 'personal'):
+            servers = set(json.loads(render(OPENCODE.read_text(), profile))['mcp']['servers'])
+            script = render(TEMPLATE.read_text(), profile)
+            for name in WORK_SERVERS:
+                self.assertEqual(name in servers, profile == 'work')
+                self.assertEqual(f"codex_server '{name}'" in script, profile == 'work')
+                self.assertEqual(f"claude_server '{name}'" in script, profile == 'work')
 
 
 if __name__ == '__main__':

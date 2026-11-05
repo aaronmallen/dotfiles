@@ -1,5 +1,6 @@
 {{- $servers := dict -}}
 {{- range $name, $server := .ai.mcp_servers -}}
+{{-   if and (hasKey $server "profiles") (not (has $.profile $server.profiles)) -}}{{- continue -}}{{- end -}}
 {{-   if hasKey $server "url" -}}
 {{-     $remote := dict "type" "remote" "url" $server.url -}}
 {{-     $headers := dict -}}
