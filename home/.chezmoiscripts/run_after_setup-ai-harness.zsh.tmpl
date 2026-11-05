@@ -13,56 +13,41 @@ plugins=(
 
 config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-# claude_server NAME URL [TOKEN_VAR]
-# claude_server NAME -- COMMAND...
+# claude_server NAME WANT ADD_ARGS...: add the server, or fail when the saved one differs from the WANT JSON
 claude_server() {
-  local name=$1 filter
-  shift
-  if [[ $1 == -- ]]; then
-    shift
-    filter='.type == "stdio" and .command == $ARGS.positional[0] and .args == $ARGS.positional[1:]'
-  else
-    filter='.type == "http" and .url == $ARGS.positional[0] and .headers.Authorization == (if $ARGS.positional[1] then "Bearer ${\($ARGS.positional[1])}" else null end)'
-  fi
+  local name=$1 want=$2
+  shift 2
   if jq -e --arg name "$name" 'has($name)' <<<"$claude_servers" >/dev/null; then
-    jq -e --arg name "$name" ".[\$name] | $filter" --args -- "$@" <<<"$claude_servers" >/dev/null || {
+    jq -e --arg name "$name" --argjson want "$want" '.[$name] == $want' <<<"$claude_servers" >/dev/null || {
       echo "Claude MCP server $name has a different configuration" >&2
       exit 1
     }
-  elif [[ $filter == *stdio* ]]; then
-    claude mcp add --scope user "$name" -- "$@"
   else
-    local -a auth=()
-    [[ -n $2 ]] && auth=(--header "Authorization: Bearer \${$2}")
-    claude mcp add --scope user --transport http "$name" "$1" "${auth[@]}"
+    claude mcp add --scope user "$@"
   fi
 }
 
-# codex_server NAME URL [TOKEN_VAR]
-# codex_server NAME -- COMMAND...
+# codex_server NAME WANT ADD_ARGS...: add the server, or fail when the saved one differs from the WANT JSON
 codex_server() {
-  local name=$1 filter
-  shift
-  if [[ $1 == -- ]]; then
-    shift
-    filter='.transport.type == "stdio" and .transport.command == $ARGS.positional[0] and .transport.args == $ARGS.positional[1:]'
-  else
-    filter='.transport.url == $ARGS.positional[0] and .transport.bearer_token_env_var == $ARGS.positional[1]'
-  fi
+  local name=$1 want=$2 headers
+  shift 2
   if jq -e --arg name "$name" 'any(.[]; .name == $name)' <<<"$codex_servers" >/dev/null; then
-    jq -e --arg name "$name" "any(.[]; .name == \$name and $filter)" --args -- "$@" <<<"$codex_servers" >/dev/null || {
+    jq -e --arg name "$name" --argjson want "$want" \
+      'any(.[]; .name == $name and (.transport as $t | all("type", "url", "bearer_token_env_var", "env_http_headers", "command", "args"; $t[.] == $want[.])))' \
+      <<<"$codex_servers" >/dev/null || {
       echo "Codex MCP server $name has a different configuration" >&2
       exit 1
     }
-  elif [[ $filter == *stdio* ]]; then
-    codex mcp add "$name" -- "$@"
   else
-    local -a auth=()
-    [[ -n $2 ]] && auth=(--bearer-token-env-var "$2")
     # Codex signs in right after adding a server and exits non-zero when that fails, even though the server was saved.
-    if ! codex mcp add "$name" --url "$1" "${auth[@]}"; then
+    if ! codex mcp add "$name" "$@"; then
       codex mcp list --json | jq -e --arg name "$name" 'any(.[]; .name == $name)' >/dev/null || exit 1
       echo "Codex added MCP server $name but could not sign in; run: codex mcp login $name" >&2
+    fi
+    # codex mcp add has no flag for headers read from the environment.
+    headers=$(jq -r '.env_http_headers // {} | to_entries[] | "\(.key | @json) = \(.value | @json)"' <<<"$want")
+    if [[ -n $headers ]]; then
+      printf '\n[mcp_servers.%s.env_http_headers]\n%s\n' "$(jq -n --arg name "$name" '$name')" "$headers" >>"${CODEX_HOME:-$HOME/.codex}/config.toml"
     fi
   fi
 }
@@ -77,9 +62,22 @@ if command -v claude >/dev/null; then
 {{- range $name, $server := .ai.mcp_servers }}
 {{-   $claude_name := get $server "claude_name" | default $name }}
 {{-   if hasKey $server "url" }}
-  claude_server {{ $claude_name | squote }} {{ $server.url | squote }}{{ with get $server "bearer_token_env_var" }} {{ . | squote }}{{ end }}
+{{-     $want := dict "type" "http" "url" $server.url }}
+{{-     $add := list "--transport" "http" $claude_name $server.url }}
+{{-     $headers := dict }}
+{{-     with get $server "bearer_token_env_var" }}{{ $_ := set $headers "Authorization" (printf "Bearer ${%s}" .) }}{{ end }}
+{{-     range $header, $var := dig "header_env_vars" dict $server }}{{ $_ := set $headers $header (printf "${%s}" $var) }}{{ end }}
+{{-     range $header, $value := $headers }}{{ $add = concat $add (list "--header" (printf "%s: %s" $header $value)) }}{{ end }}
+{{-     if $headers }}{{ $_ := set $want "headers" $headers }}{{ end }}
+{{-     with get $server "oauth_client_id" }}
+{{-       $_ := set $want "oauth" (dict "clientId" . "callbackPort" $server.oauth_callback_port) }}
+{{-       $add = concat $add (list "--client-id" . "--callback-port" (toString $server.oauth_callback_port)) }}
+{{-     end }}
+  claude_server {{ $claude_name | squote }} {{ $want | toJson | squote }}{{ range $add }} {{ . | squote }}{{ end }}
 {{-   else }}
-  claude_server {{ $claude_name | squote }} --{{ range concat $server.command (dig "args" "claude" list $server) }} {{ . | squote }}{{ end }}
+{{-     $command := concat $server.command (dig "args" "claude" list $server) }}
+{{-     $want := dict "type" "stdio" "command" (first $command) "args" (rest $command) "env" dict }}
+  claude_server {{ $claude_name | squote }} {{ $want | toJson | squote }} {{ $claude_name | squote }} --{{ range $command }} {{ . | squote }}{{ end }}
 {{-   end }}
 {{- end }}
 
@@ -97,9 +95,19 @@ if command -v codex >/dev/null; then
   codex_servers=$(codex mcp list --json)
 {{- range $name, $server := .ai.mcp_servers }}
 {{-   if hasKey $server "url" }}
-  codex_server {{ $name | squote }} {{ $server.url | squote }}{{ with get $server "bearer_token_env_var" }} {{ . | squote }}{{ end }}
+{{-     $want := dict "type" "streamable_http" "url" $server.url }}
+{{-     $add := list "--url" $server.url }}
+{{-     with get $server "bearer_token_env_var" }}
+{{-       $_ := set $want "bearer_token_env_var" . }}
+{{-       $add = concat $add (list "--bearer-token-env-var" .) }}
+{{-     end }}
+{{-     with get $server "header_env_vars" }}{{ $_ := set $want "env_http_headers" . }}{{ end }}
+{{-     with get $server "oauth_client_id" }}{{ $add = concat $add (list "--oauth-client-id" .) }}{{ end }}
+  codex_server {{ $name | squote }} {{ $want | toJson | squote }}{{ range $add }} {{ . | squote }}{{ end }}
 {{-   else }}
-  codex_server {{ $name | squote }} --{{ range concat $server.command (dig "args" "codex" list $server) }} {{ . | squote }}{{ end }}
+{{-     $command := concat $server.command (dig "args" "codex" list $server) }}
+{{-     $want := dict "type" "stdio" "command" (first $command) "args" (rest $command) }}
+  codex_server {{ $name | squote }} {{ $want | toJson | squote }} --{{ range $command }} {{ . | squote }}{{ end }}
 {{-   end }}
 {{- end }}
 

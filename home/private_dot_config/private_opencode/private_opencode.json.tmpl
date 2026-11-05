@@ -2,10 +2,14 @@
 {{- range $name, $server := .ai.mcp_servers -}}
 {{-   if hasKey $server "url" -}}
 {{-     $remote := dict "type" "remote" "url" $server.url -}}
-{{-     if hasKey $server "bearer_token_env_var" -}}
+{{-     $headers := dict -}}
+{{-     with get $server "bearer_token_env_var" -}}{{- $_ := set $headers "Authorization" (printf "Bearer {env:%s}" .) -}}{{- end -}}
+{{-     range $header, $var := dig "header_env_vars" dict $server -}}{{- $_ := set $headers $header (printf "{env:%s}" $var) -}}{{- end -}}
+{{-     if $headers -}}
 {{-       $_ := set $remote "oauth" false -}}
-{{-       $_ := set $remote "headers" (dict "Authorization" (printf "Bearer {env:%s}" $server.bearer_token_env_var)) -}}
+{{-       $_ := set $remote "headers" $headers -}}
 {{-     end -}}
+{{-     with get $server "oauth_client_id" -}}{{- $_ := set $remote "oauth" (dict "clientId" .) -}}{{- end -}}
 {{-     $_ := set $servers $name $remote -}}
 {{-   else -}}
 {{-     $_ := set $servers $name (dict "type" "local" "command" (concat $server.command (dig "args" "opencode" list $server))) -}}

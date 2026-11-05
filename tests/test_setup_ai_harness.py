@@ -14,7 +14,7 @@ def render(template):
     return subprocess.run(['chezmoi', '--source', str(ROOT), 'execute-template', template], capture_output=True, text=True, check=True).stdout
 
 FAKE_CLI = '''#!/usr/bin/env python3
-import json, os, pathlib, sys
+import json, os, pathlib, sys, tomllib
 root = pathlib.Path(os.environ['XDG_CONFIG_HOME'])
 state_file = root / 'state.json'
 state = json.loads(state_file.read_text()) if state_file.exists() else {'claude': {}, 'codex': {}, 'claude_plugin': False, 'market': False, 'codex_plugin': False, 'changes': 0}
@@ -24,7 +24,9 @@ if args[:4] == ['claude', 'mcp', 'add', '--scope']:
         i = args.index('--'); state['claude'][args[i - 1]] = {'type': 'stdio', 'command': args[i + 1], 'args': args[i + 2:], 'env': {}}
     else:
         rest = args[8:]; server = {'type': 'http', 'url': rest[0]}
-        if rest[1:2] == ['--header']: server['headers'] = dict([rest[2].split(': ', 1)])
+        options = dict(zip(rest[1::2], rest[2::2]))
+        if '--header' in options: server['headers'] = dict([options['--header'].split(': ', 1)])
+        if '--client-id' in options: server['oauth'] = {'clientId': options['--client-id'], 'callbackPort': int(options['--callback-port'])}
         state['claude'][args[7]] = server
     (root / 'claude/.claude.json').write_text(json.dumps({'mcpServers': state['claude']}))
 elif args == ['claude', 'plugin', 'list', '--json']:
@@ -32,12 +34,15 @@ elif args == ['claude', 'plugin', 'list', '--json']:
 elif args[:3] == ['claude', 'plugin', 'install']:
     state['claude_plugin'] = True
 elif args == ['codex', 'mcp', 'list', '--json']:
-    print(json.dumps([{'name': n, 'transport': t} for n, t in state['codex'].items()]))
+    config = pathlib.Path(os.environ['CODEX_HOME'], 'config.toml')
+    headers = tomllib.loads(config.read_text()).get('mcp_servers', {}) if config.exists() else {}
+    print(json.dumps([{'name': n, 'transport': {**t, 'env_http_headers': headers.get(n, {}).get('env_http_headers')}} for n, t in state['codex'].items()]))
 elif args[:3] == ['codex', 'mcp', 'add']:
     if '--' in args:
         i = args.index('--'); state['codex'][args[3]] = {'type': 'stdio', 'command': args[i + 1], 'args': args[i + 2:]}
     else:
-        rest = args[4:]; state['codex'][args[3]] = {'type': 'streamable_http', 'url': rest[1], 'bearer_token_env_var': rest[3] if len(rest) > 3 else None}
+        options = dict(zip(args[4::2], args[5::2]))
+        state['codex'][args[3]] = {'type': 'streamable_http', 'url': options['--url'], 'bearer_token_env_var': options.get('--bearer-token-env-var')}
 elif args == ['codex', 'plugin', 'marketplace', 'list', '--json']:
     source = {'source': 'https://github.com/DietrichGebert/ponytail.git'}
     print(json.dumps({'marketplaces': [{'name': 'ponytail', 'root': str(root / 'market'), 'marketplaceSource': source}] if state['market'] else []}))
@@ -68,12 +73,14 @@ class SetupTest(unittest.TestCase):
                 executable = root / 'bin' / name
                 executable.write_text(FAKE_CLI)
                 executable.chmod(0o755)
-            env = dict(os.environ, XDG_CONFIG_HOME=directory, CLAUDE_CONFIG_DIR=str(root / 'claude'), PATH=f'{root / "bin"}:{os.environ["PATH"]}')
+            env = dict(os.environ, XDG_CONFIG_HOME=directory, CLAUDE_CONFIG_DIR=str(root / 'claude'), CODEX_HOME=directory, PATH=f'{root / "bin"}:{os.environ["PATH"]}')
             subprocess.run(['zsh', str(script)], env=env, check=True)
             state_file = root / 'state.json'
             state = json.loads(state_file.read_text())
             self.assertEqual(state['claude']['github']['headers'], {'Authorization': 'Bearer ${GITHUB_MCP_TOKEN}'})
             self.assertEqual(state['codex']['github']['bearer_token_env_var'], 'GITHUB_MCP_TOKEN')
+            self.assertEqual(state['claude']['everflow']['headers'], {'X-Api-Key': '${EVERFLOW_API_KEY}'})
+            self.assertIn('"X-Api-Key" = "EVERFLOW_API_KEY"', (root / 'config.toml').read_text())
             count = int(render('{{ len .ai.mcp_servers }}'))
             self.assertEqual((len(state['claude']), len(state['codex']), state['changes']), (count, count, 2 * count + 3))
             subprocess.run(['zsh', str(script)], env=env, check=True)
