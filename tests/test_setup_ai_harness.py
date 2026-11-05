@@ -9,7 +9,13 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / 'home/.chezmoiscripts/run_after_setup-ai-harness.zsh.tmpl'
 OPENCODE = ROOT / 'home/private_dot_config/private_opencode/private_opencode.json.tmpl'
-WORK_SERVERS = {'datadog', 'everflow', 'slack'}
+PROFILE_SERVERS = {
+    'datadog': 'work',
+    'everflow': 'work',
+    'linear-aaronmallen': 'personal',
+    'linear-complish': 'personal',
+    'slack': 'work',
+}
 
 
 def render(template, profile='work'):
@@ -84,7 +90,7 @@ class SetupTest(unittest.TestCase):
             self.assertEqual(state['codex']['github']['bearer_token_env_var'], 'GITHUB_MCP_TOKEN')
             self.assertEqual(state['claude']['everflow']['headers'], {'X-Api-Key': '${EVERFLOW_API_KEY}'})
             self.assertIn('"X-Api-Key" = "EVERFLOW_API_KEY"', (root / 'config.toml').read_text())
-            count = int(render('{{ len .ai.mcp_servers }}'))
+            count = int(render('{{ len .ai.mcp_servers }}')) - sum(profile != 'work' for profile in PROFILE_SERVERS.values())
             self.assertEqual((len(state['claude']), len(state['codex']), state['changes']), (count, count, 2 * count + 3))
             subprocess.run(['zsh', str(script)], env=env, check=True)
             self.assertEqual(json.loads(state_file.read_text())['changes'], 2 * count + 3)
@@ -98,14 +104,14 @@ class SetupTest(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn(f'Codex MCP server {name} has a different configuration', result.stderr)
 
-    def test_work_servers_only_render_for_the_work_profile(self):
+    def test_profile_servers_only_render_for_their_profile(self):
         for profile in ('work', 'personal'):
             servers = set(json.loads(render(OPENCODE.read_text(), profile))['mcp']['servers'])
             script = render(TEMPLATE.read_text(), profile)
-            for name in WORK_SERVERS:
-                self.assertEqual(name in servers, profile == 'work')
-                self.assertEqual(f"codex_server '{name}'" in script, profile == 'work')
-                self.assertEqual(f"claude_server '{name}'" in script, profile == 'work')
+            for name, owner in PROFILE_SERVERS.items():
+                self.assertEqual(name in servers, profile == owner)
+                self.assertEqual(f"codex_server '{name}'" in script, profile == owner)
+                self.assertEqual(f"claude_server '{name}'" in script, profile == owner)
 
 
 if __name__ == '__main__':

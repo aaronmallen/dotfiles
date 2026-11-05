@@ -30,8 +30,10 @@ ai:
       url: https://drivemcp.googleapis.com/mcp/v1
     linear-aaronmallen:
       url: https://mcp.linear.app/mcp
+      profiles: [personal]
     linear-complish:
       url: https://mcp.linear.app/mcp
+      profiles: [personal]
     serena:
       command: [serena, start-mcp-server, --project-from-cwd]
       args:
