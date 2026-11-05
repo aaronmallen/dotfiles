@@ -10,4 +10,10 @@ return {
       require "configs.lspconfig"
     end,
   },
+
+  {
+    "lukas-reineke/virt-column.nvim",
+    event = "User FilePost",
+    opts = { char = "│", virtcolumn = "81,121", highlight = "VirtColumn" },
+  },
 }
