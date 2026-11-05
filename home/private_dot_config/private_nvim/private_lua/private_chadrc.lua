@@ -1,7 +1,7 @@
 local M = {}
 
 M.base46 = {
-  theme = "onedark",
+  theme = "monokai_pro_spectrum",
 }
 
 return M
