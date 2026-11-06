@@ -2,7 +2,7 @@
 
 [aliases]
 ll = ["log", "--template", "builtin_log_detailed"]
-sync = ["util", "exec", "--", "sh", "-c", "jj git fetch && jj rebase -s 'roots(trunk()..mine())' -d 'trunk()'"]
+sync = ["util", "exec", "--", "sh", "-c", "jj git fetch \"$@\" && jj rebase -s 'roots(trunk()..mine())' -d 'trunk()'", "jj-sync"]
 
 [git]
 private-commits = "private() | wip()"
