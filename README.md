@@ -70,6 +70,24 @@ The initial config asks for a name, email address, and profile:
 macOS uses Homebrew. Linux offers APT, Homebrew, paru, or yay. The ignore rules select files for the chosen OS and
 package manager. All profiles share the base tool list; `container` is not a minimal package set.
 
+## Bootstrap a machine
+
+On macOS, Debian/Ubuntu, or Arch/CachyOS, download and run the bootstrap as your normal user:
+
+```sh
+curl -fsSL https://aaronmallen.dev/aaron/dotfiles/raw/branch/main/bootstrap -o bootstrap
+bash bootstrap
+```
+
+It installs the tools needed for the first apply, clones the repo into `~/src/aaronmallen.dev/aaron/dotfiles`,
+and points chezmoi at that checkout. It asks for your profile and identity, guides 1Password sign-in when needed,
+then applies the dotfiles and setup hooks. Have your sudo password and 1Password account details ready.
+On Arch, it installs yay if neither yay nor paru is available. Choose your installed package manager when prompted.
+
+From an existing checkout, run `bash bootstrap` to reuse it without pulling or replacing local changes.
+Bootstrap leaves an old `~/.local/share/chezmoi` checkout and unmanaged files in place.
+Apply processes `.chezmoiremove` and runs the package hooks, including upgrades and package cleanup.
+
 ## Working with the dotfiles
 
 From this checkout, initialize chezmoi and preview changes:
