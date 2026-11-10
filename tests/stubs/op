@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+case "$*" in
+signin*) echo test-session ;;
+*read*ojcxzmy2py5m7cxtgsfcrjpjte/file*) printf 'username=test\npassword=test\n' ;;
+*read*kshwczi5i7j6xpq4txavzdfqd4*) printf 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestFixture' ;;
+*)
+  echo "Unexpected 1Password call: $*" >&2
+  exit 1
+  ;;
+esac

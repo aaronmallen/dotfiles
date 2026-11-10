@@ -1,0 +1,2 @@
+exclude = [".git/**", ".jj/**", ".serena/**"]
+include = ["**/*.toml"]

@@ -1,0 +1,27 @@
+[task_config]
+includes = ["scripts"]
+
+[tasks.format]
+alias = ["fmt"]
+depends = ["format:**"]
+description = "Format all files"
+
+[tasks.lint]
+alias = ["l"]
+depends = ["lint:**"]
+description = "Lint all files"
+
+[tools]
+bats = "latest"
+chezmoi = "latest"
+editorconfig-checker = "latest"
+jq = "latest"
+markdownlint-cli2 = "latest"
+node = "lts"
+prettier = "latest"
+shellcheck = "latest"
+shfmt = "latest"
+stylua = "latest"
+taplo = "latest"
+usage = "latest"
+yamlfmt = "latest"

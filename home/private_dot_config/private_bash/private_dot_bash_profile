@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1091  # topic files are resolved at runtime
+
+# Login shells read this file and never ~/.bashrc, so pull it in here.
+# All actual configuration lives in ~/.bashrc.
+if [[ -f "${HOME}/.bashrc" ]]; then
+  source "${HOME}/.bashrc"
+fi

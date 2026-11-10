@@ -1,0 +1,31 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env zsh
+set -eu
+
+{{- range (glob (joinPath .chezmoi.sourceDir "private_dot_config/private_rex/private_themes/*.json")) }}
+# {{ base . }}: {{ include . | sha256sum }}
+{{- end }}
+
+for theme in "${HOME}"/.config/rex/themes/*.json(N); do
+  osascript -l JavaScript - "$theme" <<'JXA'
+ObjC.import("Foundation")
+
+function run(argv) {
+  const defaults = $.NSUserDefaults.alloc.initWithSuiteName("com.superlogical.rex")
+  const theme = JSON.parse(
+    $.NSString.stringWithContentsOfFileEncodingError(argv[0], $.NSUTF8StringEncoding, null).js,
+  )
+  const stored = defaults.dataForKey("Workspace.customThemes")
+  const themes = stored.isNil()
+    ? []
+    : JSON.parse($.NSString.alloc.initWithDataEncoding(stored, $.NSUTF8StringEncoding).js)
+  const merged = themes.filter((t) => t.id !== theme.id && t.name !== theme.name).concat([theme])
+  defaults.setObjectForKey(
+    $(JSON.stringify(merged)).dataUsingEncoding($.NSUTF8StringEncoding),
+    "Workspace.customThemes",
+  )
+  defaults.setObjectForKey($(theme.id), "Workspace." + theme.appearance + "ThemeID")
+}
+JXA
+done
+{{ end -}}

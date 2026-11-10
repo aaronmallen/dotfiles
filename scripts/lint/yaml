@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+#MISE description="Lint all YAML files"
+#MISE alias=["l:yaml", "l:yml", "lint:yml"]
+
+set -e
+
+yamlfmt -lint -dstar -conf .config/yamlfmt.yml '**/*.{yaml,yml}'

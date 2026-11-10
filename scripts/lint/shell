@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#MISE description="Lint all shell files"
+#MISE alias=["l:sh", "l:shell", "lint:sh"]
+
+set -euo pipefail
+
+shfmt -f=0 . | while IFS= read -r -d '' file; do
+  IFS= read -r first_line <"$file" || true
+  case "$file:$first_line" in
+  *.zsh:* | *zshrc:* | *zshenv:* | *zprofile:* | *:#!*zsh*) zsh -n "$file" ;;
+  *)
+    shfmt -d "$file"
+    case "$file:$first_line" in
+    *:#!*) shellcheck "$file" ;;
+    *.bash:* | *bashrc:* | *bash_profile:*) shellcheck --shell=bash "$file" ;;
+    *) shellcheck --shell=sh "$file" ;;
+    esac
+    ;;
+  esac
+done

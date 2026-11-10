@@ -1,0 +1,43 @@
+# This file is written by xdg-user-dirs-update
+# If you want to change or add directories, just edit the line you're
+# interested in. All local changes will be retained on the next run.
+# Format is XDG_xxx_DIR="$HOME/yyy", where yyy is a shell-escaped
+# homedir-relative path, or XDG_xxx_DIR="/yyy", where /yyy is an
+# absolute path. No other format is supported.
+#
+{{- if eq .chezmoi.os "darwin" }}
+XDG_BIN_HOME="{{ env "HOME" }}/.local/bin"
+XDG_CACHE_HOME="{{ env "HOME" }}/Library/Caches"
+XDG_CONFIG_DIRS="{{ env "HOME" }}/Library/Preferences:/Library/Application Support:/Library/Preferences:{{ env "HOME" }}/.config"
+XDG_CONFIG_HOME="{{ env "HOME" }}/.config"
+XDG_DATA_DIRS="/Library/Application Support:{{ env "HOME" }}/.local/share"
+XDG_DATA_HOME="{{ env "HOME" }}/.local/share"
+XDG_DESKTOP_DIR="{{ env "HOME" }}/Desktop"
+XDG_DOCUMENTS_DIR="{{ env "HOME" }}/Documents"
+XDG_DOWNLOAD_DIR="{{ env "HOME" }}/Downloads"
+XDG_MUSIC_DIR="{{ env "HOME" }}/Music"
+XDG_PICTURES_DIR="{{ env "HOME" }}/Pictures"
+XDG_PUBLICSHARE_DIR="{{ env "HOME" }}/Public"
+XDG_RUNTIME_DIR="{{ env "HOME" }}/Library/Application Support"
+XDG_STATE_HOME="{{ env "HOME" }}/.local/state"
+XDG_TEMPLATES_DIR="{{ env "HOME" }}/Templates"
+XDG_VIDEOS_DIR="{{ env "HOME" }}/Movies"
+{{- end }}
+{{- if eq .chezmoi.os "linux" }}
+XDG_BIN_HOME="{{ env "HOME" }}/.local/bin"
+XDG_CACHE_HOME="{{ env "HOME" }}/.cache"
+XDG_CONFIG_DIRS="/etc/xdg:{{ env "HOME" }}/.config"
+XDG_CONFIG_HOME="{{ env "HOME" }}/.config"
+XDG_DATA_DIRS="/usr/local/share:/usr/share:{{ env "HOME" }}/.local/share"
+XDG_DATA_HOME="{{ env "HOME" }}/.local/share"
+XDG_DESKTOP_DIR="{{ env "HOME" }}/Desktop"
+XDG_DOCUMENTS_DIR="{{ env "HOME" }}/Documents"
+XDG_DOWNLOAD_DIR="{{ env "HOME" }}/Downloads"
+XDG_MUSIC_DIR="{{ env "HOME" }}/Music"
+XDG_PICTURES_DIR="{{ env "HOME" }}/Pictures"
+XDG_PUBLICSHARE_DIR="{{ env "HOME" }}/Public"
+XDG_RUNTIME_DIR="/run/user/{{ output "id" "-u" | trim }}"
+XDG_STATE_HOME="{{ env "HOME" }}/.local/state"
+XDG_TEMPLATES_DIR="{{ env "HOME" }}/Templates"
+XDG_VIDEOS_DIR="{{ env "HOME" }}/Videos"
+{{- end }}

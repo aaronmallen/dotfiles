@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+#MISE description="Test dotfiles in an isolated home directory"
+#MISE alias=["t"]
+
+set -e
+
+bats tests "$@"

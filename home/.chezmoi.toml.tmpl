@@ -1,0 +1,25 @@
+{{- $email := promptStringOnce . "email" "What is your email address?" -}}
+{{- $fullName := promptStringOnce . "fullName" "What is your full name?" -}}
+
+{{- $packageManager := "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $packageManager = "brew" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   $packageManagers := list "apt" "brew" "paru" "yay" -}}
+{{-   $packageManager = promptChoiceOnce . "packageManager" "Which package manager should be used?" $packageManagers -}}
+{{- end -}}
+
+{{- $profiles := list "personal" "work" "container" -}}
+{{- $profile := promptChoiceOnce . "profile" "What profile should be used?" $profiles -}}
+
+sourceDir = {{ .chezmoi.workingTree | quote }}
+
+[data]
+fullName = {{ $fullName | quote }}
+email = {{ $email | quote }}
+packageManager = {{ $packageManager | quote }}
+profile = {{ $profile | quote }}
+
+[git]
+autoCommit = true
+autoPush = true

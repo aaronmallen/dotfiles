@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+#MISE description="Check JSON formatting"
+#MISE alias=["l:json"]
+
+set -e
+
+prettier --check --ignore-path .config/prettierignore --no-error-on-unmatched-pattern '**/*.json' '**/*.jsonc'

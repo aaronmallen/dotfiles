@@ -1,0 +1,20 @@
+Host ssh.aaronmallen.dev
+  User git
+  HostKeyAlias [truenas.local]:30143
+  ProxyCommand "${XDG_DATA_HOME:-$HOME/.local/share}/mise/shims/cloudflared" access ssh --hostname %h
+
+Host *
+  AddKeysToAgent yes
+  {{- if eq .chezmoi.os "darwin" }}
+  UseKeychain yes
+  {{- if stat (joinPath .chezmoi.homeDir "Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock") }}
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+  {{- end }}
+  {{- else if eq .chezmoi.os "linux" }}
+  {{- if stat (joinPath .chezmoi.homeDir ".1password/agent.sock") }}
+  IdentityAgent ~/.1password/agent.sock
+  {{- end }}
+  {{- end }}
+  {{- if eq .email "hello@aaronmallen.me" }}
+  IdentityFile ~/.ssh/id_ed25519_hello@aaronmallen.me.pub
+  {{- end }}

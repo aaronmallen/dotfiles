@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+#MISE description="Format all JSON files"
+#MISE alias=["fmt:json"]
+
+set -e
+
+prettier --write --ignore-path .config/prettierignore --no-error-on-unmatched-pattern '**/*.json' '**/*.jsonc'

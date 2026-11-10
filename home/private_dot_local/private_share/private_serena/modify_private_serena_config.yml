@@ -1,0 +1,17 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $settings := `
+agent_interface: tools
+base_modes:
+  - interactive
+  - editing
+  - no-memories
+web_dashboard_open_on_launch: false
+` | fromYaml -}}
+{{- $config := dict -}}
+{{- if .chezmoi.stdin -}}
+{{-   $config = fromYaml .chezmoi.stdin -}}
+{{- end -}}
+{{- if not (hasKey $config "projects") -}}
+{{-   $_ := set $config "projects" list -}}
+{{- end -}}
+{{- mergeOverwrite $config $settings | toYaml -}}

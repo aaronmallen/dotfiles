@@ -1,0 +1,26 @@
+{
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "theme": {
+    "name": "monokai",
+    "mode": "dark"
+  },
+  "animations": true,
+  "session": {
+    "thinking": "show",
+    "permissions": "autoaccept",
+    "sidebar": "auto"
+  },
+  "tabs": {
+    "mode": "auto",
+    "layout": "vertical",
+    "indicators": "status"
+  },
+  "attention": {
+    "notifications": true,
+    "sound": true
+  },
+  "plugins": [
+    "@prevalentware/opencode-loop-plugin",
+    "opencode-subagents-sidebar"
+  ]
+}

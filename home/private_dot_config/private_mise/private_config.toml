@@ -1,0 +1,65 @@
+[tools]
+"7zip" = "latest"
+age = "latest"
+ast-grep = "latest"
+atuin = "latest"
+aube = "latest"
+bat = "latest"
+bat-extras = "latest"
+bun = "latest"
+caddy = "latest"
+chezmoi = "latest"
+claude = "latest"
+cloudflared = "latest"
+codex = "latest"
+crystal = "latest"
+delta = "latest"
+deno = "latest"
+doctl = "latest"
+elixir = "latest"
+erlang = "latest"
+fd = "latest"
+fnox = "latest"
+fzf = "latest"
+go = "latest"
+jj = "latest"
+jq = "latest"
+kubectx = "latest"
+lsd = "latest"
+lua = "latest"
+minikube = "latest"
+neovim = "latest"
+node = "latest"
+opencode = "latest"
+pipx = "latest"
+"pipx:asciinema" = "latest"
+"pypi:serena-agent" = { version = "latest", python = "3.13" }
+pitchfork = "latest"
+postgres = "18"
+python = "latest"
+ripgrep = "latest"
+ruby = { version = "latest", postinstall = 'xargs gem install < "${XDG_CONFIG_HOME:-$HOME/.config}/ruby/default_gems"' }
+rust = "latest"
+shellcheck = "latest"
+sqlite = "latest"
+starship = "latest"
+tlrc = "latest"
+tree-sitter = "latest"
+usage = "latest"
+watchexec = "latest"
+yarn = "latest"
+zoxide = "latest"
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = [
+  "crystal",
+  "elixir",
+  "go",
+  "node",
+  "python",
+  "ruby",
+  "yarn",
+]
+ruby.compile = true
+self_update.auto = true

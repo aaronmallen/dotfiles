@@ -1,0 +1,29 @@
+**/README.md
+
+{{ if ne .chezmoi.os "darwin" }}
+.config/macos
+.config/pkgconfig
+.config/rex/themes
+.local/bin/mac-up
+Library
+{{ end }}
+
+{{if ne .chezmoi.os "linux" }}
+.config/autostart
+.config/vicinae
+.config/xorg
+{{ end }}
+
+{{ if and (ne .packageManager "paru") (ne .packageManager "yay") }}
+.config/aur
+{{ end }}
+
+{{ if ne .packageManager "apt" }}
+.config/apt
+.local/bin/apt-up
+{{ end }}
+
+{{ if ne .packageManager "brew" }}
+.config/homebrew
+.local/bin/brew-up
+{{ end }}

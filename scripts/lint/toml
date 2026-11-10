@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+#MISE description="Lint all TOML files"
+#MISE alias=["l:toml"]
+
+set -e
+
+taplo lint --config .config/taplo.toml
+taplo format --check --config .config/taplo.toml

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+command -v chezmoi > /dev/null && chezmoi update --apply
+{{- if eq .packageManager "brew" }}
+brew-up
+{{- end }}
+{{- if eq .packageManager "apt" }}
+apt-up
+{{- end }}
+{{- if or (eq .packageManager "paru") (eq .packageManager "yay") }}
+aur-up
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+mac-up
+{{- end }}
+mise-up

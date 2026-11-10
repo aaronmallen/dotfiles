@@ -1,0 +1,14 @@
+{{- $fontDir := "" }}
+{{- if eq .chezmoi.os "darwin" }}
+{{-   $fontDir = "Library/Fonts" }}
+{{- else if eq .chezmoi.os "linux" }}
+{{-   $fontDir = ".local/share/fonts" }}
+{{- end }}
+{{- range .fonts.nerd_fonts }}
+
+["{{ $fontDir }}/{{ .name }}"]
+private = true
+refreshPeriod = "168h"
+type = "archive"
+url = {{ printf "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/%s" .file | quote }}
+{{- end }}

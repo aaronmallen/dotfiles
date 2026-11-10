@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+export TLDR_CACHE_DIR="${XDG_CACHE_HOME}/tldr"

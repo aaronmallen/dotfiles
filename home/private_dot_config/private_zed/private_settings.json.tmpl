@@ -1,0 +1,64 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "outline_panel": {
+    "dock": "left"
+  },
+  "project_panel": {
+    "auto_fold_dirs": false,
+    "dock": "left"
+  },
+  "autosave": "on_focus_change",
+  "context_servers": {},
+  "edit_predictions": {
+    "provider": "zed",
+    "mode": "subtle",
+    "copilot": {
+      "proxy": null,
+      "proxy_no_verify": null
+    },
+    "enabled_in_text_threads": false
+  },
+  "agent": {
+    "dock": "right",
+    "play_sound_when_agent_done": "always",
+    "model_parameters": [],
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4"
+    }
+  },
+  "git_panel": {
+    "dock": "right"
+  },
+  "icon_theme": {
+    "mode": "system",
+    "light": "Material Icon Theme",
+    "dark": "Material Icon Theme"
+  },
+  "ui_font_size": 16,
+  "buffer_font_family": "FiraCode Nerd Font",
+  "buffer_font_features": {
+    "calt": true
+  },
+  "buffer_font_size": 14,
+  "tab_size": 2,
+  "theme": {
+    "mode": "system",
+    "light": "Monokai Pro (CE)",
+    "dark": "Monokai Pro (CE)"
+  },
+  "lsp": {
+    "lemminx": {
+      "initialization_options": { "settings": { "xml": { "server": { "workDir": "{{ if eq .chezmoi.os "darwin" }}{{ .chezmoi.homeDir }}/Library/Caches{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}/lemminx" } } } },
+      "settings": { "xml": { "server": { "workDir": "{{ if eq .chezmoi.os "darwin" }}{{ .chezmoi.homeDir }}/Library/Caches{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}/lemminx" } } }
+    }
+  },
+  "wrap_guides": [80, 120]
+}

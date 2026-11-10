@@ -1,0 +1,8 @@
+fonts:
+  nerd_fonts:
+    - name: FiraCode Nerd Font
+      file: FiraCode.zip
+    - name: JetBrainsMono Nerd Font
+      file: JetBrainsMono.zip
+    - name: Monaspace Nerd Font
+      file: Monaspace.zip

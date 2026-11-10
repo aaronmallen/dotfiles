@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+if [ "$#" -eq 1 ] && [ "$1" = /etc/os-release ]; then
+  printf 'ID=ubuntu\nVERSION_ID="24.04"\n'
+else
+  exec /bin/cat "$@"
+fi

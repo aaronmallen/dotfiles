@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ""
+  MISE_SKILLS_FETCH: "false"
+  MISE_SKILLS_AUTO_SYNC: "false"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: https://github.com/actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install Zsh
+        run: |
+          if [ "$(id -u)" -eq 0 ]; then
+            apt-get update && apt-get install -y zsh
+          else
+            sudo apt-get update && sudo apt-get install -y zsh
+          fi
+      - name: Install project tools
+        uses: https://github.com/jdx/mise-action@v5
+        with:
+          cache: false
+          github_token: ""
+      - name: Lint
+        run: mise run lint
+      - name: Test
+        run: mise run test

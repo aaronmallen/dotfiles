@@ -1,0 +1,6 @@
+.git/
+.jj/
+.serena/
+**/*.tmpl
+**/modify_*
+**/symlink_*

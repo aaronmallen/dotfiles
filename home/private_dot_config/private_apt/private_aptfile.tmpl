@@ -1,0 +1,37 @@
+1password
+1password-cli
+btop
+curl
+{{- if eq .profile "personal" }}
+discord
+{{- end }}
+docker.io
+gcc
+git
+git-lfs
+gh
+{{- /*
+  Ghostty entered the Ubuntu archive in 26.04; Debian has no official
+  package, so it is left out there rather than failing the whole
+  `apt-get install` run. See ../ghostty/README.md.
+*/}}
+{{- $osID := dig "id" "" .chezmoi.osRelease }}
+{{- $osVer := dig "versionID" "0" .chezmoi.osRelease }}
+{{- if and (eq $osID "ubuntu") (ge (float64 $osVer) 26.04) }}
+ghostty
+{{- end }}
+gnupg
+icu-devtools
+imagemagick
+libtool
+libyaml-dev
+meld
+{{- if eq .profile "personal" }}
+{{- end }}
+pkg-config
+python3-pygments
+libreadline-dev
+{{- if eq .profile "personal" }}
+telegram-desktop
+{{- end }}
+vim

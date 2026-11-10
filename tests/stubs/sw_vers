@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+case "$1" in
+-productVersion) echo 15.0 ;;
+-buildVersion) echo 24A335 ;;
+*) exit 1 ;;
+esac

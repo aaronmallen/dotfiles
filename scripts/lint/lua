@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+#MISE description="Check Lua formatting and syntax"
+#MISE alias=["l:lua"]
+
+set -e
+
+stylua --check --config-path .config/stylua.toml --glob '**/*.lua' --glob '!{.git,.jj,.serena}/**' .

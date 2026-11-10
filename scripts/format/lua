@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+#MISE description="Format all Lua files"
+#MISE alias=["fmt:lua"]
+
+set -e
+
+stylua --config-path .config/stylua.toml --glob '**/*.lua' --glob '!{.git,.jj,.serena}/**' .

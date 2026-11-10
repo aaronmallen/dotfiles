@@ -1,0 +1,5 @@
+[".local/share/zsh-syntax-highlighting"]
+private = true
+refreshPeriod = "168h"
+type = "git-repo"
+url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"

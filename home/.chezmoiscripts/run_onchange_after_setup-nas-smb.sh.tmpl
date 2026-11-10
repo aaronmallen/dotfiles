@@ -1,0 +1,51 @@
+{{ if eq .profile "personal" -}}
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env sh
+set -eu
+
+FSTAB="/etc/fstab"
+sudo mkdir -p /mnt/truenas/documents /mnt/truenas/code
+echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | sudo install -m 600 /dev/stdin /etc/smbcredentials-truenas
+
+TEMP_FSTAB=$(mktemp)
+trap 'rm -f "${TEMP_FSTAB}"' EXIT
+sudo awk '$0 != "# TrueNAS SMB shares" && $1 != "//truenas.local/documents" && $1 != "//truenas.local/code"' "${FSTAB}" > "${TEMP_FSTAB}"
+cat >> "${TEMP_FSTAB}" << 'EOF'
+# TrueNAS SMB shares
+//truenas.local/documents /mnt/truenas/documents cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
+//truenas.local/code /mnt/truenas/code cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
+EOF
+if ! sudo cmp -s "${TEMP_FSTAB}" "${FSTAB}"; then
+  sudo tee "${FSTAB}" < "${TEMP_FSTAB}" > /dev/null
+fi
+sudo mount -a
+{{ else if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env sh
+set -eu
+
+AUTO_MASTER="/etc/auto_master"
+AUTO_MAP="/etc/auto_smb_truenas"
+MARKER="/Volumes/nas"
+
+SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2-)
+if [ "$(sudo security find-internet-password -s truenas.local -a aaron -w /Library/Keychains/System.keychain 2>/dev/null || true)" != "${SMB_PASS}" ]; then
+  echo "Enter the TrueNAS SMB password when prompted."
+  sudo security add-internet-password -U -a aaron -s truenas.local -D "Network Password" -r "smb " /Library/Keychains/System.keychain -w
+fi
+
+  # Create the automount map file
+  sudo tee "${AUTO_MAP}" > /dev/null << 'EOF'
+documents -fstype=smbfs ://aaron@truenas.local/documents
+code      -fstype=smbfs ://aaron@truenas.local/code
+EOF
+  sudo chmod 644 "${AUTO_MAP}"
+
+  # Create the mount point (automount requires it to exist)
+  sudo mkdir -p /Volumes/nas
+
+if ! sudo grep -qF "${MARKER}" "${AUTO_MASTER}"; then
+  echo "/Volumes/nas	auto_smb_truenas" | sudo tee -a "${AUTO_MASTER}" > /dev/null
+fi
+sudo automount -vc
+{{ end -}}
+{{ end -}}

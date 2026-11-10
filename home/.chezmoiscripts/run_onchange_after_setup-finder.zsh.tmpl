@@ -1,0 +1,18 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env zsh
+set -eu
+
+plist="$HOME/Library/Preferences/com.apple.finder.plist"
+buddy=/usr/libexec/PlistBuddy
+
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+for key in :StandardViewSettings :StandardViewSettings:IconViewSettings; do
+  $buddy -c "Print $key" "$plist" >/dev/null 2>&1 || $buddy -c "Add $key dict" "$plist"
+done
+$buddy -c "Delete :StandardViewSettings:IconViewSettings:arrangeBy" "$plist" 2>/dev/null || true
+$buddy -c "Add :StandardViewSettings:IconViewSettings:arrangeBy string name" "$plist"
+
+killall cfprefsd 2>/dev/null || true
+killall Finder 2>/dev/null || true
+{{ end -}}
