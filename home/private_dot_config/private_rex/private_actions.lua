@@ -10,7 +10,7 @@ end
 rex.action {
   name = "monitor",
   title = "Open Monitor",
-  description = "Rename the session to monitor, with btop and caffeinate in its first two tabs.",
+  description = "Rename the session to monitor, with btop in its first tab.",
   run = function(ctx)
     local session_id = ctx.session_id
     local view = check(rex.session.view { session_id = session_id })
@@ -18,7 +18,7 @@ rex.action {
 
     local windows, rest = {}, nil
     for _, window in ipairs(view.windows or {}) do
-      if window.label == "btop" or window.label == "caffeinate" then
+      if window.label == "btop" then
         windows[window.label] = windows[window.label] or window.window_id
       elseif rest == nil then
         rest = window.window_id
@@ -38,9 +38,7 @@ rex.action {
     end
 
     local btop = open("btop", "btop")
-    local caffeinate = open("caffeinate", "caffeinate -disu")
-    check(rex.session.move_window { session_id = session_id, window_id = caffeinate, before_window_id = rest })
-    check(rex.session.move_window { session_id = session_id, window_id = btop, before_window_id = caffeinate })
+    check(rex.session.move_window { session_id = session_id, window_id = btop, before_window_id = rest })
     check(rex.session.focus_window { session_id = session_id, window_id = btop })
   end,
 }

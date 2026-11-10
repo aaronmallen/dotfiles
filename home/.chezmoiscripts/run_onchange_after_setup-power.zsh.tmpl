@@ -1,0 +1,6 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env zsh
+set -eu
+
+sudo pmset -a disablesleep 1
+{{ end -}}
