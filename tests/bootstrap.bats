@@ -9,7 +9,10 @@ setup() {
   export BOOTSTRAP_OS=Darwin
   mkdir -p "$HOME" "$BATS_TEST_TMPDIR/bin"
   cp "$BATS_TEST_DIRNAME/../bootstrap" "$BATS_TEST_TMPDIR/bootstrap"
-  for tool in bash dirname env ln mkdir mktemp rm; do
+  export PASSWORD_MANAGER_SCRIPT="$BATS_TEST_DIRNAME/../home/.install-password-manager.sh"
+  mkdir -p "$BATS_TEST_TMPDIR/home"
+  cp "$PASSWORD_MANAGER_SCRIPT" "$BATS_TEST_TMPDIR/home/.install-password-manager.sh"
+  for tool in bash cp dirname env ln mkdir mktemp rm; do
     ln -s "$(command -v "$tool")" "$BATS_TEST_TMPDIR/bin/$tool"
   done
   cat >"$BATS_TEST_TMPDIR/bin/stub" <<'EOF'
@@ -23,6 +26,8 @@ git)
   [[ ${FAIL_CLONE:-0} != 1 ]] || exit 1
   mkdir -p "$3"
   printf 'home\n' >"$3/.chezmoiroot"
+  mkdir -p "$3/home"
+  cp "$PASSWORD_MANAGER_SCRIPT" "$3/home/.install-password-manager.sh"
   ;;
 chezmoi)
   case "$*" in

@@ -40,41 +40,16 @@ Darwin)
     fi
   fi
   brew install git gnupg zsh mise chezmoi jq
-  if ! command -v op >/dev/null; then
-    brew install --cask 1password-cli
-  fi
   ;;
 Linux)
   if command -v apt-get >/dev/null; then
     sudo apt-get update
     sudo apt-get install -y ca-certificates curl git gnupg zsh unzip build-essential jq
-    if ! command -v op >/dev/null; then
-      curl -fsSL https://downloads.1password.com/linux/keys/1password.asc -o "$work/1password.asc"
-      gpg --batch --yes --dearmor --output "$work/1password.gpg" "$work/1password.asc"
-      sudo install -m 644 "$work/1password.gpg" /usr/share/keyrings/1password-archive-keyring.gpg
-      printf 'deb [arch=%s signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/%s stable main\n' \
-        "$(dpkg --print-architecture)" "$(dpkg --print-architecture)" >"$work/1password.list"
-      sudo install -m 644 "$work/1password.list" /etc/apt/sources.list.d/1password.list
-      curl -fsSL https://downloads.1password.com/linux/debian/debsig/1password.pol -o "$work/1password.pol"
-      sudo install -d /etc/debsig/policies/AC2D62742012EA22 /usr/share/debsig/keyrings/AC2D62742012EA22
-      sudo install -m 644 "$work/1password.pol" /etc/debsig/policies/AC2D62742012EA22/1password.pol
-      sudo install -m 644 "$work/1password.gpg" /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-      sudo apt-get update
-      sudo apt-get install -y 1password-cli
-    fi
   elif command -v pacman >/dev/null; then
     sudo pacman -Syu --needed --noconfirm base-devel ca-certificates curl git gnupg zsh unzip jq
-    if command -v paru >/dev/null; then
-      aur=paru
-    elif command -v yay >/dev/null; then
-      aur=yay
-    else
+    if ! command -v paru >/dev/null && ! command -v yay >/dev/null; then
       git clone https://aur.archlinux.org/yay.git "$work/yay"
       (cd "$work/yay" && makepkg -si --noconfirm)
-      aur=yay
-    fi
-    if ! command -v op >/dev/null; then
-      "$aur" -S --needed 1password-cli
     fi
   else
     echo 'Supported Linux distributions use APT or pacman.' >&2
@@ -103,6 +78,7 @@ if [[ ! -f "$checkout/.chezmoiroot" ]]; then
 fi
 
 cd "$checkout"
+bash "$checkout/home/.install-password-manager.sh"
 chezmoi init --source "$checkout"
 
 manager=$(chezmoi execute-template '{{ .packageManager }}')

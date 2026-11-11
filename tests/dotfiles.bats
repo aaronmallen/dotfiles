@@ -6,6 +6,8 @@ load helper
   cm init
   source_dir=$(chezmoi --config "$BATS_TEST_TMPDIR/chezmoi.toml" dump-config --format json | jq -r .sourceDir)
   [ "$source_dir" = "$ROOT" ]
+  hook=$(chezmoi --config "$BATS_TEST_TMPDIR/chezmoi.toml" dump-config --format json | jq -r '.hooks["read-source-state"].pre.args[0]')
+  [ "$hook" = "$ROOT/home/.install-password-manager.sh" ]
 }
 
 @test "font URLs render offline with an invalid GitHub token" {
@@ -163,7 +165,8 @@ EOF
   sh "$BATS_TEST_TMPDIR/nas.sh"
   [ "$(grep -c '^//truenas.local/documents ' "$FSTAB_TEST")" -eq 1 ]
   [ "$(grep -c '^//truenas.local/code ' "$FSTAB_TEST")" -eq 1 ]
-  ! grep -q 'gitlab\|192.168.1.238' "$FSTAB_TEST"
+  run grep -q 'gitlab\|192.168.1.238' "$FSTAB_TEST"
+  [ "$status" -eq 1 ]
   grep -q '^UUID=root / ext4 defaults 0 1$' "$FSTAB_TEST"
   grep -q '^//other/share /mnt/other cifs defaults 0 0$' "$FSTAB_TEST"
   cp "$FSTAB_TEST" "$BATS_TEST_TMPDIR/first-fstab"

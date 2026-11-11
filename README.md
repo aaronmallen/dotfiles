@@ -41,6 +41,10 @@ tests/                Bats tests and command stubs
 `.chezmoiroot` selects `home/` as the source of managed files. The config template sets `sourceDir` to the
 checkout root, so chezmoi uses this repo directly.
 
+The `read-source-state.pre` hook runs `home/.install-password-manager.sh` before reading templates.
+It installs 1Password CLI through Homebrew, APT, or AUR when `op` is missing. Bootstrap uses the same script.
+Run `chezmoi init` again in an existing checkout to add the hook to your config.
+
 Chezmoi names describe how to install a file. For example, `private_dot_config` becomes `~/.config`,
 `private_executable_compress` becomes an executable named `compress`, and `symlink_dot_bashrc` defines `~/.bashrc`.
 Files ending in `.tmpl` render from template data. The `modify_` templates merge settings into files
