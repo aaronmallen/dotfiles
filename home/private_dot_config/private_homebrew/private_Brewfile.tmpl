@@ -72,6 +72,8 @@ cask "telegram"
 cask "zed"
 cask "zoom"
 
+{{ if eq .profile "personal" -}}
 mas "ColorSlurp", id: 1287239339
 mas "Sequence Diagram for Mac", id: 1195426709
 mas "Xcode", id: 497799835
+{{ end -}}

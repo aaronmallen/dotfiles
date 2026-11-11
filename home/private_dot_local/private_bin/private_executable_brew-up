@@ -2,7 +2,6 @@
 
 command -v brew >/dev/null &&
   brew bundle &&
-  brew bundle cleanup --force &&
   brew update &&
   brew upgrade &&
   brew cleanup &&

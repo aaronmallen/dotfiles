@@ -9,7 +9,7 @@ echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | su
 
 TEMP_FSTAB=$(mktemp)
 trap 'rm -f "${TEMP_FSTAB}"' EXIT
-sudo awk '$0 != "# TrueNAS SMB shares" && $1 != "//truenas.local/documents" && $1 != "//truenas.local/code"' "${FSTAB}" > "${TEMP_FSTAB}"
+sudo awk '$0 != "# TrueNAS SMB shares" && $1 !~ /^\/\/truenas\.local\/(documents|code|gitlab)$/ && $2 !~ /^\/mnt\/truenas\/(documents|code|gitlab)$/' "${FSTAB}" > "${TEMP_FSTAB}"
 cat >> "${TEMP_FSTAB}" << 'EOF'
 # TrueNAS SMB shares
 //truenas.local/documents /mnt/truenas/documents cifs credentials=/etc/smbcredentials-truenas,uid=aaron,gid=aaron,_netdev,nofail 0 0
@@ -17,8 +17,13 @@ cat >> "${TEMP_FSTAB}" << 'EOF'
 EOF
 if ! sudo cmp -s "${TEMP_FSTAB}" "${FSTAB}"; then
   sudo tee "${FSTAB}" < "${TEMP_FSTAB}" > /dev/null
+  sudo systemctl daemon-reload
 fi
-sudo mount -a
+for share in documents code; do
+  if ! mountpoint -q "/mnt/truenas/${share}"; then
+    sudo mount "/mnt/truenas/${share}"
+  fi
+done
 {{ else if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env sh
 set -eu

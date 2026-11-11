@@ -123,6 +123,56 @@ load helper
   done
 }
 
+@test "NAS setup replaces duplicate shares, drops legacy GitLab and skips mounted shares" {
+  export FSTAB_TEST="$BATS_TEST_TMPDIR/fstab"
+  export NAS_LOG="$BATS_TEST_TMPDIR/nas.log"
+  export NAS_MOUNTED="$BATS_TEST_TMPDIR/code-mounted"
+  cat >"$FSTAB_TEST" <<'EOF'
+UUID=root / ext4 defaults 0 1
+//other/share /mnt/other cifs defaults 0 0
+# TrueNAS SMB shares
+//truenas.local/documents /mnt/truenas/documents cifs defaults 0 0
+//truenas.local/documents /mnt/truenas/documents cifs defaults 0 0
+//192.168.1.238/code /mnt/truenas/code cifs defaults 0 0
+//truenas.local/gitlab /mnt/truenas/gitlab cifs defaults 0 0
+EOF
+  mkdir "$BATS_TEST_TMPDIR/bin"
+  cat >"$BATS_TEST_TMPDIR/bin/sudo" <<'EOF'
+#!/bin/sh
+case "$1" in
+  awk|cmp|tee) exec "$@" ;;
+  mkdir) exit 0 ;;
+  install) cat >/dev/null ;;
+  systemctl) echo "$*" >>"$NAS_LOG" ;;
+  mount)
+    [ "$2" = /mnt/truenas/code ] || exit 1
+    echo "$*" >>"$NAS_LOG"
+    touch "$NAS_MOUNTED"
+    ;;
+  *) exit 1 ;;
+esac
+EOF
+  cat >"$BATS_TEST_TMPDIR/bin/mountpoint" <<'EOF'
+#!/bin/sh
+[ "$2" = /mnt/truenas/documents ] || [ -f "$NAS_MOUNTED" ]
+EOF
+  chmod +x "$BATS_TEST_TMPDIR/bin/"*
+  export PATH="$BATS_TEST_TMPDIR/bin:$PATH"
+  render personal linux paru "$ROOT/home/.chezmoiscripts/run_onchange_after_setup-nas-smb.sh.tmpl" |
+    sed "s|FSTAB=\"/etc/fstab\"|FSTAB=\"$FSTAB_TEST\"|" >"$BATS_TEST_TMPDIR/nas.sh"
+  sh "$BATS_TEST_TMPDIR/nas.sh"
+  [ "$(grep -c '^//truenas.local/documents ' "$FSTAB_TEST")" -eq 1 ]
+  [ "$(grep -c '^//truenas.local/code ' "$FSTAB_TEST")" -eq 1 ]
+  ! grep -q 'gitlab\|192.168.1.238' "$FSTAB_TEST"
+  grep -q '^UUID=root / ext4 defaults 0 1$' "$FSTAB_TEST"
+  grep -q '^//other/share /mnt/other cifs defaults 0 0$' "$FSTAB_TEST"
+  cp "$FSTAB_TEST" "$BATS_TEST_TMPDIR/first-fstab"
+  sh "$BATS_TEST_TMPDIR/nas.sh"
+  cmp "$FSTAB_TEST" "$BATS_TEST_TMPDIR/first-fstab"
+  [ "$(grep -c '^mount /mnt/truenas/code$' "$NAS_LOG")" -eq 1 ]
+  [ "$(grep -c '^systemctl daemon-reload$' "$NAS_LOG")" -eq 1 ]
+}
+
 @test "compress and extract round-trip spaced paths without overwriting existing files" {
   cd "$BATS_TEST_TMPDIR"
   mkdir 'sample folder'

@@ -3,5 +3,4 @@
 APTFILE="${HOME}/.config/apt/aptfile"
 sudo apt-get update &&
   xargs -a "${APTFILE}" sudo apt-get install -y &&
-  sudo apt-get autoremove -y &&
   sudo apt-get upgrade -y
