@@ -20,13 +20,14 @@ _bash_debug() {
 
 # Load a bash topic's configuration files from XDG_CONFIG_HOME.
 #
-# Handles dependency resolution, env/alias sourcing, and guards against
+# Handles dependency resolution, file sourcing, and guards against
 # double-loading. Each topic lives in its own directory under XDG_CONFIG_HOME
-# and may contain env.sh, aliases.sh, and init.bash files.
+# and may contain env.sh, aliases.sh, functions.sh, and init.bash files.
 #
 # Options:
 #   --source-env       Source the topic's env.sh file
 #   --source-aliases   Source the topic's aliases.sh file
+#   --source-functions Source the topic's functions.sh file
 #   --deps <topic>     Load a dependency first (repeatable)
 #
 # Usage:
@@ -46,7 +47,7 @@ _load_bash_topic() {
 
   _bash_debug "initializing: ${topic}"
 
-  local source_env="" source_aliases=""
+  local source_env="" source_aliases="" source_functions=""
   local -a deps=()
 
   while [[ $# -gt 0 ]]; do
@@ -57,6 +58,10 @@ _load_bash_topic() {
       ;;
     --source-aliases)
       source_aliases=1
+      shift
+      ;;
+    --source-functions)
+      source_functions=1
       shift
       ;;
     --deps)
@@ -83,6 +88,11 @@ _load_bash_topic() {
   if [[ -n "$source_aliases" ]]; then
     local alias_file="${XDG_CONFIG_HOME:-$HOME/.config}/${topic}/aliases.sh"
     [[ -f "$alias_file" ]] && _bash_debug "sourcing: ${alias_file}" && source "$alias_file"
+  fi
+
+  if [[ -n "$source_functions" ]]; then
+    local functions_file="${XDG_CONFIG_HOME:-$HOME/.config}/${topic}/functions.sh"
+    [[ -f "$functions_file" ]] && _bash_debug "sourcing: ${functions_file}" && source "$functions_file"
   fi
 
   BASH_LOADED_TOPICS="${BASH_LOADED_TOPICS}${topic}:"
