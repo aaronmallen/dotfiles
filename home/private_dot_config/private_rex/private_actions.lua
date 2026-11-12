@@ -7,11 +7,72 @@ local function check(result, err)
   return result
 end
 
+local function split(items, direction)
+  local layout = items[#items]
+  for i = #items - 1, 1, -1 do
+    layout = direction(1 / (#items - i + 1), items[i], layout)
+  end
+  return layout
+end
+
+local function monitor_layout()
+  local path = (os.getenv "XDG_CONFIG_HOME" or os.getenv "HOME" .. "/.config") .. "/rex/monitor.toml"
+  local file, err = io.open(path, "r")
+  if not file then
+    error("Cannot read " .. path .. ": " .. err, 0)
+  end
+  local contents = file:read "*a"
+  file:close()
+  local ok, config = pcall(require("tinytoml").parse, contents, { load_from_string = true })
+  if not ok then
+    error(path .. ": " .. config, 0)
+  end
+  assert(type(config.panes) == "table" and next(config.panes), path .. ": panes must contain at least one pane")
+  local panes, occupied = {}, {}
+  for label, pane in pairs(config.panes) do
+    assert(
+      type(pane) == "table" and type(pane.command) == "string" and pane.command:match "%S",
+      path .. ": " .. label .. ": command must be a nonempty string"
+    )
+    for _, axis in ipairs { "col", "row" } do
+      local value = pane[axis]
+      assert(
+        type(value) == "number" and value >= 0 and value % 1 == 0,
+        path .. ": " .. label .. ": " .. axis .. " must be a nonnegative integer"
+      )
+    end
+    local position = pane.col .. ":" .. pane.row
+    assert(not occupied[position], path .. ": " .. label .. ": duplicate position " .. position)
+    occupied[position] = true
+    pane.label = label
+    panes[#panes + 1] = pane
+  end
+  table.sort(panes, function(a, b)
+    return a.col < b.col or (a.col == b.col and a.row < b.row)
+  end)
+  local columns, rows, col = {}, {}, nil
+  for _, pane in ipairs(panes) do
+    if col ~= nil and pane.col ~= col then
+      columns[#columns + 1] = split(rows, rex.layout.vertical)
+      rows = {}
+    end
+    col = pane.col
+    rows[#rows + 1] = rex.layout.block {
+      flavor = shell,
+      label = pane.label,
+      options = { initial_input = pane.command .. "\n" },
+    }
+  end
+  columns[#columns + 1] = split(rows, rex.layout.vertical)
+  return split(columns, rex.layout.horizontal)
+end
+
 rex.action {
   name = "monitor",
   title = "Open Monitor",
-  description = "Rename the session to monitor, with four btop panes in its first tab.",
+  description = "Open the panes configured in ~/.config/rex/monitor.toml.",
   run = function(ctx)
+    local layout = monitor_layout()
     local session_id = ctx.session_id
     local view = check(rex.session.view { session_id = session_id })
     check(rex.session.set_label { session_id = session_id, label = "monitor" })
@@ -25,10 +86,6 @@ rex.action {
       end
     end
 
-    local function pane(label, command)
-      return rex.layout.block { flavor = shell, label = label, options = { initial_input = command .. "\n" } }
-    end
-
     local function open(label)
       if windows[label] then
         return windows[label]
@@ -37,19 +94,7 @@ rex.action {
         session_id = session_id,
         window_label = label,
         focus = false,
-        layout = rex.layout.horizontal(
-          0.5,
-          rex.layout.vertical(
-            0.5,
-            pane("aa-pc-01", "btop"),
-            pane("aa-pc-02", "ssh -4 -t aa-pc-02.local LC_ALL=C.UTF-8 btop")
-          ),
-          rex.layout.vertical(
-            0.5,
-            pane("aa-pc-03", "ssh -4 -t pangolin.local LC_ALL=C.UTF-8 btop"),
-            pane("aa-app-01", "ssh -4 -t raspberry-pi.local btop")
-          )
-        ),
+        layout = layout,
       }).window_id
     end
 
