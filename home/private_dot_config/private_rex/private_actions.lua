@@ -10,7 +10,7 @@ end
 rex.action {
   name = "monitor",
   title = "Open Monitor",
-  description = "Rename the session to monitor, with three btop panes in its first tab.",
+  description = "Rename the session to monitor, with four btop panes in its first tab.",
   run = function(ctx)
     local session_id = ctx.session_id
     local view = check(rex.session.view { session_id = session_id })
@@ -39,7 +39,11 @@ rex.action {
         focus = false,
         layout = rex.layout.horizontal(
           0.5,
-          pane("aa-pc-01", "btop"),
+          rex.layout.vertical(
+            0.5,
+            pane("aa-pc-01", "btop"),
+            pane("aa-pc-02", "ssh -4 -t aa-pc-02.local LC_ALL=C.UTF-8 btop")
+          ),
           rex.layout.vertical(
             0.5,
             pane("aa-pc-03", "ssh -4 -t pangolin.local LC_ALL=C.UTF-8 btop"),
@@ -52,5 +56,11 @@ rex.action {
     local btop = open "btop"
     check(rex.session.move_window { session_id = session_id, window_id = btop, before_window_id = rest })
     check(rex.session.focus_window { session_id = session_id, window_id = btop })
+    if rest and #view.windows == 1 then
+      local layers = view.windows[1].layers
+      if #layers == 1 and #layers[1].blocks == 1 and layers[1].blocks[1].flavor == shell then
+        check(rex.session.close_window { session_id = session_id, window_id = rest })
+      end
+    end
   end,
 }
