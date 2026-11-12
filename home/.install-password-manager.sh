@@ -2,13 +2,17 @@
 
 set -euo pipefail
 
-command -v op >/dev/null && exit 0
-
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
 case "$(uname -s)" in
 Darwin)
+  packages=()
+  if [[ ! -d /Applications/1Password.app && ! -d "$HOME/Applications/1Password.app" ]]; then
+    packages+=(1password)
+  fi
+  command -v op >/dev/null || packages+=(1password-cli)
+  ((${#packages[@]})) || exit 0
   if ! command -v brew >/dev/null; then
     for brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
       if [[ -x "$brew" ]]; then
@@ -26,10 +30,13 @@ Darwin)
       eval "$(/usr/local/bin/brew shellenv bash)"
     fi
   fi
-  command -v op >/dev/null && exit 0
-  brew install --cask 1password-cli
+  brew install --cask "${packages[@]}"
   ;;
 Linux)
+  packages=()
+  command -v 1password >/dev/null || packages+=(1password)
+  command -v op >/dev/null || packages+=(1password-cli)
+  ((${#packages[@]})) || exit 0
   if command -v apt-get >/dev/null; then
     sudo apt-get update
     sudo apt-get install -y ca-certificates curl gnupg
@@ -44,7 +51,7 @@ Linux)
     sudo install -m 644 "$work/1password.pol" /etc/debsig/policies/AC2D62742012EA22/1password.pol
     sudo install -m 644 "$work/1password.gpg" /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
     sudo apt-get update
-    sudo apt-get install -y 1password-cli
+    sudo apt-get install -y "${packages[@]}"
   elif command -v pacman >/dev/null; then
     if command -v paru >/dev/null; then
       aur=paru
@@ -56,7 +63,7 @@ Linux)
       (cd "$work/yay" && makepkg -si --noconfirm)
       aur=yay
     fi
-    "$aur" -S --needed 1password-cli
+    "$aur" -S --needed "${packages[@]}"
   else
     echo 'Installing 1Password CLI requires APT or pacman on Linux.' >&2
     exit 1

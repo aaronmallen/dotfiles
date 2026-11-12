@@ -12,7 +12,7 @@ setup() {
   export PASSWORD_MANAGER_SCRIPT="$BATS_TEST_DIRNAME/../home/.install-password-manager.sh"
   mkdir -p "$BATS_TEST_TMPDIR/home"
   cp "$PASSWORD_MANAGER_SCRIPT" "$BATS_TEST_TMPDIR/home/.install-password-manager.sh"
-  for tool in bash cp dirname env ln mkdir mktemp rm; do
+  for tool in bash cp dirname env ln mkdir mktemp rm sh; do
     ln -s "$(command -v "$tool")" "$BATS_TEST_TMPDIR/bin/$tool"
   done
   cat >"$BATS_TEST_TMPDIR/bin/stub" <<'EOF'
@@ -22,6 +22,9 @@ name=${0##*/}
 printf '%s %s\n' "$name" "$*" >>"$BOOTSTRAP_LOG"
 case "$name" in
 uname) echo "$BOOTSTRAP_OS" ;;
+curl)
+  printf 'ln -s "%s/bin/stub" "%s/bin/mise"\n' "$BATS_TEST_TMPDIR" "$BATS_TEST_TMPDIR" >"$4"
+  ;;
 git)
   [[ ${FAIL_CLONE:-0} != 1 ]] || exit 1
   mkdir -p "$3"
@@ -40,7 +43,7 @@ op) [[ ${FAIL_AUTH:-0} != 1 ]] ;;
 esac
 EOF
   chmod +x "$BATS_TEST_TMPDIR/bin/stub"
-  for tool in uname git brew chezmoi op; do
+  for tool in uname git brew chezmoi op 1password mise curl; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
   done
   export PATH="$BATS_TEST_TMPDIR/bin"
@@ -50,9 +53,21 @@ EOF
   run bash "$BATS_TEST_TMPDIR/bootstrap"
   [ "$status" -eq 0 ]
   log=$(<"$BOOTSTRAP_LOG")
+  [[ "$log" == *$'brew install git gnupg zsh\n'* ]]
+  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
   [[ "$log" == *"git clone https://aaronmallen.dev/aaron/dotfiles.git $HOME/src/aaronmallen.dev/aaron/dotfiles"* ]]
   [[ "$log" == *"chezmoi init --source $HOME/src/aaronmallen.dev/aaron/dotfiles"* ]]
   [[ "$log" == *"chezmoi apply --source $HOME/src/aaronmallen.dev/aaron/dotfiles"* ]]
+}
+
+@test "bootstrap installs mise directly when missing" {
+  rm "$BATS_TEST_TMPDIR/bin/mise"
+  run bash "$BATS_TEST_TMPDIR/bootstrap"
+  [ "$status" -eq 0 ]
+  log=$(<"$BOOTSTRAP_LOG")
+  [[ "$log" == *"curl -fsSL https://mise.run -o "* ]]
+  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
+  [[ "$log" == *"chezmoi apply"* ]]
 }
 
 @test "bootstrap refuses an occupied clone destination before installing anything" {
@@ -90,23 +105,27 @@ EOF
 }
 
 @test "bootstrap prepares an APT machine before applying" {
-  for tool in apt-get sudo mise; do
+  for tool in apt-get sudo; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
   done
   run env BOOTSTRAP_OS=Linux bash "$BATS_TEST_TMPDIR/bootstrap"
   [ "$status" -eq 0 ]
   log=$(<"$BOOTSTRAP_LOG")
   [[ "$log" == *"sudo apt-get install -y"* ]]
+  [[ "$log" != *"build-essential jq"* ]]
+  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
   [[ "$log" == *"chezmoi apply"* ]]
 }
 
 @test "bootstrap prepares an Arch machine before applying" {
-  for tool in pacman sudo mise yay; do
+  for tool in pacman sudo yay; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
   done
   run env BOOTSTRAP_OS=Linux bash "$BATS_TEST_TMPDIR/bootstrap"
   [ "$status" -eq 0 ]
   log=$(<"$BOOTSTRAP_LOG")
   [[ "$log" == *"sudo pacman -Syu --needed --noconfirm"* ]]
+  [[ "$log" != *"unzip jq"* ]]
+  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
   [[ "$log" == *"chezmoi apply"* ]]
 }

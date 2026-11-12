@@ -42,7 +42,8 @@ tests/                Bats tests and command stubs
 checkout root, so chezmoi uses this repo directly.
 
 The `read-source-state.pre` hook runs `home/.install-password-manager.sh` before reading templates.
-It installs 1Password CLI through Homebrew, APT, or AUR when `op` is missing. Bootstrap uses the same script.
+It installs the 1Password app and CLI through Homebrew, APT, or AUR when either is missing.
+Bootstrap uses the same script.
 Run `chezmoi init` again in an existing checkout to add the hook to your config.
 
 Chezmoi names describe how to install a file. For example, `private_dot_config` becomes `~/.config`,

@@ -39,14 +39,14 @@ Darwin)
       eval "$(/usr/local/bin/brew shellenv bash)"
     fi
   fi
-  brew install git gnupg zsh mise chezmoi jq
+  brew install git gnupg zsh
   ;;
 Linux)
   if command -v apt-get >/dev/null; then
     sudo apt-get update
-    sudo apt-get install -y ca-certificates curl git gnupg zsh unzip build-essential jq
+    sudo apt-get install -y ca-certificates curl git gnupg zsh unzip build-essential
   elif command -v pacman >/dev/null; then
-    sudo pacman -Syu --needed --noconfirm base-devel ca-certificates curl git gnupg zsh unzip jq
+    sudo pacman -Syu --needed --noconfirm base-devel ca-certificates curl git gnupg zsh unzip
     if ! command -v paru >/dev/null && ! command -v yay >/dev/null; then
       git clone https://aur.archlinux.org/yay.git "$work/yay"
       (cd "$work/yay" && makepkg -si --noconfirm)
@@ -55,10 +55,6 @@ Linux)
     echo 'Supported Linux distributions use APT or pacman.' >&2
     exit 1
   fi
-  if ! command -v mise >/dev/null; then
-    curl -fsSL https://mise.run -o "$work/mise"
-    sh "$work/mise"
-  fi
   ;;
 *)
   echo 'Bootstrap supports macOS, Debian/Ubuntu, and Arch/CachyOS.' >&2
@@ -66,11 +62,14 @@ Linux)
   ;;
 esac
 
-if ! command -v chezmoi >/dev/null; then
-  cd "$HOME"
-  mise_env=$(mise env --shell bash chezmoi@latest)
-  eval "$mise_env"
+if ! command -v mise >/dev/null; then
+  curl -fsSL https://mise.run -o "$work/mise"
+  sh "$work/mise"
 fi
+
+cd "$HOME"
+mise_env=$(mise env --shell bash chezmoi@latest jq@latest)
+eval "$mise_env"
 
 if [[ ! -f "$checkout/.chezmoiroot" ]]; then
   mkdir -p "$(dirname "$checkout")"

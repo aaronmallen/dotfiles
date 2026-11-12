@@ -3,8 +3,9 @@
 setup() {
   export INSTALL_LOG="$BATS_TEST_TMPDIR/commands"
   export INSTALL_OS=Darwin
+  export HOME="$BATS_TEST_TMPDIR/home"
   SCRIPT="$BATS_TEST_DIRNAME/../home/.install-password-manager.sh"
-  mkdir -p "$BATS_TEST_TMPDIR/bin"
+  mkdir -p "$BATS_TEST_TMPDIR/bin" "$HOME/Applications/1Password.app"
   for tool in bash env ln mktemp rm; do
     ln -s "$(command -v "$tool")" "$BATS_TEST_TMPDIR/bin/$tool"
   done
@@ -26,11 +27,12 @@ EOF
   export PATH="$BATS_TEST_TMPDIR/bin"
 }
 
-@test "password manager hook exits without running commands when op exists" {
+@test "password manager hook exits without installing when both exist" {
   ln -s stub "$BATS_TEST_TMPDIR/bin/op"
   run bash "$SCRIPT"
   [ "$status" -eq 0 ]
-  [ ! -e "$INSTALL_LOG" ]
+  [[ $(<"$INSTALL_LOG") == *"uname -s"* ]]
+  [[ $(<"$INSTALL_LOG") != *"brew install"* ]]
 }
 
 @test "password manager hook installs with Homebrew and propagates failure" {
@@ -48,7 +50,7 @@ EOF
   run env INSTALL_OS=Linux bash "$SCRIPT"
   [ "$status" -eq 0 ]
   log=$(<"$INSTALL_LOG")
-  [[ "$log" == *"sudo install -m 644"*"/usr/share/keyrings/1password-archive-keyring.gpg"*"sudo apt-get install -y 1password-cli"* ]]
+  [[ "$log" == *"sudo install -m 644"*"/usr/share/keyrings/1password-archive-keyring.gpg"*"sudo apt-get install -y 1password 1password-cli"* ]]
 }
 
 @test "password manager hook uses an installed AUR helper" {
@@ -57,7 +59,25 @@ EOF
   done
   run env INSTALL_OS=Linux bash "$SCRIPT"
   [ "$status" -eq 0 ]
-  [[ $(<"$INSTALL_LOG") == *"paru -S --needed 1password-cli"* ]]
+  [[ $(<"$INSTALL_LOG") == *"paru -S --needed 1password 1password-cli"* ]]
+}
+
+@test "password manager hook installs the app when only the CLI exists" {
+  for tool in apt-get sudo curl gpg dpkg op; do
+    ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
+  done
+  run env INSTALL_OS=Linux bash "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [[ $(<"$INSTALL_LOG") == *"sudo apt-get install -y 1password" ]]
+}
+
+@test "password manager hook skips Linux installation when both exist" {
+  for tool in 1password op; do
+    ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
+  done
+  run env INSTALL_OS=Linux bash "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [[ $(<"$INSTALL_LOG") != *"install"* ]]
 }
 
 @test "password manager hook rejects unsupported systems" {
