@@ -47,6 +47,10 @@
     "branch": "master",
     "commit": "f1e186e44d3b7f9ae918008e2c28ce37c6023d2d"
   },
+  "jujutsu.nvim": {
+    "branch": "main",
+    "commit": "98e995bc2af75834e82555a35792dff3a5067236"
+  },
   "lazy.nvim": {
     "branch": "main",
     "commit": "306a05526ada86a7b30af95c5cc81ffba93fef97"

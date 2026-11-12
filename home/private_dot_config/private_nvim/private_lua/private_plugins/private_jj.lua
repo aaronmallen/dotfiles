@@ -1,5 +1,21 @@
 return {
   {
+    "dont-be-evil-company/jujutsu.nvim",
+    keys = {
+      {
+        "<leader>jj",
+        function()
+          require("jujutsu").open()
+        end,
+        desc = "Jujutsu dashboard",
+      },
+    },
+    opts = {
+      picker = "snacks",
+      integrations = { codediff = false, diffview = false },
+    },
+  },
+  {
     "nicolasgb/jj.nvim",
     version = "*",
     cmd = { "J", "Jdiff", "Jvdiff", "Jhdiff", "Jbrowse" },
