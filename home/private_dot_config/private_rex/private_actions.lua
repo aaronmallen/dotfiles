@@ -10,7 +10,7 @@ end
 rex.action {
   name = "monitor",
   title = "Open Monitor",
-  description = "Rename the session to monitor, with btop in its first tab.",
+  description = "Rename the session to monitor, with three btop panes in its first tab.",
   run = function(ctx)
     local session_id = ctx.session_id
     local view = check(rex.session.view { session_id = session_id })
@@ -25,7 +25,11 @@ rex.action {
       end
     end
 
-    local function open(label, command)
+    local function pane(label, command)
+      return rex.layout.block { flavor = shell, label = label, options = { initial_input = command .. "\n" } }
+    end
+
+    local function open(label)
       if windows[label] then
         return windows[label]
       end
@@ -33,11 +37,19 @@ rex.action {
         session_id = session_id,
         window_label = label,
         focus = false,
-        layout = rex.layout.block { flavor = shell, options = { initial_input = command .. "\n" } },
+        layout = rex.layout.horizontal(
+          0.5,
+          pane("aa-pc-01", "btop"),
+          rex.layout.vertical(
+            0.5,
+            pane("aa-pc-03", "ssh -4 -t pangolin.local LC_ALL=C.UTF-8 btop"),
+            pane("aa-app-01", "ssh -4 -t raspberry-pi.local btop")
+          )
+        ),
       }).window_id
     end
 
-    local btop = open("btop", "btop")
+    local btop = open "btop"
     check(rex.session.move_window { session_id = session_id, window_id = btop, before_window_id = rest })
     check(rex.session.focus_window { session_id = session_id, window_id = btop })
   end,
