@@ -1,7 +1,5 @@
-local action, created, calls, fail
-local shell = "com.superlogical.terminal.shell"
-local window = { window_id = "initial", label = "shell", layers = { { blocks = { { flavor = shell } } } } }
-local view = { windows = { window } }
+local action, created, calls
+local windows = 0
 rex = {
   action = function(value)
     action = value
@@ -17,24 +15,26 @@ rex = {
       return { direction = "vertical", ratio = ratio, a = a, b = b }
     end,
   },
-  session = {},
+  call = function(method, args)
+    assert(method == "session.create" and args.label == "monitor" and args.session_id == nil)
+    assert(#args.initial_windows == 1 and args.initial_windows[1].window_label == "monitor")
+    calls[#calls + 1] = method
+    created = args.initial_windows[1].layout
+    windows = windows + 1
+    return {
+      session_id = "session-" .. windows,
+      initial_windows = { { window_id = "monitor-" .. windows } },
+    }
+  end,
+  client = {
+    queue = function(name, args)
+      calls[#calls + 1] = name
+      if name == "session.select" then
+        assert(args.session_id == "session-" .. windows and args.window_id == "monitor-" .. windows)
+      end
+    end,
+  },
 }
-for _, name in ipairs { "view", "set_label", "new_window", "move_window", "focus_window", "close_window" } do
-  local name = name
-  rex.session[name] = function(args)
-    calls[#calls + 1] = name
-    if name == fail then
-      return nil, "failed"
-    end
-    if name == "view" then
-      return view
-    end
-    if name == "new_window" then
-      created = args.layout
-    end
-    return { window_id = "monitor" }
-  end
-end
 dofile "home/private_dot_config/private_rex/private_actions.lua"
 local path = os.tmpname()
 local open = io.open
@@ -58,6 +58,7 @@ local function run(contents, expected_error)
     assert(#calls == 0)
   else
     assert(ok, err)
+    assert(table.concat(calls, ",") == "session.create,session.select,client.tab.move_to_new_window")
   end
 end
 local function pane(label, col, row, command)
@@ -74,7 +75,6 @@ run(pane("a", 0, 0) .. pane("b", 0, 0), "duplicate position")
 run(pane("local", 0, 0))
 assert(created, table.concat(calls, ","))
 assert(created.label == "local")
-assert(calls[#calls - 1] == "focus_window" and calls[#calls] == "close_window")
 run(
   pane("remote", 3, 5, "ssh missing-host custom-tui")
     .. pane("local", 0, 0)
@@ -86,12 +86,9 @@ assert(created.a.direction == "vertical" and created.a.ratio == 0.5)
 assert(created.a.a.label == "local" and created.a.b.label == "bottom")
 assert(created.b.ratio == 0.5 and created.b.a.label == "middle")
 assert(created.b.b.options.initial_input == "ssh missing-host custom-tui\n")
-view.windows = { window, window }
 run(pane("local", 0, 0))
-assert(calls[#calls] == "focus_window")
-view.windows = { { window_id = "existing", label = "btop" } }
 run(pane("local", 0, 0))
-assert(created == nil and calls[#calls] == "focus_window")
+assert(windows == 4)
 os.remove(path)
 io.open = open
 print "monitor action checks passed"

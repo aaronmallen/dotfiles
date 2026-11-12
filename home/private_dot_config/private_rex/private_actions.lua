@@ -70,42 +70,17 @@ end
 rex.action {
   name = "monitor",
   title = "Open Monitor",
-  description = "Open the panes configured in ~/.config/rex/monitor.toml.",
-  run = function(ctx)
+  description = "Open ~/.config/rex/monitor.toml in a new monitor session and window.",
+  run = function()
     local layout = monitor_layout()
-    local session_id = ctx.session_id
-    local view = check(rex.session.view { session_id = session_id })
-    check(rex.session.set_label { session_id = session_id, label = "monitor" })
-
-    local windows, rest = {}, nil
-    for _, window in ipairs(view.windows or {}) do
-      if window.label == "btop" then
-        windows[window.label] = windows[window.label] or window.window_id
-      elseif rest == nil then
-        rest = window.window_id
-      end
-    end
-
-    local function open(label)
-      if windows[label] then
-        return windows[label]
-      end
-      return check(rex.session.new_window {
-        session_id = session_id,
-        window_label = label,
-        focus = false,
-        layout = layout,
-      }).window_id
-    end
-
-    local btop = open "btop"
-    check(rex.session.move_window { session_id = session_id, window_id = btop, before_window_id = rest })
-    check(rex.session.focus_window { session_id = session_id, window_id = btop })
-    if rest and #view.windows == 1 then
-      local layers = view.windows[1].layers
-      if #layers == 1 and #layers[1].blocks == 1 and layers[1].blocks[1].flavor == shell then
-        check(rex.session.close_window { session_id = session_id, window_id = rest })
-      end
-    end
+    local session = check(rex.call("session.create", {
+      label = "monitor",
+      initial_windows = { { window_label = "monitor", layout = layout } },
+    }))
+    rex.client.queue("session.select", {
+      session_id = session.session_id,
+      window_id = session.initial_windows[1].window_id,
+    })
+    rex.client.queue "client.tab.move_to_new_window"
   end,
 }
