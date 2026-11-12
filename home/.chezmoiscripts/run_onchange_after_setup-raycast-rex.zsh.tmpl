@@ -1,0 +1,10 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env zsh
+set -eu
+
+# {{ include ".chezmoiexternals/raycast-rex-sessions.toml.tmpl" | sha256sum }}
+export PATH="${HOME}/.local/share/mise/shims:${PATH}"
+cd "${HOME}/.local/share/raycast/extensions/rex-sessions"
+npm ci --no-audit --no-fund
+npm run build
+{{ end -}}

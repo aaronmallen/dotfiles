@@ -23,3 +23,14 @@ load helper
   [ "$status" -eq 0 ]
   [[ "$output" == *'[".local/share/rex/plugins/rex-agents"]'* ]]
 }
+
+@test "Raycast Rex source and build are only installed on macOS" {
+  for file in .chezmoiexternals/raycast-rex-sessions.toml.tmpl .chezmoiscripts/run_onchange_after_setup-raycast-rex.zsh.tmpl; do
+    run render personal linux apt "$ROOT/home/$file"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    run render personal darwin brew "$ROOT/home/$file"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"rex-sessions"* ]]
+  done
+}
