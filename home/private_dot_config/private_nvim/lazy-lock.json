@@ -107,6 +107,10 @@
     "branch": "master",
     "commit": "65734f76783705255d9ede8a6e4692e1572801a5"
   },
+  "rex.nvim": {
+    "branch": "main",
+    "commit": "02ad3b3e12d6600806a25597b52344b6770f845c"
+  },
   "schemastore.nvim": {
     "branch": "main",
     "commit": "cb6074339e4a7057140912e308d93155e55d1410"
