@@ -13,9 +13,17 @@ private-commits = "private() | wip()"
 "wip()" = "description(glob:'wip:*')"
 
 [signing]
+{{- if eq .email "hello@aaronmallen.me" }}
 behavior = "own"
 backend = "gpg"
 key = "87133702D8F60DD8"
+{{- else if eq .email "aallen@creditninja.com" }}
+behavior = "own"
+backend = "gpg"
+key = "35C4F5CC3932DF34"
+{{- else }}
+behavior = "drop"
+{{- end }}
 
 [templates]
 log_node = """

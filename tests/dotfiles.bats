@@ -10,6 +10,30 @@ load helper
   [ "$hook" = "$ROOT/home/.install-password-manager.sh" ]
 }
 
+@test "git and jj select signing by email" {
+  for email in hello@aaronmallen.me aallen@creditninja.com test@example.com; do
+    case "$email" in
+    hello@aaronmallen.me) key=87133702D8F60DD8 ;;
+    aallen@creditninja.com) key=35C4F5CC3932DF34 ;;
+    *) key= ;;
+    esac
+    overrides=$(data container linux apt | jq --arg email "$email" '. + {email: $email}')
+    cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_config/private_git/private_config.tmpl" >"$BATS_TEST_TMPDIR/gitconfig"
+    cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_config/private_jj/private_config.toml.tmpl" >"$BATS_TEST_TMPDIR/jj.toml"
+    if [ -n "$key" ]; then
+      [ "$(git config --file "$BATS_TEST_TMPDIR/gitconfig" commit.gpgsign)" = true ]
+      [ "$(git config --file "$BATS_TEST_TMPDIR/gitconfig" user.signingkey)" = "$key" ]
+      grep -Fx 'behavior = "own"' "$BATS_TEST_TMPDIR/jj.toml"
+      grep -Fx "key = \"$key\"" "$BATS_TEST_TMPDIR/jj.toml"
+    else
+      [ "$(git config --file "$BATS_TEST_TMPDIR/gitconfig" commit.gpgsign)" = false ]
+      run git config --file "$BATS_TEST_TMPDIR/gitconfig" user.signingkey
+      [ "$status" -ne 0 ]
+      grep -Fx 'behavior = "drop"' "$BATS_TEST_TMPDIR/jj.toml"
+    fi
+  done
+}
+
 @test "font URLs render offline with an invalid GitHub token" {
   export CHEZMOI_GITHUB_ACCESS_TOKEN=invalid-test-token
   export HTTPS_PROXY=http://127.0.0.1:1
