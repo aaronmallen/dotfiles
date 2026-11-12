@@ -111,6 +111,14 @@
     "branch": "main",
     "commit": "cb6074339e4a7057140912e308d93155e55d1410"
   },
+  "smart-splits-backend-rex": {
+    "branch": "master",
+    "commit": "68f54325975ad47b03a968a3f201081bfadc0ff5"
+  },
+  "smart-splits.nvim": {
+    "branch": "master",
+    "commit": "5fd4fe53c2df2009e689f61511e3c474a9eccbaf"
+  },
   "snacks.nvim": {
     "branch": "main",
     "commit": "882c996cf28183f4d63640de0b4c02ec886d01f2"
