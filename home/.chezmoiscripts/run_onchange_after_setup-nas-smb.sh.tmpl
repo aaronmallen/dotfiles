@@ -5,7 +5,7 @@ set -eu
 
 FSTAB="/etc/fstab"
 sudo mkdir -p /mnt/truenas/documents /mnt/truenas/code
-echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | sudo install -m 600 /dev/stdin /etc/smbcredentials-truenas
+printf '%s\n' {{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" | shellQuote }} | sudo install -m 600 /dev/stdin /etc/smbcredentials-truenas
 
 TEMP_FSTAB=$(mktemp)
 trap 'rm -f "${TEMP_FSTAB}"' EXIT
@@ -32,7 +32,7 @@ AUTO_MASTER="/etc/auto_master"
 AUTO_MAP="/etc/auto_smb_truenas"
 MARKER="/Volumes/nas"
 
-SMB_PASS=$(echo '{{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" }}' | grep '^password=' | cut -d= -f2-)
+SMB_PASS=$(printf '%s\n' {{ onepasswordRead "op://Private/ojcxzmy2py5m7cxtgsfcrjpjte/file" | shellQuote }} | grep '^password=' | cut -d= -f2-)
 if [ "$(sudo security find-internet-password -s truenas.local -a aaron -w /Library/Keychains/System.keychain 2>/dev/null || true)" != "${SMB_PASS}" ]; then
   echo "Enter the TrueNAS SMB password when prompted."
   sudo security add-internet-password -U -a aaron -s truenas.local -D "Network Password" -r "smb " /Library/Keychains/System.keychain -w
