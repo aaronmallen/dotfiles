@@ -22,4 +22,4 @@
 {{-     $plugins = append $plugins .opencode -}}
 {{-   end -}}
 {{- end -}}
-{{- dict "mcp" (dict "servers" $servers) "permission" (dict "*" "allow") "plugins" $plugins | toPrettyJson }}
+{{- dict "mcp" (dict "servers" $servers) "permission" (dict "*" "allow") "plugins" $plugins "policies" (list (dict "action" "provider.use" "resource" "github-copilot" "effect" "deny")) | toPrettyJson }}
