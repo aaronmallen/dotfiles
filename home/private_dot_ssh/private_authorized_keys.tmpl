@@ -1,0 +1,3 @@
+{{- if eq .email "hello@aaronmallen.me" }}{{ onepasswordRead "op://Private/kshwczi5i7j6xpq4txavzdfqd4/public key" }} hello@aaronmallen.me
+{{- else if eq .email "aallen@creditninja.com" }}{{ onepasswordRead "op://Private/kl2lzt2zs6jdy2s2pmaqvsihji/public key" }} aallen@creditninja.com
+{{- end }}
