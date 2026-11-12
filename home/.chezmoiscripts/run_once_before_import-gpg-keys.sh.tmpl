@@ -17,4 +17,14 @@ op document get "GPG hello@aaronmallen.me Ownertrust" --vault Private | gpg --im
 
 echo "GPG keys imported successfully!"
 gpg --list-secret-keys
+{{- else if eq .email "aallen@creditninja.com" }}
+
+echo "Importing GPG private key from 1Password..."
+op document get r7oaflndgvy43rnu7asnq34ige --vault Private | gpg --import
+
+echo "Importing GPG ownertrust from 1Password..."
+op document get bqpuhdqsrdumpqhrqkyrgsv5wy --vault Private | gpg --import-ownertrust
+
+echo "GPG keys imported successfully!"
+gpg --list-secret-keys
 {{- end }}
