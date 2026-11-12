@@ -35,5 +35,6 @@ fi
 {{ end -}}
 
 # Mise config hash: {{ include "private_dot_config/private_mise/private_config.toml" | sha256sum }}
-command -v mise > /dev/null \
-  && mise install || true
+if command -v mise > /dev/null; then
+  mise install
+fi

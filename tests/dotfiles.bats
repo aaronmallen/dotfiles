@@ -210,3 +210,18 @@ EOF
   [ "$status" -eq 0 ]
   tar -tf archive.tar | grep -Fx file
 }
+
+@test "package hook reports failed mise installs" {
+  mkdir "$BATS_TEST_TMPDIR/bin"
+  printf '#!/bin/sh\nexit 0\n' >"$BATS_TEST_TMPDIR/bin/brew"
+  cat >"$BATS_TEST_TMPDIR/bin/mise" <<'EOF'
+#!/bin/sh
+exit "${MISE_FAIL:-0}"
+EOF
+  chmod +x "$BATS_TEST_TMPDIR/bin/brew" "$BATS_TEST_TMPDIR/bin/mise"
+  render container linux brew "$ROOT/home/.chezmoiscripts/run_onchange_after_install-packages.zsh.tmpl" >"$BATS_TEST_TMPDIR/packages.zsh"
+  run env PATH="$BATS_TEST_TMPDIR/bin:$PATH" zsh "$BATS_TEST_TMPDIR/packages.zsh"
+  [ "$status" -eq 0 ]
+  run env MISE_FAIL=42 PATH="$BATS_TEST_TMPDIR/bin:$PATH" zsh "$BATS_TEST_TMPDIR/packages.zsh"
+  [ "$status" -eq 42 ]
+}
