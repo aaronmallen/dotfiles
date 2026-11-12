@@ -1,0 +1,10 @@
+{{ if eq .chezmoi.os "darwin" }}
+[".local/share/sshpick/sshpick"]
+type = "file"
+executable = true
+url = "https://raw.githubusercontent.com/calvindotnow/sshpick/e3322ce8aac52d27137d25631fac2a267ed34be5/sshpick"
+
+[".config/rex/sshpick.lua"]
+type = "file"
+url = "https://raw.githubusercontent.com/calvindotnow/sshpick/e3322ce8aac52d27137d25631fac2a267ed34be5/sshpick.lua"
+{{ end }}

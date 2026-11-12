@@ -1,0 +1,3 @@
+#!/bin/sh
+export PATH="${XDG_DATA_HOME:-$HOME/.local/share}/mise/shims:$HOME/.local/bin:/Applications/Rex Beta.app/Contents/Helpers/Rex Server.rex/Contents/MacOS:$PATH"
+exec "$HOME/.local/share/sshpick/sshpick" "$@"

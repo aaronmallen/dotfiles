@@ -3,8 +3,9 @@
 {{ if ne .chezmoi.os "darwin" }}
 .config/macos
 .config/pkgconfig
-.config/rex/themes
+.config/rex
 .local/bin/mac-up
+.local/bin/sshpick
 Library
 {{ end }}
 
