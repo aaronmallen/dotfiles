@@ -187,3 +187,14 @@ EOF
   [ "$status" -ne 0 ]
   cmp 'sample folder/file name.txt' 'sample folder-1/file name.txt'
 }
+
+@test "compress rejects duplicate names in ZIP archives" {
+  cd "$BATS_TEST_TMPDIR"
+  mkdir a b
+  printf first >a/same
+  printf second >b/same
+  run sh "$ROOT/home/private_dot_local/private_bin/private_executable_compress" archive.zip a/same b/same
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"duplicate name: same"* ]]
+  [ ! -e archive.zip ]
+}

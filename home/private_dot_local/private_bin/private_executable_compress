@@ -82,6 +82,14 @@ case $lower in
   taropt=--use-compress-program=zstd tar_c "$@"
   ;;
 *.zip)
+  (
+    for input in "$@"; do
+      shift
+      for other in "$@"; do
+        [ "$(basename -- "$input")" != "$(basename -- "$other")" ] || die "duplicate name: $(basename -- "$input")"
+      done
+    done
+  )
   tool=$(need zip 7zz 7z)
   if [ "$tool" = zip ]; then
     for input in "$@"; do
