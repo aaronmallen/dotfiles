@@ -17,4 +17,6 @@ Host *
   {{- end }}
   {{- if eq .email "hello@aaronmallen.me" }}
   IdentityFile ~/.ssh/id_ed25519_hello@aaronmallen.me.pub
+  {{- else if eq .email "aallen@creditninja.com" }}
+  IdentityFile ~/.ssh/id_ed25519_aallen@creditninja.com.pub
   {{- end }}
