@@ -61,6 +61,7 @@ symbol = ""
 command = "echo -n"
 description = "Directory closing cap when not in VCS"
 format = "[ ](fg:cyan)"
+ignore_timeout = true
 when = "! git rev-parse --git-dir 2>/dev/null && ! jj root --ignore-working-copy 2>/dev/null"
 
 [custom.git]
@@ -73,6 +74,7 @@ echo " $branch$dirty"
 '''
 description = "Git branch and status"
 format = "[](bg:green fg:cyan)[[ $output ](fg:bg bg:green)]($style)[ ](fg:green)"
+ignore_timeout = true
 shell = ["bash", "--noprofile", "--norc"]
 style = "bg:green"
 when = "git rev-parse --git-dir 2>/dev/null && ! jj root --ignore-working-copy 2>/dev/null"
