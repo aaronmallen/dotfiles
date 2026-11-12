@@ -14,3 +14,12 @@ load helper
   [[ "$output" == *'[".local/share/sshpick/sshpick"]'* ]]
   [[ "$output" == *'[".config/rex/sshpick.lua"]'* ]]
 }
+
+@test "Rex agents are only installed on macOS" {
+  run render personal linux apt "$ROOT/home/.chezmoiexternals/rex-agents.toml.tmpl"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"rex-agents"* ]]
+  run render personal darwin brew "$ROOT/home/.chezmoiexternals/rex-agents.toml.tmpl"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'[".local/share/rex/plugins/rex-agents"]'* ]]
+}
