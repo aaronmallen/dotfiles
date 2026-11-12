@@ -201,3 +201,12 @@ EOF
   [[ "$output" == *"duplicate name: same"* ]]
   [ ! -e archive.zip ]
 }
+
+@test "compress handles nested inputs with CDPATH set" {
+  cd "$BATS_TEST_TMPDIR"
+  mkdir nested
+  printf content >nested/file
+  run env CDPATH=. sh "$ROOT/home/private_dot_local/private_bin/private_executable_compress" archive.tar nested/file
+  [ "$status" -eq 0 ]
+  tar -tf archive.tar | grep -Fx file
+}

@@ -24,7 +24,7 @@ need() {
 }
 
 absdir() {
-  (cd "$(dirname -- "$1")" && pwd)
+  (CDPATH='' cd "$(dirname -- "$1")" && pwd)
 }
 
 usage() {
