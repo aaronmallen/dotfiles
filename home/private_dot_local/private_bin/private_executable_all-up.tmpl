@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 
-command -v chezmoi > /dev/null && chezmoi update --apply
+set -e
+
+if command -v chezmoi > /dev/null; then
+  chezmoi update --apply
+fi
 {{- if eq .packageManager "brew" }}
 brew-up
 {{- end }}

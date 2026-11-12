@@ -225,3 +225,28 @@ EOF
   run env MISE_FAIL=42 PATH="$BATS_TEST_TMPDIR/bin:$PATH" zsh "$BATS_TEST_TMPDIR/packages.zsh"
   [ "$status" -eq 42 ]
 }
+
+@test "all-up stops when an update fails" {
+  mkdir "$BATS_TEST_TMPDIR/bin"
+  cat >"$BATS_TEST_TMPDIR/bin/stub" <<'EOF'
+#!/bin/sh
+name=${0##*/}
+printf '%s\n' "$name" >>"$UPDATE_LOG"
+[ "$name" != "${FAIL_UPDATE:-}" ]
+EOF
+  chmod +x "$BATS_TEST_TMPDIR/bin/stub"
+  for tool in chezmoi apt-up mise-up; do
+    ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
+  done
+  render container linux apt "$ROOT/home/private_dot_local/private_bin/private_executable_all-up.tmpl" >"$BATS_TEST_TMPDIR/all-up"
+  export UPDATE_LOG="$BATS_TEST_TMPDIR/updates"
+  run env PATH="$BATS_TEST_TMPDIR/bin:$PATH" sh "$BATS_TEST_TMPDIR/all-up"
+  [ "$status" -eq 0 ]
+  grep -Fx mise-up "$UPDATE_LOG"
+  : >"$UPDATE_LOG"
+  run env FAIL_UPDATE=apt-up PATH="$BATS_TEST_TMPDIR/bin:$PATH" sh "$BATS_TEST_TMPDIR/all-up"
+  [ "$status" -ne 0 ]
+  grep -Fx apt-up "$UPDATE_LOG"
+  run grep -Fx mise-up "$UPDATE_LOG"
+  [ "$status" -ne 0 ]
+}
