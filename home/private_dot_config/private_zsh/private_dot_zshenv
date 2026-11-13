@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+[[ -o interactive || ${DOTFILES_LOADING_ENV:-} == 1 ]] && return 0
+export DOTFILES_LOADING_ENV=1
+
+source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/topics.zsh"
+
+for init in "${XDG_CONFIG_HOME:-$HOME/.config}"/*/init.zsh(N); do
+  source "$init" || continue
+done
+unset init DOTFILES_LOADING_ENV

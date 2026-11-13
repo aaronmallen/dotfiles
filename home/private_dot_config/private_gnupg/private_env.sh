@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
-GPG_TTY="$(tty)"
+if [ -t 0 ]; then
+  GPG_TTY="$(tty)"
+  export GPG_TTY
+fi
 
 export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
-export GPG_TTY

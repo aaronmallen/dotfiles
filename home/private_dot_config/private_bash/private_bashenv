@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
+
+[[ $- == *i* || ${DOTFILES_LOADING_ENV:-} == 1 ]] && return 0
+export DOTFILES_LOADING_ENV=1
+
+source "${XDG_CONFIG_HOME:-$HOME/.config}/bash/topics.bash"
+
+for init in "${XDG_CONFIG_HOME:-$HOME/.config}"/*/init.bash; do
+  [[ -f "$init" ]] || continue
+  source "$init" || continue
+done
+unset init DOTFILES_LOADING_ENV

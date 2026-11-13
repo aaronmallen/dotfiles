@@ -9,9 +9,11 @@ load helper
   printf '\nFUNCTION_LOADS=$(( ${FUNCTION_LOADS:-0} + 1 ))\n' >>"$XDG_CONFIG_HOME/system/functions.sh"
 
   for shell in bash zsh; do
+    mkdir -p "$XDG_CONFIG_HOME/$shell"
+    cp "$ROOT/home/private_dot_config/private_${shell}/private_topics.$shell" "$XDG_CONFIG_HOME/$shell/topics.$shell"
     sed '/^# Load zsh-completions/,$d; /^# Source bash completions/,$d; /^\[\[ \$- ==/d' \
       "$ROOT/home/private_dot_config/private_${shell}/private_dot_${shell}rc" >"$BATS_TEST_TMPDIR/loader"
-    run "$shell" -c '
+    run "$shell" -i -c '
       source "$1"
       loader="_load_${2}_topic"
       "$loader" system
