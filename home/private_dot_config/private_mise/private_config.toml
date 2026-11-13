@@ -9,9 +9,9 @@ bat-extras = "latest"
 bun = "latest"
 caddy = "latest"
 chezmoi = "latest"
-claude = "latest"
+claude = { version = "latest", minimum_release_age = "0d" }
 cloudflared = "latest"
-codex = "latest"
+codex = { version = "latest", minimum_release_age = "0d" }
 copier = "latest"
 crystal = "latest"
 delta = "latest"
@@ -31,7 +31,7 @@ lua = "latest"
 minikube = "latest"
 neovim = "latest"
 node = "latest"
-opencode = "latest"
+opencode = { version = "latest", minimum_release_age = "0d" }
 pipx = "latest"
 "pipx:asciinema" = "latest"
 "pypi:serena-agent" = { version = "latest", python = "3.13" }
