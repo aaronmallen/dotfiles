@@ -139,6 +139,10 @@
     "branch": "v3.0",
     "commit": "8cbf0dc1883b20a1df114149c187d250f0af0853"
   },
+  "vimoi.nvim": {
+    "branch": "main",
+    "commit": "a4127aa60af658d9be025268a0db7fda417f7740"
+  },
   "volt": {
     "branch": "main",
     "commit": "4351c5cd790a0d39491c4d5c75dd62d7db3d3414"
