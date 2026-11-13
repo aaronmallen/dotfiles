@@ -3,6 +3,7 @@ format = """
 [█](pink)\
 $os\
 $username\
+$hostname\
 [ ](bg:cyan fg:pink)\
 $directory\
 $custom\
@@ -139,6 +140,11 @@ format = "[[ $symbol](fg:java bg:gutter)[( $version) ](fg:fg bg:gutter)]($style)
 style = "bg:gutter"
 symbol = ""
 
+[hostname]
+format = "[@$hostname ]($style)"
+ssh_only = false
+style = "bg:pink fg:#FFFFFF"
+
 [line_break]
 disabled = false
 
@@ -231,7 +237,7 @@ style = "bg:fg"
 time_format = "%H:%M"
 
 [username]
-format = "[ $user ]($style)"
+format = "[ $user]($style)"
 show_always = true
 style_root = "bg:pink fg:fg"
 style_user = "bg:pink fg:fg"
