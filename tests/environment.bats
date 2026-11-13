@@ -40,7 +40,7 @@ EOF
     [[ -z ${GPG_TTY:-} ]] &&
     [[ $BASH_ENV == "$HOME/.config/bash/bashenv" ]] &&
     [[ -z ${DOTFILES_LOADING_ENV:-} ]]
-  '
+  ' </dev/null
     [ "$status" -eq 0 ]
     [ -z "$output" ]
   done
