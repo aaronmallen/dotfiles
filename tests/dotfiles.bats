@@ -7,7 +7,26 @@ load helper
   source_dir=$(chezmoi --config "$BATS_TEST_TMPDIR/chezmoi.toml" dump-config --format json | jq -r .sourceDir)
   [ "$source_dir" = "$ROOT" ]
   hook=$(chezmoi --config "$BATS_TEST_TMPDIR/chezmoi.toml" dump-config --format json | jq -r '.hooks["read-source-state"].pre.args[0]')
-  [ "$hook" = "$ROOT/home/.install-password-manager.sh" ]
+  [ "$hook" = "$ROOT/home/.bootstrap.sh" ]
+}
+
+@test "fresh init applies from a custom checkout and runs bootstrap before templates" {
+  source="$BATS_TEST_TMPDIR/fork checkout"
+  mkdir -p "$source/home"
+  printf 'home\n' >"$source/.chezmoiroot"
+  cp "$ROOT/home/.chezmoi.toml.tmpl" "$source/home/.chezmoi.toml.tmpl"
+  cat >"$source/home/.bootstrap.sh" <<'EOF'
+printf 'ready\n' >"$HOME/hook-ran"
+EOF
+  cat >"$source/home/dot_hook-test.tmpl" <<'EOF'
+{{ output "cat" (joinPath .chezmoi.homeDir "hook-ran") }}
+EOF
+  cm --source "$source" init --apply
+  [ "$(cat "$HOME/.hook-test")" = ready ]
+  [ "$(chezmoi --config "$BATS_TEST_TMPDIR/chezmoi.toml" dump-config --format json | jq -r .sourceDir)" = "$source" ]
+  rm "$HOME/hook-ran"
+  cm --source "$source" data >/dev/null
+  [ -f "$HOME/hook-ran" ]
 }
 
 @test "git and jj select signing by email" {

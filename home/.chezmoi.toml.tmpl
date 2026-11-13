@@ -16,7 +16,10 @@ sourceDir = {{ .chezmoi.workingTree | quote }}
 
 [hooks.read-source-state.pre]
 command = "bash"
-args = [{{ joinPath .chezmoi.workingTree "home" ".install-password-manager.sh" | quote }}]
+args = [{{ joinPath .chezmoi.workingTree "home" ".bootstrap.sh" | quote }}]
+
+[scriptEnv]
+PATH = {{ printf "%s/.local/bin:%s/mise/shims:/opt/homebrew/bin:/usr/local/bin:%s" .chezmoi.homeDir (env "XDG_DATA_HOME" | default (joinPath .chezmoi.homeDir ".local" "share")) (env "PATH") | quote }}
 
 [data]
 fullName = {{ $fullName | quote }}

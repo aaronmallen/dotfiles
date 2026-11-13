@@ -8,11 +8,11 @@ setup() {
   export BOOTSTRAP_LOG="$BATS_TEST_TMPDIR/commands"
   export BOOTSTRAP_OS=Darwin
   mkdir -p "$HOME" "$BATS_TEST_TMPDIR/bin"
-  cp "$BATS_TEST_DIRNAME/../bootstrap" "$BATS_TEST_TMPDIR/bootstrap"
-  export PASSWORD_MANAGER_SCRIPT="$BATS_TEST_DIRNAME/../home/.install-password-manager.sh"
-  mkdir -p "$BATS_TEST_TMPDIR/home"
-  cp "$PASSWORD_MANAGER_SCRIPT" "$BATS_TEST_TMPDIR/home/.install-password-manager.sh"
-  for tool in bash cp dirname env ln mkdir mktemp rm sh; do
+  cp "$BATS_TEST_DIRNAME/../home/.bootstrap.sh" "$BATS_TEST_TMPDIR/bootstrap"
+  cat >"$BATS_TEST_TMPDIR/.install-password-manager.sh" <<'EOF'
+echo password-manager >>"$BOOTSTRAP_LOG"
+EOF
+  for tool in bash dirname env ln mkdir mktemp rm sh; do
     ln -s "$(command -v "$tool")" "$BATS_TEST_TMPDIR/bin/$tool"
   done
   cat >"$BATS_TEST_TMPDIR/bin/stub" <<'EOF'
@@ -25,39 +25,36 @@ uname) echo "$BOOTSTRAP_OS" ;;
 curl)
   printf 'ln -s "%s/bin/stub" "%s/bin/mise"\n' "$BATS_TEST_TMPDIR" "$BATS_TEST_TMPDIR" >"$4"
   ;;
-git)
-  [[ ${FAIL_CLONE:-0} != 1 ]] || exit 1
-  mkdir -p "$3"
-  printf 'home\n' >"$3/.chezmoiroot"
-  mkdir -p "$3/home"
-  cp "$PASSWORD_MANAGER_SCRIPT" "$3/home/.install-password-manager.sh"
-  ;;
-chezmoi)
-  case "$*" in
-  *packageManager*) echo brew ;;
-  *profile*) echo personal ;;
-  *email*) echo test@example.com ;;
-  esac
-  ;;
-op) [[ ${FAIL_AUTH:-0} != 1 ]] ;;
+brew) [[ ${FAIL_INSTALL:-0} != 1 ]] ;;
 esac
 EOF
   chmod +x "$BATS_TEST_TMPDIR/bin/stub"
-  for tool in uname git brew chezmoi op 1password mise curl; do
+  for tool in uname git brew mise curl; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
   done
   export PATH="$BATS_TEST_TMPDIR/bin"
 }
 
-@test "bootstrap clones over HTTPS and applies from the new checkout" {
+@test "bootstrap installs prerequisites before the password manager" {
   run bash "$BATS_TEST_TMPDIR/bootstrap"
   [ "$status" -eq 0 ]
   log=$(<"$BOOTSTRAP_LOG")
   [[ "$log" == *$'brew install git gnupg zsh\n'* ]]
-  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
-  [[ "$log" == *"git clone https://aaronmallen.dev/aaron/dotfiles.git $HOME/src/aaronmallen.dev/aaron/dotfiles"* ]]
-  [[ "$log" == *"chezmoi init --source $HOME/src/aaronmallen.dev/aaron/dotfiles"* ]]
-  [[ "$log" == *"chezmoi apply --source $HOME/src/aaronmallen.dev/aaron/dotfiles"* ]]
+  [[ "$log" == *$'mise install jq@latest\npassword-manager' ]]
+  [[ "$log" != *"chezmoi "* ]]
+  [[ "$log" != *"git clone"* ]]
+}
+
+@test "bootstrap skips installed prerequisites" {
+  for tool in gpg zsh jq; do
+    ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
+  done
+  run bash "$BATS_TEST_TMPDIR/bootstrap"
+  [ "$status" -eq 0 ]
+  log=$(<"$BOOTSTRAP_LOG")
+  [[ "$log" != *"brew "* ]]
+  [[ "$log" != *"mise "* ]]
+  [[ "$log" == *"password-manager"* ]]
 }
 
 @test "bootstrap installs mise directly when missing" {
@@ -66,45 +63,17 @@ EOF
   [ "$status" -eq 0 ]
   log=$(<"$BOOTSTRAP_LOG")
   [[ "$log" == *"curl -fsSL https://mise.run -o "* ]]
-  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
-  [[ "$log" == *"chezmoi apply"* ]]
+  [[ "$log" == *"mise install jq@latest"* ]]
 }
 
-@test "bootstrap refuses an occupied clone destination before installing anything" {
-  mkdir -p "$HOME/src/aaronmallen.dev/aaron/dotfiles"
-  printf 'keep\n' >"$HOME/src/aaronmallen.dev/aaron/dotfiles/local-file"
-  run bash "$BATS_TEST_TMPDIR/bootstrap"
-  [ "$status" -ne 0 ]
-  [ ! -e "$BOOTSTRAP_LOG" ]
-  [ -f "$HOME/src/aaronmallen.dev/aaron/dotfiles/local-file" ]
-}
-
-@test "bootstrap reuses a local checkout without cloning or pulling" {
-  printf 'home\n' >"$BATS_TEST_TMPDIR/.chezmoiroot"
-  run bash "$BATS_TEST_TMPDIR/bootstrap"
-  [ "$status" -eq 0 ]
-  log=$(<"$BOOTSTRAP_LOG")
-  [[ "$log" != *"git "* ]]
-  [[ "$log" == *"chezmoi apply --source $BATS_TEST_TMPDIR"* ]]
-}
-
-@test "bootstrap stops before apply when authentication fails" {
-  export FAIL_AUTH=1
-  run bash "$BATS_TEST_TMPDIR/bootstrap"
+@test "bootstrap stops when prerequisites fail" {
+  run env FAIL_INSTALL=1 bash "$BATS_TEST_TMPDIR/bootstrap"
   [ "$status" -ne 0 ]
   log=$(<"$BOOTSTRAP_LOG")
-  [[ "$log" != *"chezmoi apply"* ]]
+  [[ "$log" != *"password-manager"* ]]
 }
 
-@test "bootstrap stops before init when cloning fails" {
-  export FAIL_CLONE=1
-  run bash "$BATS_TEST_TMPDIR/bootstrap"
-  [ "$status" -ne 0 ]
-  log=$(<"$BOOTSTRAP_LOG")
-  [[ "$log" != *"chezmoi init"* ]]
-}
-
-@test "bootstrap prepares an APT machine before applying" {
+@test "bootstrap prepares an APT machine" {
   for tool in apt-get sudo; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
   done
@@ -112,12 +81,10 @@ EOF
   [ "$status" -eq 0 ]
   log=$(<"$BOOTSTRAP_LOG")
   [[ "$log" == *"sudo apt-get install -y"* ]]
-  [[ "$log" != *"build-essential jq"* ]]
-  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
-  [[ "$log" == *"chezmoi apply"* ]]
+  [[ "$log" == *"password-manager"* ]]
 }
 
-@test "bootstrap prepares an Arch machine before applying" {
+@test "bootstrap prepares an Arch machine" {
   for tool in pacman sudo yay; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
   done
@@ -125,7 +92,5 @@ EOF
   [ "$status" -eq 0 ]
   log=$(<"$BOOTSTRAP_LOG")
   [[ "$log" == *"sudo pacman -Syu --needed --noconfirm"* ]]
-  [[ "$log" != *"unzip jq"* ]]
-  [[ "$log" == *"mise env --shell bash chezmoi@latest jq@latest"* ]]
-  [[ "$log" == *"chezmoi apply"* ]]
+  [[ "$log" == *"password-manager"* ]]
 }

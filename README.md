@@ -41,9 +41,8 @@ tests/                Bats tests and command stubs
 `.chezmoiroot` selects `home/` as the source of managed files. The config template sets `sourceDir` to the
 checkout root, so chezmoi uses this repo directly.
 
-The `read-source-state.pre` hook runs `home/.install-password-manager.sh` before reading templates.
-It installs the 1Password app and CLI through Homebrew, APT, or AUR when either is missing.
-Bootstrap uses the same script.
+The `read-source-state.pre` hook runs `home/.bootstrap.sh` before reading templates.
+It installs missing prerequisites, mise, jq, and the 1Password app and CLI through Homebrew, APT, or AUR.
 Run `chezmoi init` again in an existing checkout to add the hook to your config.
 
 Chezmoi names describe how to install a file. For example, `private_dot_config` becomes `~/.config`,
@@ -77,20 +76,25 @@ package manager. All profiles share the base tool list; `container` is not a min
 
 ## Bootstrap a machine
 
-On macOS, Debian/Ubuntu, or Arch/CachyOS, download and run the bootstrap as your normal user:
+On macOS, Debian/Ubuntu, or Arch/CachyOS, install chezmoi as your normal user:
 
 ```sh
-curl -fsSL https://aaronmallen.dev/aaron/dotfiles/raw/branch/main/bootstrap -o bootstrap
-bash bootstrap
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+chezmoi init --apply https://aaronmallen.dev/aaron/dotfiles.git
 ```
 
-It installs the tools needed for the first apply, clones the repo into `~/src/aaronmallen.dev/aaron/dotfiles`,
-and points chezmoi at that checkout. It asks for your profile and identity, guides 1Password sign-in when needed,
-then applies the dotfiles and setup hooks. Have your sudo password and 1Password account details ready.
-On Arch, it installs yay if neither yay nor paru is available. Choose your installed package manager when prompted.
+Replace the URL with your fork's URL. Chezmoi uses your configured `sourceDir`, or its default
+`~/.local/share/chezmoi`. It asks for your profile and identity, installs prerequisites through the pre-read hook,
+then applies the dotfiles and setup scripts. Have your sudo password ready.
+On Arch, the hook installs yay if neither yay nor paru is available; choose yay when prompted on a fresh machine.
 
-From an existing checkout, run `bash bootstrap` to reuse it without pulling or replacing local changes.
-Bootstrap leaves an old `~/.local/share/chezmoi` checkout and unmanaged files in place.
+For profiles that read secrets, enable 1Password desktop app integration before applying. On CLI-only machines,
+run `chezmoi init` without `--apply`, then `chezmoi data` to install prerequisites through the hook. Sign in with
+`eval "$(op signin)"` (or `eval "$(op account add --signin)"` for a new account), then run `chezmoi apply`.
+If a secret lookup stops the first apply, sign in and run `chezmoi apply` again.
+
+From an existing checkout, run `chezmoi init --source "$PWD" --apply` to reuse it.
 Apply processes `.chezmoiremove` and runs the package hooks, including upgrades and package cleanup.
 
 ## Working with the dotfiles
