@@ -8,7 +8,7 @@ skip=(HOME USER LOGNAME SHELL TMPDIR TERM SHLVL PWD OLDPWD _ FPATH GPG_TTY
 env_file=$(mktemp)
 trap 'rm -f "$env_file"' EXIT
 
-if ! env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" \
+if ! setsid -w env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" \
   "$(command -v zsh)" -l -i -c "env -0 > ${(q)env_file}" </dev/null >/dev/null 2>&1; then
   exit 1
 fi
