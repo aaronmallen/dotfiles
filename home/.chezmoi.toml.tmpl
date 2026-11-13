@@ -21,6 +21,9 @@ args = [{{ joinPath .chezmoi.workingTree "home" ".bootstrap.sh" | quote }}]
 [scriptEnv]
 PATH = {{ printf "%s/.local/bin:%s/mise/shims:/opt/homebrew/bin:/usr/local/bin:%s" .chezmoi.homeDir (env "XDG_DATA_HOME" | default (joinPath .chezmoi.homeDir ".local" "share")) (env "PATH") | quote }}
 
+[onepassword]
+command = {{ joinPath .chezmoi.workingTree "home" ".onepassword.sh" | quote }}
+
 [data]
 fullName = {{ $fullName | quote }}
 email = {{ $email | quote }}

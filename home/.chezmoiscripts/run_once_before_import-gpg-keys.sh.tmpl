@@ -10,20 +10,20 @@ chmod 700 "${GNUPGHOME}"
 {{- if eq .email "hello@aaronmallen.me" }}
 
 echo "Importing GPG private key from 1Password..."
-op document get "GPG hello@aaronmallen.me Private Key" --vault Private | gpg --import
+{{ .chezmoi.config.onepassword.command | quote }} document get pufklmhbkbbxejv4rje27aente --vault Headless | gpg --import
 
 echo "Importing GPG ownertrust from 1Password..."
-op document get "GPG hello@aaronmallen.me Ownertrust" --vault Private | gpg --import-ownertrust
+{{ .chezmoi.config.onepassword.command | quote }} document get gog4rtdrv6aekalznadt2u6qda --vault Headless | gpg --import-ownertrust
 
 echo "GPG keys imported successfully!"
 gpg --list-secret-keys
 {{- else if eq .email "aallen@creditninja.com" }}
 
 echo "Importing GPG private key from 1Password..."
-op document get r7oaflndgvy43rnu7asnq34ige --vault Private | gpg --import
+{{ .chezmoi.config.onepassword.command | quote }} document get uw4idiwuoyormls5osoi3lroke --vault Headless | gpg --import
 
 echo "Importing GPG ownertrust from 1Password..."
-op document get bqpuhdqsrdumpqhrqkyrgsv5wy --vault Private | gpg --import-ownertrust
+{{ .chezmoi.config.onepassword.command | quote }} document get l2rq7oe5t5lfdpryg326xqdwum --vault Headless | gpg --import-ownertrust
 
 echo "GPG keys imported successfully!"
 gpg --list-secret-keys

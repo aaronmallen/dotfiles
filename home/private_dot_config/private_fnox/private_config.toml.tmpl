@@ -1,11 +1,17 @@
-[providers.op]
+[providers.keychain]
+type = "keychain"
+service = "fnox"
+
+[providers.headless]
 type = "1password"
+token = { secret = "OP_HEADLESS_SERVICE_ACCOUNT_TOKEN" }
 
 [secrets]
-CONTEXT7_API_KEY = { provider = "op", value = "op://Private/2xwpswyj6ui6xcvnv5nf4otx6m/API key" }
-GITHUB_TOKEN = { provider = "op", value = "op://Private/t5yz2ot5b2kcufxkguljhcwhvy/system" }
-GITHUB_MCP_TOKEN = { provider = "op", value = "op://Private/t5yz2ot5b2kcufxkguljhcwhvy/system" }
+OP_HEADLESS_SERVICE_ACCOUNT_TOKEN = { provider = "keychain", value = "OP_HEADLESS_SERVICE_ACCOUNT_TOKEN", env = false }
+CONTEXT7_API_KEY = { provider = "headless", value = "op://Headless/t74pjrlz3pwglhccdhjxgmgi6y/credential" }
+GITHUB_TOKEN = { provider = "headless", value = "op://Headless/btrlqdcjdfgebwsfhomcvj274y/credential" }
+GITHUB_MCP_TOKEN = { provider = "headless", value = "op://Headless/btrlqdcjdfgebwsfhomcvj274y/credential" }
 {{- if eq .profile "personal" }}
-FONTAWESOME_PACKAGE_TOKEN = { provider = "op", value = "op://Private/so7ldgubcaxzbd4kzk6cf36aie/key" }
-CARGO_REGISTRY_TOKEN = { provider = "op", value = "op://Private/deflzgla7gbnjrirszqjgaw7fe/key" }
+FONTAWESOME_PACKAGE_TOKEN = { provider = "headless", value = "op://Headless/u4zocwzcm2mus5mfrvrrilwa4e/credential" }
+CARGO_REGISTRY_TOKEN = { provider = "headless", value = "op://Headless/h2rgtbcqcvlzmretiblyyw4tce/credential" }
 {{- end }}

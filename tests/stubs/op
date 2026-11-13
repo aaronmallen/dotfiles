@@ -2,8 +2,9 @@
 
 case "$*" in
 signin*) echo test-session ;;
-*read*ojcxzmy2py5m7cxtgsfcrjpjte/file*) printf 'username=test\npassword=%s\n' "${OP_TEST_PASSWORD:-test}" ;;
-*read*kshwczi5i7j6xpq4txavzdfqd4* | *read*kl2lzt2zs6jdy2s2pmaqvsihji*) printf 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestFixture' ;;
+*read*ije6iarnhk53jywhcspemjq57a/username*) printf 'test' ;;
+*read*ije6iarnhk53jywhcspemjq57a/password*) printf '%s' "${OP_TEST_PASSWORD:-test}" ;;
+*read*keca4xvo4bwpvk6w7wjwwjdqaq* | *read*nfkdrhyf4iotcpprwnsp2c7jt4*) printf 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestFixture' ;;
 *)
   echo "Unexpected 1Password call: $*" >&2
   exit 1
