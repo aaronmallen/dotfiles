@@ -3,6 +3,19 @@
 
 load helper
 
+@test "zsh login shells keep Homebrew ahead of system commands" {
+  cm --override-data '{"packageManager":"brew"}' apply --parent-dirs --exclude scripts,externals \
+    "$HOME/.config/zsh/.zshenv" "$HOME/.config/zsh/.zprofile" "$HOME/.config/zsh/topics.zsh" \
+    "$HOME/.config/xdg/env.sh" "$HOME/.config/xdg/init.zsh" \
+    "$HOME/.config/homebrew/env.sh" "$HOME/.config/homebrew/init.zsh"
+  for mode in -c -lc; do
+    run env -i HOME="$HOME" ZDOTDIR="$HOME/.config/zsh" PATH=/usr/bin:/bin /bin/zsh "$mode" '
+      [[ ${path[(i)/opt/homebrew/bin]} -lt ${path[(i)/usr/bin]} ]]
+    '
+    [ "$status" -eq 0 ]
+  done
+}
+
 @test "noninteractive shells load topic dependencies once without interactive setup" {
   cm apply --parent-dirs --exclude scripts,externals "$HOME/.config/zsh/.zshenv" \
     "$HOME/.config/zsh/topics.zsh" \

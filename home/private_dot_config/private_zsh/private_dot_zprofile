@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+source "$HOME/.orbstack/shell/init.zsh" 2>/dev/null || :
+
+# macOS path_helper reorders PATH after .zshenv.
+if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/homebrew/env.sh" ]]; then
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/homebrew/env.sh"
+fi
