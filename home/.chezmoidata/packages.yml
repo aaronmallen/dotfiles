@@ -89,8 +89,8 @@ packages:
   code-scanning-rubocop:
     gem: code-scanning-rubocop
   codesnap:
-    brew:
-      formula: codesnap
+    mise:
+      github:mistricky/codesnap: latest
   codex:
     mise:
       codex:
@@ -179,10 +179,8 @@ packages:
     brew:
       formula: gcc
   gh:
-    apt: gh
-    aur: github-cli
-    brew:
-      formula: gh
+    mise:
+      gh: latest
   ghostty:
     apt:
       name: ghostty
@@ -197,16 +195,17 @@ packages:
     brew:
       formula: git
   git-lfs:
-    apt: git-lfs
-    aur: git-lfs
-    brew:
-      formula: git-lfs
+    mise:
+      git-lfs: latest
   github-desktop:
     aur: github-desktop-bin
     brew:
       cask: github
   github-markup:
     gem: github-markup
+  glow:
+    mise:
+      glow: latest
   gnupg:
     apt: gnupg
     aur: gnupg
@@ -250,13 +249,11 @@ packages:
     mise:
       jq: latest
   kondo:
-    aur: kondo
-    brew:
-      formula: kondo
+    mise:
+      github:tbillington/kondo: latest
   kubectl:
-    aur: kubectl
-    brew:
-      formula: kubernetes-cli
+    mise:
+      kubectl: latest
   kubectx:
     mise:
       kubectx: latest
@@ -494,9 +491,8 @@ packages:
       name: Xcode
       id: 497799835
   xdg-ninja:
-    aur: xdg-ninja
-    brew:
-      formula: xdg-ninja
+    mise:
+      aqua:b3nj5m1n/xdg-ninja: latest
   yard:
     gem: yard
   yarn:
