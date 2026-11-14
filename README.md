@@ -23,7 +23,7 @@ for mise and the system package managers.
 ```text
 home/
   .chezmoi.toml.tmpl    Initial config: identity, profile, package manager, sourceDir
-  .chezmoidata/        Shared template data for AI tools and fonts
+  .chezmoidata/        Shared template data for packages, AI tools, and fonts
   .chezmoiexternals/   Downloaded fonts and Zsh plugins
   .chezmoiscripts/     Setup hooks
   .chezmoiignore       Platform and package-manager exclusions
@@ -73,6 +73,12 @@ The initial config asks for a name, email address, and profile:
 
 macOS uses Homebrew. Linux offers APT, Homebrew, paru, or yay. The ignore rules select files for the chosen OS and
 package manager. All profiles share the base tool list; `container` is not a minimal package set.
+
+`home/.chezmoidata/packages.yml` holds system packages, mise tools, and Ruby gems in alphabetical order.
+Each entry can restrict `profiles` or `platforms`; omitted restrictions include all profiles or platforms.
+The package templates generate sorted Brewfile, APT, AUR, mise, and gem lists from this data.
+APT entries can restrict the distribution and minimum release, as Ghostty does for Ubuntu 26.04.
+Keep mise settings in its config template and bootstrap prerequisites in `home/.bootstrap.sh`.
 
 ## Bootstrap a machine
 

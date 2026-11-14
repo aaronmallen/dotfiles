@@ -1,80 +1,15 @@
-brew "ack"
-brew "alyraffauf/tap/tg", trusted: true
-brew "btop"
-brew "codesnap"
-brew "curl" # needed for postgres
-brew "docker"
-brew "docker-compose"
-brew "entr" # needed for bat-extras
-brew "gcc" # needed for postgres
-brew "gh"
-brew "git"
-brew "git-lfs"
-brew "gpg"
-brew "gnupg" # needed for GPG and pinentry
-brew "icu4c" # needed for postgres
-brew "imagemagick"
-brew "kondo"
-brew "kubernetes-cli"
-brew "libpq"
-brew "libtool"
-brew "libyaml"
-brew "mas"
-brew "mingw-w64" # use for rust binary compilations
-brew "openssl"
-brew "ossp-uuid" # needed for postgres
-brew "pinentry-mac"
-brew "pkg-config" # needed for postgres
-brew "pygments"
-brew "readline" # needed for postgres# used by mise
-brew "rustfs/tap/rc", trusted: true
-brew "vim"
-brew "xdg-ninja"
-brew "zlib" # needed for postgres
-
-cask "1password"
-cask "1password-cli"
-cask "appcleaner"
-{{ if eq .profile "personal" -}}
-cask "balenaetcher"
-{{ end -}}
-cask "bruno"
-cask "chatgpt"
-cask "claude"
-cask "nkzw-tech/tap/codiff", trusted: true
-{{ if eq .profile "personal" -}}
-cask "discord"
-{{ end -}}
-cask "figma"
-cask "ghostty"
-cask "github"
-cask "google-chrome"
-cask "google-drive"
-cask "jetbrains-toolbox"
-{{ if eq .profile "personal" -}}
-cask "linear"
-{{ end -}}
-cask "meld"
-cask "obsidian"
-cask "orbstack"
-cask "raycast"
-{{ if eq .profile "work" }}
-cask "slack"
-{{ end -}}
-{{ if eq .profile "personal" -}}
-cask "steam"
-{{ end -}}
-{{ if eq .profile "personal" -}}
-cask "tailscale-app"
-{{ end -}}
-{{ if eq .profile "personal" -}}
-cask "telegram"
-{{ end -}}
-cask "zed"
-cask "zoom"
-
-{{ if eq .profile "personal" -}}
-mas "ColorSlurp", id: 1287239339
-mas "Sequence Diagram for Mac", id: 1195426709
-mas "Xcode", id: 497799835
-{{ end -}}
+{{- $lines := list -}}
+{{- range (includeTemplate "packages" . | fromJson) -}}
+{{-   with get . "brew" -}}
+{{-     $kind := "brew" -}}
+{{-     $name := get . "formula" | default (get . "cask") -}}
+{{-     if hasKey . "cask" -}}{{- $kind = "cask" -}}{{- end -}}
+{{-     $line := printf "%s %s" $kind ($name | quote) -}}
+{{-     if get . "trusted" -}}{{- $line = printf "%s, trusted: true" $line -}}{{- end -}}
+{{-     $lines = append $lines $line -}}
+{{-   end -}}
+{{-   with get . "mas" -}}
+{{-     $lines = append $lines (printf "mas %s, id: %d" (.name | quote) (.id | int)) -}}
+{{-   end -}}
+{{- end -}}
+{{ join "\n" (sortAlpha $lines) }}

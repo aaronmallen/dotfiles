@@ -1,0 +1,19 @@
+{{- $tools := dict -}}
+{{- range (includeTemplate "packages" . | fromJson) -}}
+{{-   with get . "mise" -}}{{- $tools = merge $tools . -}}{{- end -}}
+{{- end -}}
+{{ dict "tools" $tools | toToml }}
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = [
+  "crystal",
+  "elixir",
+  "go",
+  "node",
+  "python",
+  "ruby",
+  "yarn",
+]
+ruby.compile = true
+self_update.auto = true

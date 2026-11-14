@@ -1,43 +1,5 @@
-1password
-1password-cli
-alsa-lib
-btop
-bruno-bin
-claude-desktop
-codiff-bin
-curl
-{{- if eq .profile "personal" }}
-discord
-{{- end }}
-docker
-gcc
-ghostty
-git
-git-lfs
-github-cli
-github-desktop-bin
-gnupg
-google-chrome
-icu
-imagemagick
-jetbrains-toolbox
-kondo
-kubectl
-libtool
-libyaml
-meld
-mingw-w64-gcc
-obsidian
-pkgconf
-python-pygments
-readline
-{{- if eq .profile "personal" }}
-steam
-tailscale
-telegram-desktop
-{{- end }}
-vicinae
-vim
-xdg-ninja
-zed
-zoom
+{{- $lines := list -}}
+{{- range (includeTemplate "packages" . | fromJson) -}}
+{{-   with get . "aur" -}}{{- $lines = append $lines . -}}{{- end -}}
+{{- end -}}
+{{ join "\n" (sortAlpha $lines) }}

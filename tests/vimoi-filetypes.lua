@@ -8,7 +8,7 @@ end
 
 local cases = {
   { "private_dot_config/private_nvim/private_init.lua", "lua" },
-  { "private_dot_config/private_mise/private_config.toml", "toml" },
+  { "private_dot_config/private_mise/private_config.toml.tmpl", "toml" },
   { "private_dot_config/private_apt/private_aptfile.tmpl", nil },
   { "symlink_dot_bashrc", "sh" },
   { ".chezmoiignore", "gitignore" },
@@ -28,7 +28,7 @@ assert(host_filetype("/etc/example.lua", 0) == "lua")
 for _, path in ipairs {
   "private_dot_config/private_nvim/private_init.lua",
   "private_dot_config/private_apt/private_aptfile.tmpl",
-  "private_dot_config/private_mise/private_config.toml",
+  "private_dot_config/private_mise/private_config.toml.tmpl",
 } do
   local started = vim.uv.hrtime()
   vim.cmd.edit(cli.source_root .. "/" .. path)

@@ -1,38 +1,13 @@
-1password
-1password-cli
-btop
-curl
-{{- if eq .profile "personal" }}
-discord
-{{- end }}
-docker.io
-gcc
-git
-git-lfs
-gh
-{{- /*
-  Ghostty entered the Ubuntu archive in 26.04; Debian has no official
-  package, so it is left out there rather than failing the whole
-  `apt-get install` run. See ../ghostty/README.md.
-*/}}
-{{- $osID := dig "id" "" .chezmoi.osRelease }}
-{{- $osVer := dig "versionID" "0" .chezmoi.osRelease }}
-{{- if and (eq $osID "ubuntu") (ge (float64 $osVer) 26.04) }}
-ghostty
-{{- end }}
-gnupg
-icu-devtools
-imagemagick
-libasound2-dev
-libtool
-libyaml-dev
-meld
-{{- if eq .profile "personal" }}
-{{- end }}
-pkg-config
-python3-pygments
-libreadline-dev
-{{- if eq .profile "personal" }}
-telegram-desktop
-{{- end }}
-vim
+{{- $lines := list -}}
+{{- range (includeTemplate "packages" . | fromJson) -}}
+{{-   with get . "apt" -}}
+{{-     if kindIs "map" . -}}
+{{-       if ne (dig "id" "" $.chezmoi.osRelease) .distro -}}{{- continue -}}{{- end -}}
+{{-       if lt (float64 (dig "versionID" "0" $.chezmoi.osRelease)) (float64 .min_version) -}}{{- continue -}}{{- end -}}
+{{-       $lines = append $lines .name -}}
+{{-     else -}}
+{{-       $lines = append $lines . -}}
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+{{ join "\n" (sortAlpha $lines) }}

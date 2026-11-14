@@ -1,0 +1,7 @@
+{{- $packages := dict -}}
+{{- range $name, $package := .packages -}}
+{{-   if and (hasKey $package "profiles") (not (has $.profile $package.profiles)) -}}{{- continue -}}{{- end -}}
+{{-   if and (hasKey $package "platforms") (not (has $.chezmoi.os $package.platforms)) -}}{{- continue -}}{{- end -}}
+{{-   $_ := set $packages $name $package -}}
+{{- end -}}
+{{- $packages | toJson -}}

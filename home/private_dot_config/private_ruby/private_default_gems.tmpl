@@ -1,0 +1,5 @@
+{{- $lines := list -}}
+{{- range (includeTemplate "packages" . | fromJson) -}}
+{{-   with get . "gem" -}}{{- $lines = append $lines . -}}{{- end -}}
+{{- end -}}
+{{ join "\n" (sortAlpha $lines) }}

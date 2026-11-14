@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+# Packages hash: {{ includeTemplate "packages" . | sha256sum }}
+
 {{ if eq .packageManager "brew" -}}
 # Brewfile hash: {{ include "private_dot_config/private_homebrew/private_Brewfile.tmpl" | sha256sum }}
 {{ if eq .chezmoi.os "darwin" -}}
@@ -34,7 +36,7 @@ if [[ -f "${AURFILE}" ]]; then
 fi
 {{ end -}}
 
-# Mise config hash: {{ include "private_dot_config/private_mise/private_config.toml" | sha256sum }}
+# Mise config hash: {{ include "private_dot_config/private_mise/private_config.toml.tmpl" | sha256sum }}
 if command -v mise > /dev/null; then
   mise install
 fi
