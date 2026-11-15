@@ -71,16 +71,21 @@ rex.action {
   name = "monitor",
   title = "Open Monitor",
   description = "Open ~/.config/rex/monitor.toml in a new monitor session and window.",
-  run = function()
+  run = function(ctx)
     local layout = monitor_layout()
-    local session = check(rex.call("session.create", {
-      label = "monitor",
-      initial_windows = { { window_label = "monitor", layout = layout } },
-    }))
-    rex.client.queue("session.select", {
-      session_id = session.session_id,
-      window_id = session.initial_windows[1].window_id,
-    })
-    rex.client.queue "client.tab.move_to_new_window"
+    local path = (os.getenv "XDG_CONFIG_HOME" or os.getenv "HOME" .. "/.config") .. "/rex/monitor.lua"
+    local result = check(rex.exec({
+      os.getenv "HOME"
+        .. "/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex",
+      "-C",
+      ctx.client_id,
+      "do",
+      path,
+      "--all",
+      "--fail-fast",
+      "--args",
+      check(rex.json.encode { layout = layout, client_id = ctx.client_id }),
+    }, { timeout = 15 }))
+    assert(result.ok, result.stderr)
   end,
 }

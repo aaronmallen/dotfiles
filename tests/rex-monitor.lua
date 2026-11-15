@@ -1,4 +1,4 @@
-local action, created, calls
+local action, created, calls, connected
 local windows = 0
 rex = {
   action = function(value)
@@ -16,22 +16,56 @@ rex = {
     end,
   },
   call = function(method, args)
-    assert(method == "session.create" and args.label == "monitor" and args.session_id == nil)
-    assert(#args.initial_windows == 1 and args.initial_windows[1].window_label == "monitor")
     calls[#calls + 1] = method
-    created = args.initial_windows[1].layout
-    windows = windows + 1
-    return {
-      session_id = "session-" .. windows,
-      initial_windows = { { window_id = "monitor-" .. windows } },
-    }
+    if method == "session.list" then
+      return { sessions = { { session_id = "test" } } }
+    end
+    assert(args.session_id == "session-" .. windows)
+    if method == "session.view" then
+      return { windows = { { window_id = "starter-" .. windows } } }
+    elseif method == "session.new_window" then
+      assert(args.window_label == "monitor")
+      created = args.layout
+    elseif method == "session.set_label" then
+      assert(args.label == "monitor")
+    elseif method == "session.close_window" then
+      assert(created and args.window_id == "starter-" .. windows)
+    else
+      error("Unexpected call: " .. method)
+    end
+    return {}
   end,
+  json = {
+    encode = function(value)
+      return value
+    end,
+  },
+  exec = function(argv)
+    assert(
+      argv[1]
+        == os.getenv "HOME"
+          .. "/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex"
+    )
+    assert(argv[2] == "-C" and argv[3] == "app")
+    assert(argv[5]:match "/rex/monitor.lua$")
+    rex.args = argv[#argv]
+    dofile "home/private_dot_config/private_rex/private_monitor.lua"
+    return { ok = true }
+  end,
+  on = function(event, callback)
+    assert(event == "client_connected")
+    connected = callback
+  end,
+  after = function() end,
+  stop = function() end,
   client = {
-    queue = function(name, args)
+    queue = function(name)
+      assert(name == "client.window.new")
       calls[#calls + 1] = name
-      if name == "session.select" then
-        assert(args.session_id == "session-" .. windows and args.window_id == "monitor-" .. windows)
-      end
+      windows = windows + 1
+      connected({ session_id = "test" }, { client_id = "app" })
+      connected({ session_id = "unrelated" }, { client_id = "other-app" })
+      connected({ session_id = "session-" .. windows }, { client_id = "app" })
     end,
   },
 }
@@ -52,13 +86,16 @@ local function run(contents, expected_error)
     file:close()
   end
   calls, created = {}, nil
-  local ok, err = pcall(action.run, { session_id = "test" })
+  local ok, err = pcall(action.run, { session_id = "test", client_id = "app" })
   if expected_error then
     assert(not ok and tostring(err):find(expected_error, 1, true), tostring(err))
     assert(#calls == 0)
   else
     assert(ok, err)
-    assert(table.concat(calls, ",") == "session.create,session.select,client.tab.move_to_new_window")
+    assert(
+      table.concat(calls, ",")
+        == "session.list,client.window.new,session.view,session.new_window,session.set_label,session.close_window"
+    )
   end
 end
 local function pane(label, col, row, command)
