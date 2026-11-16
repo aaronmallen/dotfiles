@@ -1,5 +1,6 @@
+{{- $ai := (includeTemplate "ai.yml.tmpl" . | fromYaml).ai -}}
 {{- $servers := dict -}}
-{{- range $name, $server := .ai.mcp_servers -}}
+{{- range $name, $server := $ai.mcp_servers -}}
 {{-   if and (hasKey $server "profiles") (not (has $.profile $server.profiles)) -}}{{- continue -}}{{- end -}}
 {{-   if hasKey $server "url" -}}
 {{-     $remote := dict "type" "remote" "url" $server.url -}}
@@ -13,11 +14,13 @@
 {{-     with get $server "oauth_client_id" -}}{{- $_ := set $remote "oauth" (dict "clientId" .) -}}{{- end -}}
 {{-     $_ := set $servers $name $remote -}}
 {{-   else -}}
-{{-     $_ := set $servers $name (dict "type" "local" "command" (concat $server.command (dig "args" "opencode" list $server))) -}}
+{{-     $local := dict "type" "local" "command" (concat $server.command (dig "args" "opencode" list $server)) -}}
+{{-     with get $server "environment" -}}{{- $_ := set $local "environment" . -}}{{- end -}}
+{{-     $_ := set $servers $name $local -}}
 {{-   end -}}
 {{- end -}}
 {{- $plugins := list -}}
-{{- range .ai.plugins -}}
+{{- range $ai.plugins -}}
 {{-   if hasKey . "opencode" -}}
 {{-     $plugins = append $plugins .opencode -}}
 {{-   end -}}

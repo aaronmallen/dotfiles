@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh
+{{- $ai := (includeTemplate "ai.yml.tmpl" . | fromYaml).ai }}
 set -e
 set -o pipefail
 
 # plugin, marketplace, GitHub repo
 plugins=(
-{{- range $name, $plugin := .ai.plugins }}
+{{- range $name, $plugin := $ai.plugins }}
 {{-   if hasKey $plugin "marketplace" }}
   {{ $name | squote }} {{ $plugin.marketplace | squote }} {{ $plugin.repo | squote }}
 {{-   end }}
@@ -33,7 +34,7 @@ codex_server() {
   shift 2
   if jq -e --arg name "$name" 'any(.[]; .name == $name)' <<<"$codex_servers" >/dev/null; then
     jq -e --arg name "$name" --argjson want "$want" \
-      'any(.[]; .name == $name and (.transport as $t | all("type", "url", "bearer_token_env_var", "env_http_headers", "command", "args"; $t[.] == $want[.])))' \
+      'any(.[]; .name == $name and (.transport as $t | all("type", "url", "bearer_token_env_var", "env_http_headers", "command", "args"; $t[.] == $want[.]) and (($t.env // {}) == ($want.env // {}))))' \
       <<<"$codex_servers" >/dev/null || {
       echo "Codex MCP server $name has a different configuration" >&2
       exit 1
@@ -59,7 +60,7 @@ if command -v claude >/dev/null; then
   else
     claude_servers='{}'
   fi
-{{- range $name, $server := .ai.mcp_servers }}
+{{- range $name, $server := $ai.mcp_servers }}
 {{-   if and (hasKey $server "profiles") (not (has $.profile $server.profiles)) }}{{ continue }}{{ end }}
 {{-   $claude_name := get $server "claude_name" | default $name }}
 {{-   if hasKey $server "url" }}
@@ -77,8 +78,9 @@ if command -v claude >/dev/null; then
   claude_server {{ $claude_name | squote }} {{ $want | toJson | squote }}{{ range $add }} {{ . | squote }}{{ end }}
 {{-   else }}
 {{-     $command := concat $server.command (dig "args" "claude" list $server) }}
-{{-     $want := dict "type" "stdio" "command" (first $command) "args" (rest $command) "env" dict }}
-  claude_server {{ $claude_name | squote }} {{ $want | toJson | squote }} {{ $claude_name | squote }} --{{ range $command }} {{ . | squote }}{{ end }}
+{{-     $environment := dig "environment" dict $server }}
+{{-     $want := dict "type" "stdio" "command" (first $command) "args" (rest $command) "env" $environment }}
+  claude_server {{ $claude_name | squote }} {{ $want | toJson | squote }} {{ $claude_name | squote }}{{ range $key, $value := $environment }} --env {{ printf "%s=%s" $key $value | squote }}{{ end }} --{{ range $command }} {{ . | squote }}{{ end }}
 {{-   end }}
 {{- end }}
 
@@ -94,7 +96,7 @@ fi
 
 if command -v codex >/dev/null; then
   codex_servers=$(codex mcp list --json)
-{{- range $name, $server := .ai.mcp_servers }}
+{{- range $name, $server := $ai.mcp_servers }}
 {{-   if and (hasKey $server "profiles") (not (has $.profile $server.profiles)) }}{{ continue }}{{ end }}
 {{-   if hasKey $server "url" }}
 {{-     $want := dict "type" "streamable_http" "url" $server.url }}
@@ -108,8 +110,9 @@ if command -v codex >/dev/null; then
   codex_server {{ $name | squote }} {{ $want | toJson | squote }}{{ range $add }} {{ . | squote }}{{ end }}
 {{-   else }}
 {{-     $command := concat $server.command (dig "args" "codex" list $server) }}
-{{-     $want := dict "type" "stdio" "command" (first $command) "args" (rest $command) }}
-  codex_server {{ $name | squote }} {{ $want | toJson | squote }} --{{ range $command }} {{ . | squote }}{{ end }}
+{{-     $environment := dig "environment" dict $server }}
+{{-     $want := dict "type" "stdio" "command" (first $command) "args" (rest $command) "env" $environment }}
+  codex_server {{ $name | squote }} {{ $want | toJson | squote }}{{ range $key, $value := $environment }} --env {{ printf "%s=%s" $key $value | squote }}{{ end }} --{{ range $command }} {{ . | squote }}{{ end }}
 {{-   end }}
 {{- end }}
 

@@ -20,9 +20,9 @@ load helper
   cm apply --parent-dirs --exclude scripts,externals "$HOME/.config/zsh/.zshenv" \
     "$HOME/.config/zsh/topics.zsh" \
     "$HOME/.config/xdg/env.sh" "$HOME/.config/agents/env.sh" \
-    "$HOME/.config/rust/env.sh" "$HOME/.config/npm/env.sh" "$HOME/.config/mise/env.sh" \
+    "$HOME/.config/rust/env.sh" "$HOME/.config/npm/env.sh" "$HOME/.config/mise/env.sh" "$HOME/.config/matplotlib/env.sh" \
     "$HOME/.config/copilot" "$HOME/.config/gnupg/env.sh" "$HOME/.config/bash"
-  for topic in xdg agents rust npm mise gnupg; do
+  for topic in xdg agents rust npm mise gnupg matplotlib; do
     cm apply --exclude scripts,externals "$HOME/.config/$topic/init.zsh" "$HOME/.config/$topic/init.bash"
   done
   mkdir -p "$HOME/.config/a-dependent" "$HOME/.config/z-dependency"
@@ -45,6 +45,8 @@ EOF
     [[ $RUSTUP_HOME == "$HOME/.local/share/rustup" ]] &&
     [[ $CARGO_HOME == "$HOME/.local/share/cargo" ]] &&
     [[ $NPM_CONFIG_USERCONFIG == "$HOME/.config/npm/npmrc" ]] &&
+    [[ $NPM_CONFIG_CACHE == "$XDG_CACHE_HOME/javascript/npm" ]] &&
+    [[ $MPLCONFIGDIR == "$XDG_CACHE_HOME/matplotlib" ]] &&
     [[ $MISE_RUSTUP_HOME == "$RUSTUP_HOME" ]] &&
     [[ $MISE_CARGO_HOME == "$CARGO_HOME" ]] &&
     [[ $NEW_TOPIC_HOME == "$HOME/.local/share/dependency/new-topic" ]] &&

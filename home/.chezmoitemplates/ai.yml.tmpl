@@ -7,6 +7,8 @@ ai:
       url: https://mcp.atlassian.com/v2/mcp
     chrome-devtools:
       command: [npx, -y, chrome-devtools-mcp@latest]
+      environment:
+        NPM_CONFIG_CACHE: {{ printf "%s/%s/javascript/npm" (env "HOME") (ternary "Library/Caches" ".cache" (eq .chezmoi.os "darwin")) | quote }}
     cloudflare:
       url: https://mcp.cloudflare.com/mcp
     context7:
@@ -37,6 +39,8 @@ ai:
       profiles: [personal]
     serena:
       command: [serena, start-mcp-server, --project-from-cwd]
+      environment:
+        SERENA_HOME: {{ printf "%s/.local/share/serena" (env "HOME") | quote }}
       args:
         claude: [--context=claude-code]
         codex: [--context=codex]
