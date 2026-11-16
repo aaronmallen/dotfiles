@@ -11,7 +11,8 @@ desktop settings, and scripts for keeping machines up to date.
 - **Development:** Git and Jujutsu, language runtimes and CLI tools through mise, plus Homebrew, APT,
   and AUR package lists.
 - **AI tools:** Claude Code, Codex, OpenCode, and Serena. Shared MCP server and plugin definitions live in
-  `home/.chezmoitemplates/ai.yml.tmpl`; agent instructions and skills live under `home/private_dot_config/private_agents/`.
+  `home/.chezmoitemplates/ai.yml.tmpl`; agent instructions and skills live under
+  `home/private_dot_config/private_agents/`.
 - **Machine setup:** SSH and GnuPG, 1Password-backed secrets through fnox, fonts, desktop launchers, macOS settings,
   and session environment setup for GUI apps.
 
