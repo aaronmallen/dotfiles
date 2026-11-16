@@ -22,6 +22,18 @@ or local plan, follow the site's and fix or delete the local copy.
   that already covers the work before you make another. Write a local file or a page only when I ask for one.
 - **When the server is not connected** or this connection lacks a tool, say so once, then use the local default.
 
+## Rex Sessions
+
+At the start of every chat, check `REX_SESSION` and `REX_BLOCK`. If set, run
+`rex --autostart=false whoami --json` to confirm the session and pane still exist.
+
+**Always rename your Rex session to match the chat**, even if it already has a custom name. Use
+`rex session rename "$REX_SESSION" '<chat-topic>'` with two to four lowercase words joined by hyphens.
+Rename it again when the chat's main task changes. Do not wait for permission or a request to rename.
+
+Use the session confirmed for this chat, never whichever session the user happens to be viewing.
+If Rex is unavailable or the session cannot be confirmed, continue the task without renaming another session.
+
 ## Writing Rules
 
 Review every prose output (READMEs, docs, issues, commit messages) against these rules before delivering:
