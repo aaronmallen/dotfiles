@@ -14,42 +14,36 @@ plugins=(
 
 config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-# claude_server NAME WANT ADD_ARGS...: add the server, or fail when the saved one differs from the WANT JSON
+# claude_server NAME WANT ADD_ARGS...: sync the server with the WANT JSON
 claude_server() {
   local name=$1 want=$2
   shift 2
   if jq -e --arg name "$name" 'has($name)' <<<"$claude_servers" >/dev/null; then
-    jq -e --arg name "$name" --argjson want "$want" '.[$name] == $want' <<<"$claude_servers" >/dev/null || {
-      echo "Claude MCP server $name has a different configuration" >&2
-      exit 1
-    }
-  else
-    claude mcp add --scope user "$@"
+    jq -e --arg name "$name" --argjson want "$want" '.[$name] == $want' <<<"$claude_servers" >/dev/null && return 0
+    claude mcp remove --scope user "$name"
   fi
+  claude mcp add --scope user "$@"
 }
 
-# codex_server NAME WANT ADD_ARGS...: add the server, or fail when the saved one differs from the WANT JSON
+# codex_server NAME WANT ADD_ARGS...: sync the server with the WANT JSON
 codex_server() {
   local name=$1 want=$2 headers
   shift 2
   if jq -e --arg name "$name" 'any(.[]; .name == $name)' <<<"$codex_servers" >/dev/null; then
     jq -e --arg name "$name" --argjson want "$want" \
       'any(.[]; .name == $name and (.transport as $t | all("type", "url", "bearer_token_env_var", "env_http_headers", "command", "args"; $t[.] == $want[.]) and (($t.env // {}) == ($want.env // {}))))' \
-      <<<"$codex_servers" >/dev/null || {
-      echo "Codex MCP server $name has a different configuration" >&2
-      exit 1
-    }
-  else
-    # Codex signs in right after adding a server and exits non-zero when that fails, even though the server was saved.
-    if ! codex mcp add "$name" "$@"; then
-      codex mcp list --json | jq -e --arg name "$name" 'any(.[]; .name == $name)' >/dev/null || exit 1
-      echo "Codex added MCP server $name but could not sign in; run: codex mcp login $name" >&2
-    fi
-    # codex mcp add has no flag for headers read from the environment.
-    headers=$(jq -r '.env_http_headers // {} | to_entries[] | "\(.key | @json) = \(.value | @json)"' <<<"$want")
-    if [[ -n $headers ]]; then
-      printf '\n[mcp_servers.%s.env_http_headers]\n%s\n' "$(jq -n --arg name "$name" '$name')" "$headers" >>"${CODEX_HOME:-$HOME/.codex}/config.toml"
-    fi
+      <<<"$codex_servers" >/dev/null && return 0
+    codex mcp remove "$name"
+  fi
+  # Codex signs in right after adding a server and exits non-zero when that fails, even though the server was saved.
+  if ! codex mcp add "$name" "$@"; then
+    codex mcp list --json | jq -e --arg name "$name" 'any(.[]; .name == $name)' >/dev/null || exit 1
+    echo "Codex added MCP server $name but could not sign in; run: codex mcp login $name" >&2
+  fi
+  # codex mcp add has no flag for headers read from the environment.
+  headers=$(jq -r '.env_http_headers // {} | to_entries[] | "\(.key | @json) = \(.value | @json)"' <<<"$want")
+  if [[ -n $headers ]]; then
+    printf '\n[mcp_servers.%s.env_http_headers]\n%s\n' "$(jq -n --arg name "$name" '$name')" "$headers" >>"${CODEX_HOME:-$HOME/.codex}/config.toml"
   fi
 }
 
