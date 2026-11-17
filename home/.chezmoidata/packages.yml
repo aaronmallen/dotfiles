@@ -273,6 +273,9 @@ packages:
     aur: libyaml
     brew:
       formula: libyaml
+  lig:
+    mise:
+      github:KevenGoncalves/lig: latest
   linear:
     profiles:
       - personal

@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+_load_zsh_topic "lig" --deps mise || return 0
+eval "$(lig init zsh pre)"
+eval "$(lig init zsh post)"
