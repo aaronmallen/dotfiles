@@ -406,6 +406,12 @@ packages:
   rust:
     mise:
       rust: latest
+  rustdesk:
+    profiles:
+      - personal
+    aur: rustdesk-bin
+    brew:
+      cask: rustdesk
   rustfs-client:
     brew:
       formula: rustfs/tap/rc
