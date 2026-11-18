@@ -290,6 +290,11 @@ packages:
   mas:
     brew:
       formula: mas
+  matcha:
+    aur: matcha-client-bin
+    brew:
+      formula: floatpane/matcha/matcha
+      trusted: true
   mdl:
     gem: mdl
   meld:
