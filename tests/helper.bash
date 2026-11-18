@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 setup() {
+  unset OP_SERVICE_ACCOUNT_TOKEN
   ROOT=$(cd "$BATS_TEST_DIRNAME/.." && pwd)
   export HOME="$BATS_TEST_TMPDIR/home"
   export XDG_CONFIG_HOME="$HOME/.config"

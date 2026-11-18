@@ -1,0 +1,3 @@
+{{ if and (eq .chezmoi.hostname "aa-pc-01") (eq .email "hello@aaronmallen.me") -}}
+{{ onepasswordRead "op://Headless/zkqi7kp56xychzws3k5u57m5ya/public key" }} aaron@aa-pc-01
+{{ end -}}

@@ -5,6 +5,7 @@ signin*) echo test-session ;;
 *read*ije6iarnhk53jywhcspemjq57a/username*) printf 'test' ;;
 *read*ije6iarnhk53jywhcspemjq57a/password*) printf '%s' "${OP_TEST_PASSWORD:-test}" ;;
 *read*keca4xvo4bwpvk6w7wjwwjdqaq* | *read*nfkdrhyf4iotcpprwnsp2c7jt4*) printf 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestFixture' ;;
+*read*zkqi7kp56xychzws3k5u57m5ya/* | *read*bwziibg3tq5v5j5hogpvnhnhga/* | *read*nivzhuwruylnldk2i3ul4llhaa/* | *read*cn5s2c2bqisv744uty4cpgrlym/* | *read*2xugrnik2xzoxplrvat7zvhbmq/* | *read*id_ed25519_aa-*/public*) printf 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestFixture' ;;
 *)
   echo "Unexpected 1Password call: $*" >&2
   exit 1

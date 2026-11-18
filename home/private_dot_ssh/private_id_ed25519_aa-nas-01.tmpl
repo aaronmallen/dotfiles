@@ -1,0 +1,3 @@
+{{ if and (eq .chezmoi.hostname "aa-nas-01") (eq .email "hello@aaronmallen.me") -}}
+{{ onepasswordRead "op://Headless/cn5s2c2bqisv744uty4cpgrlym/private key?ssh-format=openssh" }}
+{{ end -}}

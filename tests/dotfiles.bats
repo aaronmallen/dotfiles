@@ -160,21 +160,61 @@ EOF
   cmp "$HOME/.local/share/serena/serena_config.yml" "$BATS_TEST_TMPDIR/serena.yml"
 }
 
-@test "SSH selects the available agent for each platform" {
+@test "SSH uses local keys without an agent for every profile and platform" {
   for os in darwin linux; do
     if [ "$os" = darwin ]; then
       agent="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
     else
       agent="$HOME/.1password/agent.sock"
     fi
-    render container "$os" apt "$ROOT/home/private_dot_ssh/private_config.tmpl" >"$BATS_TEST_TMPDIR/ssh"
-    ! grep -q 'IdentityAgent' "$BATS_TEST_TMPDIR/ssh"
     mkdir -p "$(dirname "$agent")"
     touch "$agent"
-    render container "$os" apt "$ROOT/home/private_dot_ssh/private_config.tmpl" >"$BATS_TEST_TMPDIR/ssh"
-    grep -q 'IdentityAgent' "$BATS_TEST_TMPDIR/ssh"
-    ssh -G -o IgnoreUnknown=UseKeychain -F "$BATS_TEST_TMPDIR/ssh" example.com >/dev/null
+    for email in hello@aaronmallen.me aallen@creditninja.com test@example.com; do
+      overrides=$(data container "$os" apt | jq --arg email "$email" '.email = $email | .chezmoi.hostname = "unknown"')
+      cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_ssh/private_config.tmpl" >"$BATS_TEST_TMPDIR/ssh"
+      ssh -G -F "$BATS_TEST_TMPDIR/ssh" example.com >"$BATS_TEST_TMPDIR/effective"
+      grep -Fx 'identityagent none' "$BATS_TEST_TMPDIR/effective"
+      grep -Fx 'addkeystoagent false' "$BATS_TEST_TMPDIR/effective"
+      if [ "$email" != test@example.com ]; then
+        grep -Fx "identityfile ~/.ssh/id_ed25519_$email" "$BATS_TEST_TMPDIR/effective"
+        ! grep -q "identityfile .*\\.pub$" "$BATS_TEST_TMPDIR/effective"
+      fi
+    done
   done
+}
+
+@test "machine keys stay on their host and Git keeps its separate identity" {
+  for host in aa-pc-01 aa-pc-02 aa-pc-03 aa-nas-01 aa-app-01 unknown; do
+    overrides=$(data personal linux apt | jq --arg host "$host" '.email = "hello@aaronmallen.me" | .chezmoi.hostname = $host')
+    for key_host in aa-pc-01 aa-pc-02 aa-pc-03 aa-nas-01 aa-app-01; do
+      for suffix in "" .pub; do
+        cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_ssh/private_id_ed25519_$key_host$suffix.tmpl" >"$BATS_TEST_TMPDIR/key"
+        if [ "$host" = "$key_host" ]; then
+          [ -s "$BATS_TEST_TMPDIR/key" ]
+        else
+          [ ! -s "$BATS_TEST_TMPDIR/key" ]
+        fi
+      done
+    done
+    [ "$host" != unknown ] || continue
+    cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_ssh/private_config.tmpl" >"$BATS_TEST_TMPDIR/ssh"
+    ssh -G -o IgnoreUnknown=UseKeychain -F "$BATS_TEST_TMPDIR/ssh" aa-nas-01 >"$BATS_TEST_TMPDIR/effective"
+    grep -Fx 'identityagent none' "$BATS_TEST_TMPDIR/effective"
+    grep -Fx "identityfile ~/.ssh/id_ed25519_$host" "$BATS_TEST_TMPDIR/effective"
+    ! grep -q 'id_ed25519_hello@' "$BATS_TEST_TMPDIR/effective"
+    ssh -G -F "$BATS_TEST_TMPDIR/ssh" github.com | grep -Fx 'identityfile ~/.ssh/id_ed25519_hello@aaronmallen.me'
+  done
+}
+
+@test "personal authorized keys contain only the five machine identities" {
+  overrides=$(data personal linux apt | jq '.email = "hello@aaronmallen.me"')
+  cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_ssh/private_authorized_keys.tmpl" >"$BATS_TEST_TMPDIR/authorized_keys"
+  [ "$(grep -c '^ssh-ed25519 ' "$BATS_TEST_TMPDIR/authorized_keys")" -eq 5 ]
+  for host in aa-pc-01 aa-pc-02 aa-pc-03 aa-nas-01 aa-app-01; do
+    [ "$(grep -c " aaron@$host$" "$BATS_TEST_TMPDIR/authorized_keys")" -eq 1 ]
+  done
+  run grep -q 'hello@aaronmallen.me' "$BATS_TEST_TMPDIR/authorized_keys"
+  [ "$status" -eq 1 ]
 }
 
 @test "NAS setup replaces duplicate shares, drops legacy GitLab and skips mounted shares" {
@@ -218,8 +258,8 @@ EOF
   env PATH="$BATS_TEST_TMPDIR/bin:$PATH" sh "$BATS_TEST_TMPDIR/nas.sh"
   grep -Fx "password=$OP_TEST_PASSWORD" "$NAS_CREDENTIALS"
   [ ! -e injected ]
-  [ "$(grep -c '^//truenas.local/documents ' "$FSTAB_TEST")" -eq 1 ]
-  [ "$(grep -c '^//truenas.local/code ' "$FSTAB_TEST")" -eq 1 ]
+  [ "$(grep -c '^//aa-nas-01.local/documents ' "$FSTAB_TEST")" -eq 1 ]
+  [ "$(grep -c '^//aa-nas-01.local/code ' "$FSTAB_TEST")" -eq 1 ]
   run grep -q 'gitlab\|192.168.1.238' "$FSTAB_TEST"
   [ "$status" -eq 1 ]
   grep -q '^UUID=root / ext4 defaults 0 1$' "$FSTAB_TEST"
@@ -229,6 +269,50 @@ EOF
   cmp "$FSTAB_TEST" "$BATS_TEST_TMPDIR/first-fstab"
   [ "$(grep -c '^mount /mnt/truenas/code$' "$NAS_LOG")" -eq 1 ]
   [ "$(grep -c '^systemctl daemon-reload$' "$NAS_LOG")" -eq 1 ]
+}
+
+@test "macOS NAS setup passes the password through stdin and stops on keychain errors" {
+  export NAS_INPUT="$BATS_TEST_TMPDIR/security-input"
+  export NAS_AUTOMOUNT="$BATS_TEST_TMPDIR/automount"
+  OP_TEST_PASSWORD=$(printf '%s\n%s' "quotes'\"\\ spaces" "\$(touch injected)")
+  export OP_TEST_PASSWORD
+  mkdir "$BATS_TEST_TMPDIR/bin"
+  cat >"$BATS_TEST_TMPDIR/bin/sudo" <<'EOF'
+#!/bin/sh
+case "$1" in
+  security)
+    [ "$#" -eq 2 ] && [ "$2" = -i ] || exit 2
+    cat >"$NAS_INPUT"
+    exit "${SECURITY_FAIL:-0}"
+    ;;
+  tee) cat >/dev/null ;;
+  chmod|mkdir|grep) exit 0 ;;
+  automount) touch "$NAS_AUTOMOUNT" ;;
+  *) exit 1 ;;
+esac
+EOF
+  chmod +x "$BATS_TEST_TMPDIR/bin/sudo"
+  render personal darwin brew "$ROOT/home/.chezmoiscripts/run_onchange_after_setup-nas-smb.sh.tmpl" >"$BATS_TEST_TMPDIR/nas.sh"
+  env PATH="$BATS_TEST_TMPDIR/bin:$PATH" sh "$BATS_TEST_TMPDIR/nas.sh"
+  python3 - <<'PY'
+import os
+import shlex
+from pathlib import Path
+
+command = Path(os.environ["NAS_INPUT"]).read_text()
+assert len(command.splitlines()) == 1
+args = shlex.split(command)
+assert args[:9] == ["add-internet-password", "-U", "-a", "aaron", "-s", "aa-nas-01.local", "-D", "Network Password", "-r"]
+assert args[9:11] == ["smb ", "-X"]
+assert bytes.fromhex(args[11]).decode() == os.environ["OP_TEST_PASSWORD"]
+assert args[12:] == ["/Library/Keychains/System.keychain"]
+PY
+  [ -f "$NAS_AUTOMOUNT" ]
+  [ ! -e injected ]
+  rm "$NAS_AUTOMOUNT"
+  run env PATH="$BATS_TEST_TMPDIR/bin:$PATH" SECURITY_FAIL=42 sh "$BATS_TEST_TMPDIR/nas.sh"
+  [ "$status" -eq 42 ]
+  [ ! -e "$NAS_AUTOMOUNT" ]
 }
 
 @test "compress and extract round-trip spaced paths without overwriting existing files" {
