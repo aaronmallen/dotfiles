@@ -10,6 +10,15 @@ load helper
   [ "$hook" = "$ROOT/home/.bootstrap.sh" ]
 }
 
+@test "init selects 1Password mode from the service account environment" {
+  unset OP_SERVICE_ACCOUNT_TOKEN
+  cm init
+  [ "$(chezmoi --config "$BATS_TEST_TMPDIR/chezmoi.toml" dump-config --format json | jq -r .onepassword.mode)" = account ]
+  export OP_SERVICE_ACCOUNT_TOKEN=test-service-account-token
+  cm init
+  [ "$(chezmoi --config "$BATS_TEST_TMPDIR/chezmoi.toml" dump-config --format json | jq -r .onepassword.mode)" = service ]
+}
+
 @test "fresh init applies from a custom checkout and runs bootstrap before templates" {
   source="$BATS_TEST_TMPDIR/fork checkout"
   mkdir -p "$source/home"

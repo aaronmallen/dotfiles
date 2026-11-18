@@ -23,6 +23,7 @@ PATH = {{ printf "%s/.local/bin:%s/mise/shims:/opt/homebrew/bin:/usr/local/bin:%
 
 [onepassword]
 command = {{ joinPath .chezmoi.workingTree "home" ".onepassword.sh" | quote }}
+mode = {{ if env "OP_SERVICE_ACCOUNT_TOKEN" }}"service"{{ else }}"account"{{ end }}
 
 [data]
 fullName = {{ $fullName | quote }}

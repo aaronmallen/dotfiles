@@ -24,19 +24,13 @@ or local plan, follow the site's and fix or delete the local copy.
 
 ## Secrets and 1Password Vaults
 
-Use fnox to read secrets. The two 1Password vaults have separate service accounts:
+Use fnox to read secrets. The `Headless` 1Password vault holds development, machine setup, agent and automation
+credentials. Use the `op` fnox provider; the former `Agents` vault no longer exists.
 
-| Vault | Purpose | fnox provider | Service-account secret |
-| --- | --- | --- | --- |
-| Headless | Routine development and machine setup | `headless` | `OP_HEADLESS_SERVICE_ACCOUNT_TOKEN` |
-| Agents | Agent and automation credentials | `agents` | `OP_AGENTS_SERVICE_ACCOUNT_TOKEN` |
+fnox exports `OP_SERVICE_ACCOUNT_TOKEN` into the environment. Call `op` directly; it uses that token automatically.
+Read other configured secrets with `fnox get <NAME>`. Do not read the OS keychain directly.
 
-Read configured secrets with `fnox get <NAME>`. When calling `op` directly, read the matching service-account
-secret through fnox and pass it as `OP_SERVICE_ACCOUNT_TOKEN` only to that process. Do not read the OS keychain
-directly or substitute one vault's account for the other.
-
-Both service-account secrets use `env = false`. Never export them globally, print secrets, or write them into
-logs, memory, artifacts or tracked files.
+Never print secrets or the full environment, or write secrets into logs, memory, artifacts or tracked files.
 
 ## Rex Sessions
 
