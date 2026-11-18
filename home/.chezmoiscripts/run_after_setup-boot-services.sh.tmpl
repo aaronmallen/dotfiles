@@ -1,0 +1,63 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+set -eu
+
+if ! command -v systemctl >/dev/null 2>&1 ||
+  ! systemctl show --property=Version --value >/dev/null 2>&1; then
+  echo "Boot services: skipping setup; systemd is unavailable."
+  exit 0
+fi
+
+if [ "$(systemctl show tailscaled.service --property=LoadState --value 2>/dev/null)" = loaded ]; then
+  if ! sudo systemctl enable --now tailscaled.service; then
+    echo "Boot services: could not enable/start tailscaled; retry chezmoi apply after fixing the error." >&2
+  fi
+else
+  echo "Boot services: skipping tailscaled; its service is not installed."
+fi
+
+if [ ! -x /usr/bin/rex ]; then
+  echo "Boot services: skipping Rex; /usr/bin/rex is not installed."
+  exit 0
+fi
+
+if ! systemctl --user show-environment >/dev/null 2>&1; then
+  echo "Boot services: Rex setup pending; the systemd user manager is unavailable. Retry chezmoi apply from a user login."
+  exit 0
+fi
+
+if ! systemctl --user daemon-reload; then
+  echo "Boot services: Rex setup pending; could not reload user units." >&2
+  exit 0
+fi
+
+for unit in rex.service rex.socket; do
+  if [ "$(systemctl --user show "$unit" --property=LoadState --value 2>/dev/null)" != loaded ]; then
+    echo "Boot services: Rex setup pending; $unit is missing or masked. Install the Rex package's user units, then retry chezmoi apply."
+    exit 0
+  fi
+done
+
+if ! command -v loginctl >/dev/null 2>&1; then
+  echo "Boot services: Rex setup pending; loginctl is unavailable."
+  exit 0
+fi
+
+user=$(id -un)
+if [ "$(loginctl show-user "$user" --property=Linger --value 2>/dev/null)" != yes ]; then
+  if ! sudo loginctl enable-linger "$user"; then
+    echo "Boot services: Rex setup pending; could not enable lingering for $user." >&2
+    exit 0
+  fi
+fi
+
+if ! systemctl --user enable rex.service rex.socket; then
+  echo "Boot services: Rex setup pending; could not enable its user units." >&2
+  exit 0
+fi
+
+echo "Boot services: Rex service and socket enabled for boot, with Tailscale."
+echo "Rex handover pending until its next start: no server or socket was started, stopped, or restarted."
+echo "Keep current sessions running; after you finish them, reboot when ready to hand over to systemd."
+echo "First-time authorization is interactive: run sudo tailscale up for the host and follow Rex's Tailscale login URL in journalctl --user -u rex.service."
+{{ end -}}

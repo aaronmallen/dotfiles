@@ -120,6 +120,24 @@ Chezmoi also processes the paths listed in `home/.chezmoiremove`.
 
 The generated config enables Git auto-commit and auto-push for chezmoi commands that change the source state.
 
+### Linux boot services
+
+On Linux with systemd, each apply enables and starts an installed `tailscaled.service`.
+With the Rex package installed at `/usr/bin/rex` and its user units available, it also enables lingering for the
+current user and enables `rex.service` and `rex.socket` for boot. Sudo uses the usual password prompt.
+Missing tools or an unavailable user manager produce a notice; a later apply retries setup.
+
+The managed `~/.config/systemd/user/rex.service.d/zz-dotfiles-tailscale.conf` sets Rex's startup flags to enable
+its embedded Tailscale endpoint as `%H-rex`. It sorts after older `10-tailscale.conf` and `override.conf` files,
+replacing their `ExecStart` while preserving their other settings. Keep later drop-ins from overriding `ExecStart`.
+
+Apply never starts, stops, or restarts Rex or its socket, even if a detached server owns the socket.
+It reports the pending handover. Finish your sessions, then reboot when ready for systemd to take over.
+Socket activation alone does not start the embedded endpoint at boot, so both units must be enabled.
+
+Authorize the host interactively with `sudo tailscale up`. Rex is a separate Tailscale node; follow its login URL
+in `journalctl --user -u rex.service` after startup. Credentials and node state stay on the machine, outside dotfiles.
+
 ## Checks
 
 Install Zsh and [mise], then run:

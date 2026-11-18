@@ -11,6 +11,7 @@ Library
 
 {{if ne .chezmoi.os "linux" }}
 .config/autostart
+.config/systemd/user/rex.service.d/zz-dotfiles-tailscale.conf
 .config/vicinae
 .config/xorg
 {{ end }}
