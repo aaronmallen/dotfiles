@@ -22,6 +22,22 @@ or local plan, follow the site's and fix or delete the local copy.
   that already covers the work before you make another. Write a local file or a page only when I ask for one.
 - **When the server is not connected** or this connection lacks a tool, say so once, then use the local default.
 
+## Secrets and 1Password Vaults
+
+Use fnox to read secrets. The two 1Password vaults have separate service accounts:
+
+| Vault | Purpose | fnox provider | Service-account secret |
+| --- | --- | --- | --- |
+| Headless | Routine development and machine setup | `headless` | `OP_HEADLESS_SERVICE_ACCOUNT_TOKEN` |
+| Agents | Agent and automation credentials | `agents` | `OP_AGENTS_SERVICE_ACCOUNT_TOKEN` |
+
+Read configured secrets with `fnox get <NAME>`. When calling `op` directly, read the matching service-account
+secret through fnox and pass it as `OP_SERVICE_ACCOUNT_TOKEN` only to that process. Do not read the OS keychain
+directly or substitute one vault's account for the other.
+
+Both service-account secrets use `env = false`. Never export them globally, print secrets, or write them into
+logs, memory, artifacts or tracked files.
+
 ## Rex Sessions
 
 At the start of every chat, check `REX_SESSION` and `REX_BLOCK`. If set, run
