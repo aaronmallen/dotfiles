@@ -1,7 +1,6 @@
 {{- if eq .email "hello@aaronmallen.me" -}}
-{{ range $host := list "aa-pc-01" "aa-pc-02" "aa-pc-03" "aa-nas-01" "aa-app-01" -}}
+{{ range $host := list "aa-pc-01" "aa-pc-02" "aa-pc-03" "aa-nas-01" "aa-app-01" "aa-phone-01" "aa-tab-01" -}}
 {{ onepasswordRead (printf "op://Headless/id_ed25519_%s/public key" $host) }} aaron@{{ $host }}
 {{ end -}}
-{{ onepasswordRead "op://Headless/id_25519_aa-phone-01/public key" }} aaron@aa-phone-01
 {{- else if eq .email "aallen@creditninja.com" }}{{ onepasswordRead "op://Headless/nfkdrhyf4iotcpprwnsp2c7jt4/public key" }} aallen@creditninja.com
 {{- end }}
