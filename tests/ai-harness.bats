@@ -3,7 +3,7 @@
 load helper
 
 prepare_harness() {
-  render container linux apt "$ROOT/home/.chezmoiscripts/run_after_setup-ai-harness.zsh.tmpl" |
+  render work linux apt "$ROOT/home/.chezmoiscripts/run_after_setup-ai-harness.zsh.tmpl" |
     sed '/^if command -v claude /,$d' >"$BATS_TEST_TMPDIR/harness.zsh"
   export CLAUDE_CONFIG_DIR="$HOME/.config/claude"
   export CODEX_HOME="$HOME/.config/codex"

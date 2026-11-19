@@ -1,5 +1,36 @@
 **/README.md
 
+{{ if has .profile (list "app" "dev" "rnr") }}
+.chezmoiscripts/import-gpg-keys.sh
+.chezmoiscripts/install-fonts.sh
+.chezmoiscripts/setup-finder.zsh
+.chezmoiscripts/setup-power.zsh
+.chezmoiscripts/setup-raycast-rex.zsh
+.chezmoiscripts/setup-rex-themes.zsh
+.chezmoiscripts/setup-session-env.zsh
+.chezmoiscripts/store-op-headless-token.sh
+.config/autostart
+.config/ghostty
+.config/gtk
+.config/jetbrains
+.config/macos
+.config/vicinae
+.config/xorg
+.config/zed
+Library
+{{ end }}
+
+{{ if has .profile (list "app" "rnr") }}
+.chezmoiscripts/setup-ai-harness.zsh
+.config/agents
+.config/claude
+.config/codex
+.config/copilot
+.config/opencode
+.config/serena
+.local/share/serena
+{{ end }}
+
 {{ if ne .chezmoi.os "darwin" }}
 .config/macos
 .config/pkgconfig

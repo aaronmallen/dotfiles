@@ -1,6 +1,7 @@
 return {
   {
     "zbirenbaum/copilot.lua",
+    enabled = vim.fn.executable "node" == 1,
     cmd = "Copilot",
     event = "InsertEnter",
     opts = {

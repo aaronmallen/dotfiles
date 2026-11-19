@@ -1,5 +1,5 @@
 default-cache-ttl 600
 max-cache-ttl 7200
-{{- if eq .chezmoi.os "darwin" }}
+{{- if and (eq .chezmoi.os "darwin") (hasKey (includeTemplate "packages" . | fromJson) "pinentry-mac") }}
 pinentry-program {{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/bin/pinentry-mac
 {{- end }}

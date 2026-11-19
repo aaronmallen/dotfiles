@@ -14,7 +14,7 @@ setup() {
 fullName = "Dotfiles Test"
 email = "test@example.com"
 packageManager = "apt"
-profile = "container"
+profile = "work"
 EOF
 }
 

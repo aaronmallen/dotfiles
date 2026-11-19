@@ -5,10 +5,15 @@ set -euo pipefail
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
+desktop=true
+case "${1:-}" in
+app | dev | rnr) desktop=false ;;
+esac
+
 case "$(uname -s)" in
 Darwin)
   packages=()
-  if [[ ! -d /Applications/1Password.app && ! -d "$HOME/Applications/1Password.app" ]]; then
+  if "$desktop" && [[ ! -d /Applications/1Password.app && ! -d "$HOME/Applications/1Password.app" ]]; then
     packages+=(1password)
   fi
   command -v op >/dev/null || packages+=(1password-cli)
@@ -34,7 +39,9 @@ Darwin)
   ;;
 Linux)
   packages=()
-  command -v 1password >/dev/null || packages+=(1password)
+  if "$desktop" && ! command -v 1password >/dev/null; then
+    packages+=(1password)
+  fi
   command -v op >/dev/null || packages+=(1password-cli)
   ((${#packages[@]})) || exit 0
   if command -v apt-get >/dev/null; then

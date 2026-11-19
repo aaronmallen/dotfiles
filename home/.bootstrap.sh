@@ -72,4 +72,4 @@ if ! command -v jq >/dev/null; then
   mise install jq@latest
 fi
 
-bash "$(dirname "${BASH_SOURCE[0]}")/.install-password-manager.sh"
+bash "$(dirname "${BASH_SOURCE[0]}")/.install-password-manager.sh" "$@"

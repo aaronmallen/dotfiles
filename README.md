@@ -43,7 +43,8 @@ tests/                Bats tests and command stubs
 checkout root, so chezmoi uses this repo directly.
 
 The `read-source-state.pre` hook runs `home/.bootstrap.sh` before reading templates.
-It installs missing prerequisites, mise, jq, and the 1Password app and CLI through Homebrew, APT, or AUR.
+It installs missing prerequisites, mise, jq, and the 1Password CLI.
+Only `personal` and `work` also install the 1Password app.
 Run `chezmoi init` again in an existing checkout to add the hook to your config.
 
 Chezmoi names describe how to install a file. For example, `private_dot_config` becomes `~/.config`,
@@ -68,16 +69,20 @@ The initial config asks for a name, email address, and profile:
 
 | Profile | Purpose |
 | --- | --- |
+| `app` | Headless shell and admin tools. Deploy services separately. |
+| `dev` | Headless development, including jj, AI clients, and their Node and Python dependencies. |
 | `personal` | Personal packages, secrets, MCP servers, and NAS setup. |
+| `rnr` | Headless shell and admin tools. Register the CI runner separately. |
 | `work` | Work packages and integrations, including Slack, Datadog, and Everflow. |
-| `container` | Shared configuration without personal- or work-only additions. |
 
 macOS uses Homebrew. Linux offers APT, Homebrew, paru, or yay. The ignore rules select files for the chosen OS and
-package manager. All profiles share the base tool list; `container` is not a minimal package set.
+package manager. If you used the retired `container` profile, run `chezmoi init` to choose its replacement.
 
-`home/.chezmoidata/packages.yml` holds system packages, mise tools, and Ruby gems in alphabetical order.
-Each entry can restrict `profiles` or `platforms`; omitted restrictions include all profiles or platforms.
-The package templates generate sorted Brewfile, APT, AUR, mise, and gem lists from this data.
+`home/.chezmoidata/packages.yml` holds system packages and mise tools in alphabetical order.
+Each entry must list its `profiles`. Use `default` for a package every profile needs. It is not a selectable profile.
+Optional `platforms` narrow that list by OS. Write lists with one `-` item per line.
+Docker belongs to `default`; every profile includes it.
+The package templates generate sorted Brewfile, APT, AUR, and mise lists from this data.
 APT entries can restrict the distribution and minimum release, as Ghostty does for Ubuntu 26.04.
 Keep mise settings in its config template and bootstrap prerequisites in `home/.bootstrap.sh`.
 
@@ -100,6 +105,12 @@ For profiles that read secrets, enable 1Password desktop app integration before 
 run `chezmoi init` without `--apply`, then `chezmoi data` to install prerequisites through the hook. Sign in with
 `eval "$(op signin)"` (or `eval "$(op account add --signin)"` for a new account), then run `chezmoi apply`.
 If a secret lookup stops the first apply, sign in and run `chezmoi apply` again.
+
+On `app`, `dev`, and `rnr`, provision 1Password access for the admin account before applying.
+For service-account mode, export `OP_SERVICE_ACCOUNT_TOKEN` before `chezmoi init`.
+These profiles skip desktop setup and the automatic signing-key import.
+Provide a signing key separately if you sign commits.
+On `dev`, supply `CONTEXT7_API_KEY` and `GITHUB_MCP_TOKEN` if you use those MCP servers.
 
 From an existing checkout, run `chezmoi init --source "$PWD" --apply` to reuse it.
 Apply processes `.chezmoiremove` and runs the package hooks, including upgrades and package cleanup.

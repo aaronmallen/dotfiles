@@ -45,7 +45,7 @@ EOF
     aallen@creditninja.com) key=35C4F5CC3932DF34 ;;
     *) key= ;;
     esac
-    overrides=$(data container linux apt | jq --arg email "$email" '. + {email: $email}')
+    overrides=$(data dev linux apt | jq --arg email "$email" '. + {email: $email}')
     cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_config/private_git/private_config.tmpl" >"$BATS_TEST_TMPDIR/gitconfig"
     cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_config/private_jj/private_config.toml.tmpl" >"$BATS_TEST_TMPDIR/jj.toml"
     if [ -n "$key" ]; then
@@ -73,7 +73,7 @@ EOF
 
 @test "templates render and parse for each profile on macOS and Linux" {
   for os in darwin linux; do
-    for profile in personal work container; do
+    for profile in app dev personal rnr work; do
       for manager in brew apt paru yay; do
         [[ "$os:$manager" == darwin:brew || "$os" == linux ]] || continue
         while IFS= read -r -d '' file; do
@@ -93,7 +93,7 @@ EOF
 }
 
 @test "personal secrets and MCP servers stay in their profiles" {
-  for profile in personal work container; do
+  for profile in app dev personal rnr work; do
     render "$profile" linux apt "$ROOT/home/private_dot_config/private_fnox/private_config.toml.tmpl" >"$BATS_TEST_TMPDIR/fnox.toml"
     render "$profile" linux apt "$ROOT/home/private_dot_config/private_opencode/private_opencode.json.tmpl" >"$BATS_TEST_TMPDIR/opencode.json"
     if [ "$profile" = personal ]; then
@@ -116,7 +116,7 @@ EOF
   for platform in darwin:brew linux:apt linux:paru linux:yay; do
     os=${platform%:*}
     manager=${platform#*:}
-    cm --override-data "$(data container "$os" "$manager")" managed --exclude scripts,externals >"$BATS_TEST_TMPDIR/managed"
+    cm --override-data "$(data work "$os" "$manager")" managed --exclude scripts,externals >"$BATS_TEST_TMPDIR/managed"
     if [ "$os" = darwin ]; then
       grep -q 'Library/LaunchAgents/com.aaron.session-env.plist' "$BATS_TEST_TMPDIR/managed"
       ! grep -q '.config/autostart/' "$BATS_TEST_TMPDIR/managed"
@@ -179,7 +179,7 @@ EOF
     mkdir -p "$(dirname "$agent")"
     touch "$agent"
     for email in hello@aaronmallen.me aallen@creditninja.com test@example.com; do
-      overrides=$(data container "$os" apt | jq --arg email "$email" '.email = $email | .chezmoi.hostname = "unknown"')
+      overrides=$(data dev "$os" apt | jq --arg email "$email" '.email = $email | .chezmoi.hostname = "unknown"')
       cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_ssh/private_config.tmpl" >"$BATS_TEST_TMPDIR/ssh"
       ssh -G -F "$BATS_TEST_TMPDIR/ssh" example.com >"$BATS_TEST_TMPDIR/effective"
       grep -Fx 'identityagent none' "$BATS_TEST_TMPDIR/effective"
@@ -364,7 +364,7 @@ PY
 exit "${MISE_FAIL:-0}"
 EOF
   chmod +x "$BATS_TEST_TMPDIR/bin/brew" "$BATS_TEST_TMPDIR/bin/mise"
-  render container linux brew "$ROOT/home/.chezmoiscripts/run_onchange_after_install-packages.zsh.tmpl" >"$BATS_TEST_TMPDIR/packages.zsh"
+  render dev linux brew "$ROOT/home/.chezmoiscripts/run_onchange_after_install-packages.zsh.tmpl" >"$BATS_TEST_TMPDIR/packages.zsh"
   run env PATH="$BATS_TEST_TMPDIR/bin:$PATH" zsh "$BATS_TEST_TMPDIR/packages.zsh"
   [ "$status" -eq 0 ]
   run env MISE_FAIL=42 PATH="$BATS_TEST_TMPDIR/bin:$PATH" zsh "$BATS_TEST_TMPDIR/packages.zsh"
@@ -383,7 +383,7 @@ EOF
   for tool in chezmoi apt-up mise-up; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
   done
-  render container linux apt "$ROOT/home/private_dot_local/private_bin/private_executable_all-up.tmpl" >"$BATS_TEST_TMPDIR/all-up"
+  render dev linux apt "$ROOT/home/private_dot_local/private_bin/private_executable_all-up.tmpl" >"$BATS_TEST_TMPDIR/all-up"
   export UPDATE_LOG="$BATS_TEST_TMPDIR/updates"
   run env PATH="$BATS_TEST_TMPDIR/bin:$PATH" sh "$BATS_TEST_TMPDIR/all-up"
   [ "$status" -eq 0 ]

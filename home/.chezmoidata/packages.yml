@@ -1,41 +1,78 @@
 packages:
   "1password":
+    profiles:
+      - personal
+      - work
     apt: "1password"
     aur: "1password"
     brew:
       cask: "1password"
   "1password-cli":
+    profiles:
+      - default
     apt: "1password-cli"
     aur: "1password-cli"
     brew:
       cask: "1password-cli"
   "7zip":
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       "7zip": latest
   ack:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: ack
   age:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       age: latest
   alsa:
+    profiles:
+      - personal
+      - work
     platforms:
       - linux
     apt: libasound2-dev
     aur: alsa-lib
   appcleaner:
+    profiles:
+      - personal
+      - work
     brew:
       cask: appcleaner
   asciinema:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       pipx:asciinema: latest
   ast-grep:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       ast-grep: latest
   atuin:
+    profiles:
+      - default
     mise:
       atuin: latest
   aube:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       aube: latest
   balenaetcher:
@@ -44,59 +81,89 @@ packages:
     brew:
       cask: balenaetcher
   bat:
+    profiles:
+      - default
     mise:
       bat: latest
   bat-extras:
+    profiles:
+      - default
     mise:
       bat-extras: latest
-  bcrypt:
-    gem: bcrypt
-  brakeman:
-    gem: brakeman
   bruno:
+    profiles:
+      - personal
+      - work
     aur: bruno-bin
     brew:
       cask: bruno
   btop:
+    profiles:
+      - default
     apt: btop
     aur: btop
     brew:
       formula: btop
-  bun:
-    mise:
-      bun: latest
   caddy:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       caddy: latest
   chatgpt:
+    profiles:
+      - personal
+      - work
     brew:
       cask: chatgpt
   chezmoi:
+    profiles:
+      - default
     mise:
       chezmoi: latest
   claude-code:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       claude:
         version: latest
         minimum_release_age: "0d"
   claude-desktop:
+    profiles:
+      - personal
+      - work
     aur: claude-desktop
     brew:
       cask: claude
   cloudflared:
+    profiles:
+      - default
     mise:
       cloudflared: latest
-  code-scanning-rubocop:
-    gem: code-scanning-rubocop
   codesnap:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       github:mistricky/codesnap: latest
   codex:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       codex:
         version: latest
         minimum_release_age: "0d"
   codiff:
+    profiles:
+      - dev
+      - personal
+      - work
     aur: codiff-bin
     brew:
       cask: nkzw-tech/tap/codiff
@@ -108,24 +175,24 @@ packages:
       name: ColorSlurp
       id: 1287239339
   copier:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       copier: latest
-  crystal:
-    mise:
-      crystal: latest
   curl:
+    profiles:
+      - default
     apt: curl
     aur: curl
     brew:
       formula: curl
-  debug:
-    gem: debug
   delta:
+    profiles:
+      - default
     mise:
       delta: latest
-  deno:
-    mise:
-      deno: latest
   discord:
     profiles:
       - personal
@@ -134,54 +201,76 @@ packages:
     brew:
       cask: discord
   docker:
+    profiles:
+      - default
     apt: docker.io
     aur: docker
     brew:
       formula: docker
   docker-compose:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: docker-compose
   doctl:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       doctl: latest
-  dotenv:
-    gem: dotenv
-  elixir:
-    mise:
-      elixir: latest
   entr:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: entr
-  erlang:
-    mise:
-      erlang: latest
-  factory_bot:
-    gem: factory_bot
-  factory_bot_rails:
-    gem: factory_bot_rails
-  faker:
-    gem: faker
   fd:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       fd: latest
   figma:
+    profiles:
+      - personal
+      - work
     brew:
       cask: figma
   fnox:
+    profiles:
+      - default
     mise:
       fnox: latest
   fzf:
+    profiles:
+      - default
     mise:
       fzf: latest
   gcc:
+    profiles:
+      - dev
+      - personal
+      - work
     apt: gcc
     aur: gcc
     brew:
       formula: gcc
   gh:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       gh: latest
   ghostty:
+    profiles:
+      - personal
+      - work
     apt:
       name: ghostty
       distro: ubuntu
@@ -190,90 +279,151 @@ packages:
     brew:
       cask: ghostty
   git:
+    profiles:
+      - default
     apt: git
     aur: git
     brew:
       formula: git
   git-lfs:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       git-lfs: latest
   github-desktop:
+    profiles:
+      - personal
+      - work
     aur: github-desktop-bin
     brew:
       cask: github
-  github-markup:
-    gem: github-markup
   glow:
+    profiles:
+      - default
     mise:
       glow: latest
   gnupg:
+    profiles:
+      - default
     apt: gnupg
     aur: gnupg
     brew:
       formula: gnupg
-  go:
-    mise:
-      go: latest
   google-chrome:
+    profiles:
+      - personal
+      - work
     aur: google-chrome
     brew:
       cask: google-chrome
   google-drive:
+    profiles:
+      - personal
+      - work
     brew:
       cask: google-drive
   gpg:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: gpg
-  hanami:
-    gem: hanami
   icu:
+    profiles:
+      - personal
+      - work
     apt: icu-devtools
     aur: icu
     brew:
       formula: icu4c
   imagemagick:
+    profiles:
+      - dev
+      - personal
+      - work
     apt: imagemagick
     aur: imagemagick
     brew:
       formula: imagemagick
-  jekyll:
-    gem: jekyll
   jetbrains-toolbox:
+    profiles:
+      - personal
+      - work
     aur: jetbrains-toolbox
     brew:
       cask: jetbrains-toolbox
   jj:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       jj: latest
   jq:
+    profiles:
+      - default
     mise:
       jq: latest
   kondo:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       github:tbillington/kondo: latest
   kubectl:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       kubectl: latest
   kubectx:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       kubectx: latest
   leaf:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       github:DeepanshuMishraa/leaf: latest
   libpq:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: libpq
   libtool:
+    profiles:
+      - dev
+      - personal
+      - work
     apt: libtool
     aur: libtool
     brew:
       formula: libtool
   libyaml:
+    profiles:
+      - dev
+      - personal
+      - work
     apt: libyaml-dev
     aur: libyaml
     brew:
       formula: libyaml
   lig:
+    profiles:
+      - personal
+      - work
     mise:
       github:KevenGoncalves/lig: latest
   linear:
@@ -282,135 +432,163 @@ packages:
     brew:
       cask: linear
   lsd:
+    profiles:
+      - default
     mise:
       lsd: latest
-  lua:
-    mise:
-      lua: latest
   mas:
+    profiles:
+      - personal
+      - work
     brew:
       formula: mas
   matcha:
+    profiles:
+      - personal
+      - work
     aur: matcha-client-bin
     brew:
       formula: floatpane/matcha/matcha
       trusted: true
-  mdl:
-    gem: mdl
   meld:
+    profiles:
+      - personal
+      - work
     apt: meld
     aur: meld
     brew:
       cask: meld
-  mingw-w64:
-    aur: mingw-w64-gcc
-    brew:
-      formula: mingw-w64
   minikube:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       minikube: latest
   neovim:
+    profiles:
+      - default
     mise:
       neovim: latest
   node:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       node: latest
   obsidian:
+    profiles:
+      - personal
+      - work
     aur: obsidian
     brew:
       cask: obsidian
   opencode:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       opencode:
         version: latest
         minimum_release_age: "0d"
+  openssh:
+    profiles:
+      - default
+    apt: openssh-client
+    aur: openssh
   openssl:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: openssl
   orbstack:
+    profiles:
+      - personal
+      - work
     brew:
       cask: orbstack
   ossp-uuid:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: ossp-uuid
   pinentry-mac:
+    profiles:
+      - personal
+      - work
     brew:
       formula: pinentry-mac
   pipx:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       pipx: latest
   pitchfork:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       pitchfork: latest
   pkg-config:
+    profiles:
+      - dev
+      - personal
+      - work
     apt: pkg-config
     aur: pkgconf
     brew:
       formula: pkg-config
   postgres:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       postgres: "18"
   pygments:
+    profiles:
+      - personal
+      - work
     apt: python3-pygments
     aur: python-pygments
     brew:
       formula: pygments
   python:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       python: latest
-  rails:
-    gem: rails
   raycast:
+    profiles:
+      - personal
+      - work
     brew:
       cask: raycast
-  rbs:
-    gem: rbs
-  rbs-inline:
-    gem: rbs-inline
   readline:
+    profiles:
+      - dev
+      - personal
+      - work
     apt: libreadline-dev
     aur: readline
     brew:
       formula: readline
-  redcarpet:
-    gem: redcarpet
   ripgrep:
+    profiles:
+      - default
     mise:
       ripgrep: latest
-  rspec:
-    gem: rspec
-  rspec-rails:
-    gem: rspec-rails
-  rubocop:
-    gem: rubocop
-  rubocop-factory_bot:
-    gem: rubocop-factory_bot
-  rubocop-faker:
-    gem: rubocop-faker
-  rubocop-on-rbs:
-    gem: rubocop-on-rbs
-  rubocop-ordered_methods:
-    gem: rubocop-ordered_methods
-  rubocop-performance:
-    gem: rubocop-performance
-  rubocop-rails:
-    gem: rubocop-rails
-  rubocop-rake:
-    gem: rubocop-rake
-  rubocop-rspec:
-    gem: rubocop-rspec
-  rubocop-rspec_rails:
-    gem: rubocop-rspec_rails
-  rubocop-yard:
-    gem: rubocop-yard
-  ruby:
-    mise:
-      ruby:
-        version: latest
-        postinstall: 'xargs gem install < "${XDG_CONFIG_HOME:-$HOME/.config}/ruby/default_gems"'
-  rust:
-    mise:
-      rust: latest
   rustdesk:
     profiles:
       - personal
@@ -418,6 +596,10 @@ packages:
     brew:
       cask: rustdesk
   rustfs-client:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: rustfs/tap/rc
       trusted: true
@@ -428,28 +610,35 @@ packages:
       name: Sequence Diagram for Mac
       id: 1195426709
   serena:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       pypi:serena-agent:
         version: latest
         python: "3.13"
   shellcheck:
+    profiles:
+      - personal
+      - work
     mise:
       shellcheck: latest
-  shoulda-matchers:
-    gem: shoulda-matchers
-  simplecov:
-    gem: simplecov
-  simplecov-lcov:
-    gem: simplecov-lcov
   slack:
     profiles:
       - work
     brew:
       cask: slack
   sqlite:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       sqlite: latest
   starship:
+    profiles:
+      - default
     mise:
       starship: latest
   steam:
@@ -458,15 +647,18 @@ packages:
     aur: steam
     brew:
       cask: steam
-  steep:
-    gem: steep
   tailscale:
     profiles:
+      - dev
       - personal
     aur: tailscale
     brew:
       cask: tailscale-app
   tangled:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: alyraffauf/tap/tg
       trusted: true
@@ -478,26 +670,45 @@ packages:
     brew:
       cask: telegram
   tlrc:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       tlrc: latest
   tree-sitter:
+    profiles:
+      - default
     mise:
       tree-sitter: latest
   usage:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       usage: latest
   vicinae:
+    profiles:
+      - personal
+      - work
     aur: vicinae
   vim:
+    profiles:
+      - dev
+      - personal
+      - work
     apt: vim
     aur: vim
     brew:
       formula: vim
   watchexec:
+    profiles:
+      - dev
+      - personal
+      - work
     mise:
       watchexec: latest
-  webrick:
-    gem: webrick
   xcode:
     profiles:
       - personal
@@ -505,24 +716,34 @@ packages:
       name: Xcode
       id: 497799835
   xdg-ninja:
+    profiles:
+      - personal
+      - work
     mise:
       aqua:b3nj5m1n/xdg-ninja: latest
-  yard:
-    gem: yard
-  yarn:
-    mise:
-      yarn: latest
   zed:
+    profiles:
+      - personal
+      - work
     aur: zed
     brew:
       cask: zed
   zlib:
+    profiles:
+      - dev
+      - personal
+      - work
     brew:
       formula: zlib
   zoom:
+    profiles:
+      - personal
+      - work
     aur: zoom
     brew:
       cask: zoom
   zoxide:
+    profiles:
+      - default
     mise:
       zoxide: latest

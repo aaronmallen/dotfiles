@@ -1,5 +1,6 @@
 [providers.op]
 type = "1password"
+{{- if not (has .profile (list "app" "dev" "rnr")) }}
 token = { secret = "OP_SERVICE_ACCOUNT_TOKEN" }
 
 [providers.keychain]
@@ -17,3 +18,4 @@ FONTAWESOME_PACKAGE_TOKEN = { provider = "op", value = "op://Headless/u4zocwzcm2
 GITHUB_TOKEN = { provider = "op", value = "op://Headless/btrlqdcjdfgebwsfhomcvj274y/credential" }
 GITHUB_MCP_TOKEN = { provider = "op", value = "op://Headless/btrlqdcjdfgebwsfhomcvj274y/credential" }
 OP_SERVICE_ACCOUNT_TOKEN = { provider = "keychain", value = "OP_SERVICE_ACCOUNT_TOKEN" }
+{{- end }}

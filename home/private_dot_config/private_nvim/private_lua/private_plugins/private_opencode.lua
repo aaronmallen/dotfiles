@@ -15,6 +15,7 @@ end
 return {
   {
     "nickjvandyke/opencode.nvim",
+    enabled = vim.fn.executable "opencode" == 1,
     dependencies = { "folke/snacks.nvim" },
     keys = {
       {

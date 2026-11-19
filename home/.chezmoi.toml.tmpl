@@ -9,14 +9,17 @@
 {{-   $packageManager = promptChoiceOnce . "packageManager" "Which package manager should be used?" $packageManagers -}}
 {{- end -}}
 
-{{- $profiles := list "personal" "work" "container" -}}
-{{- $profile := promptChoiceOnce . "profile" "What profile should be used?" $profiles -}}
+{{- $profiles := list "app" "dev" "personal" "rnr" "work" -}}
+{{- $profile := get . "profile" -}}
+{{- if not (has $profile $profiles) -}}
+{{-   $profile = promptChoice "What profile should be used?" $profiles -}}
+{{- end -}}
 
 sourceDir = {{ .chezmoi.workingTree | quote }}
 
 [hooks.read-source-state.pre]
 command = "bash"
-args = [{{ joinPath .chezmoi.workingTree "home" ".bootstrap.sh" | quote }}]
+args = [{{ joinPath .chezmoi.workingTree "home" ".bootstrap.sh" | quote }}, {{ $profile | quote }}]
 
 [scriptEnv]
 PATH = {{ printf "%s/.local/bin:%s/mise/shims:/opt/homebrew/bin:/usr/local/bin:%s" .chezmoi.homeDir (env "XDG_DATA_HOME" | default (joinPath .chezmoi.homeDir ".local" "share")) (env "PATH") | quote }}

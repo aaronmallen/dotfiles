@@ -62,6 +62,15 @@ EOF
   [[ $(<"$INSTALL_LOG") == *"paru -S --needed 1password 1password-cli"* ]]
 }
 
+@test "box bootstrap installs only the CLI on Linux" {
+  for tool in pacman paru; do
+    ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"
+  done
+  run env INSTALL_OS=Linux bash "$SCRIPT" app
+  [ "$status" -eq 0 ]
+  [[ $(<"$INSTALL_LOG") == *"paru -S --needed 1password-cli" ]]
+}
+
 @test "password manager hook installs the app when only the CLI exists" {
   for tool in apt-get sudo curl gpg dpkg op; do
     ln -s stub "$BATS_TEST_TMPDIR/bin/$tool"

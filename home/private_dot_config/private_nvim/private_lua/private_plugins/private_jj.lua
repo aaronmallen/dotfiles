@@ -1,6 +1,7 @@
 return {
   {
     "dont-be-evil-company/jujutsu.nvim",
+    enabled = vim.fn.executable "jj" == 1,
     keys = {
       {
         "<leader>jj",
@@ -17,6 +18,7 @@ return {
   },
   {
     "nicolasgb/jj.nvim",
+    enabled = vim.fn.executable "jj" == 1,
     version = "*",
     cmd = { "J", "Jdiff", "Jvdiff", "Jhdiff", "Jbrowse" },
     dependencies = { "folke/snacks.nvim", "esmuellert/codediff.nvim" },
