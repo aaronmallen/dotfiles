@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+
+: ${XDG_CONFIG_HOME:=${HOME}/.config}
+
+for package in mise {{ range $name, $_ := (includeTemplate "packages" . | fromJson) }}{{ $name | squote }} {{ end }}; do
+  topic=$package
+  case $package in
+    1password-cli) topic=op; cmd=(op completion zsh) ;;
+    atuin) cmd=(atuin gen-completions --shell zsh) ;;
+    bat) cmd=(bat --completion zsh) ;;
+    caddy|chezmoi|docker|doctl|git-lfs|kubectl|minikube|mise|tailscale|watchexec) cmd=("$package" completion zsh) ;;
+    delta) cmd=(delta --generate-completion zsh) ;;
+    gh) cmd=(gh completion --shell zsh) ;;
+    jj) cmd=(jj util completion zsh) ;;
+    mas) cmd=(mas --generate-completion-script zsh) ;;
+    opencode) cmd=(opencode --completions zsh) ;;
+    ripgrep) cmd=(rg --generate complete-zsh) ;;
+    starship) cmd=(starship completions zsh) ;;
+    *) continue ;;
+  esac
+  command -v "${cmd[1]}" >/dev/null || continue
+  mkdir -p "$XDG_CONFIG_HOME/$topic" && "${cmd[@]}" > "$XDG_CONFIG_HOME/$topic/_${cmd[1]}"
+done
+
+exit 0

@@ -83,6 +83,29 @@ bats_require_minimum_version 1.5.0
   [[ "$output" == *"package probe needs a non-empty profiles list"* ]]
 }
 
+@test "completions skip an unselected jj shim but run it on dev" {
+  bin="$BATS_TEST_TMPDIR/bin"
+  mkdir "$bin"
+  ln -s "$(command -v mkdir)" "$bin/mkdir"
+  cat >"$bin/jj" <<'EOF'
+#!/bin/sh
+echo "$0 $*"
+EOF
+  chmod +x "$bin/jj"
+  ln -s jj "$bin/rg"
+  for profile in app dev; do
+    hook="$BATS_TEST_TMPDIR/completions"
+    render "$profile" linux apt "$ROOT/home/.chezmoiscripts/run_after_setup-completions.zsh.tmpl" >"$hook"
+    env PATH="$bin" "$(command -v zsh)" -f "$hook"
+    grep -Fx "$bin/rg --generate complete-zsh" "$XDG_CONFIG_HOME/ripgrep/_rg"
+    if [[ "$profile" == app ]]; then
+      [ ! -e "$XDG_CONFIG_HOME/jj/_jj" ]
+    else
+      grep -Fx "$bin/jj util completion zsh" "$XDG_CONFIG_HOME/jj/_jj"
+    fi
+  done
+}
+
 @test "box profiles install the shell and admin tools plus their role packages" {
   for profile in app dev rnr; do
     cm --override-data "$(data "$profile" linux apt)" execute-template '{{ includeTemplate "packages" . }}' >"$BATS_TEST_TMPDIR/list"
