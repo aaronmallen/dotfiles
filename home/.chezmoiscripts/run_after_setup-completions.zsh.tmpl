@@ -8,7 +8,7 @@ for package in mise {{ range $name, $_ := (includeTemplate "packages" . | fromJs
     1password-cli) topic=op; cmd=(op completion zsh) ;;
     atuin) cmd=(atuin gen-completions --shell zsh) ;;
     bat) cmd=(bat --completion zsh) ;;
-    caddy|chezmoi|docker|doctl|git-lfs|kubectl|minikube|mise|tailscale|watchexec) cmd=("$package" completion zsh) ;;
+    caddy|chezmoi|docker|doctl|git-lfs|kubectl|minikube|mise|tailscale) cmd=("$package" completion zsh) ;;
     delta) cmd=(delta --generate-completion zsh) ;;
     gh) cmd=(gh completion --shell zsh) ;;
     jj) cmd=(jj util completion zsh) ;;
@@ -16,6 +16,7 @@ for package in mise {{ range $name, $_ := (includeTemplate "packages" . | fromJs
     opencode) cmd=(opencode --completions zsh) ;;
     ripgrep) cmd=(rg --generate complete-zsh) ;;
     starship) cmd=(starship completions zsh) ;;
+    watchexec) cmd=(watchexec --completions zsh) ;;
     *) continue ;;
   esac
   command -v "${cmd[1]}" >/dev/null || continue
