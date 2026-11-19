@@ -1,1 +1,8 @@
 .DS_Store
+{{ if eq .chezmoi.os "darwin" }}
+.config/rex/agents.lua
+.config/rex/sshpick.lua
+.local/bin/sshpick
+.local/share/sshpick/sshpick
+.local/share/rex/plugins/rex-agents
+{{ end }}
