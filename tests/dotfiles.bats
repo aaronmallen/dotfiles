@@ -206,11 +206,11 @@ EOF
   done
 }
 
-@test "personal authorized keys contain only the five machine identities" {
+@test "personal authorized keys contain only the six device identities" {
   overrides=$(data personal linux apt | jq '.email = "hello@aaronmallen.me"')
   cm --override-data "$overrides" execute-template --file "$ROOT/home/private_dot_ssh/private_authorized_keys.tmpl" >"$BATS_TEST_TMPDIR/authorized_keys"
-  [ "$(grep -c '^ssh-ed25519 ' "$BATS_TEST_TMPDIR/authorized_keys")" -eq 5 ]
-  for host in aa-pc-01 aa-pc-02 aa-pc-03 aa-nas-01 aa-app-01; do
+  [ "$(grep -c '^ssh-ed25519 ' "$BATS_TEST_TMPDIR/authorized_keys")" -eq 6 ]
+  for host in aa-pc-01 aa-pc-02 aa-pc-03 aa-nas-01 aa-app-01 aa-phone-01; do
     [ "$(grep -c " aaron@$host$" "$BATS_TEST_TMPDIR/authorized_keys")" -eq 1 ]
   done
   run grep -q 'hello@aaronmallen.me' "$BATS_TEST_TMPDIR/authorized_keys"
