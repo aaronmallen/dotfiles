@@ -160,6 +160,15 @@ EOF
   cmp "$HOME/.local/share/serena/serena_config.yml" "$BATS_TEST_TMPDIR/serena.yml"
 }
 
+@test "only macOS installs Rex session hooks" {
+  for os in darwin linux; do
+    for target in "$HOME/.config/claude/settings.json" "$HOME/.config/codex/hooks.json"; do
+      cm --override-data "$(data personal "$os" brew)" cat "$target" >"$BATS_TEST_TMPDIR/settings"
+      jq -e --arg os "$os" '[.hooks.SessionStart[].hooks[].command | select(contains("rex __internal session-start"))] | length == (if $os == "darwin" then 1 else 0 end)' "$BATS_TEST_TMPDIR/settings"
+    done
+  done
+}
+
 @test "SSH uses local keys without an agent for every profile and platform" {
   for os in darwin linux; do
     if [ "$os" = darwin ]; then

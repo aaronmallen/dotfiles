@@ -39,6 +39,11 @@
 {{-   $config = fromJson .chezmoi.stdin -}}
 {{- end -}}
 {{- $hooks := get $config "hooks" | default dict -}}
+{{- $start := get $hooks "SessionStart" | default list -}}
+{{- if and (eq .chezmoi.os "darwin") (not (contains "rex __internal session-start --agent codex " (toJson $start))) -}}
+{{-   $rex := dict "type" "command" "command" "/bin/sh -c 'rex __internal session-start --agent codex --feature-session-naming=false 2>/dev/null || true'" "timeout" 5 "statusMessage" "Loading Rex terminal context" -}}
+{{-   $_ := set $hooks "SessionStart" (append $start (dict "hooks" (list $rex))) -}}
+{{- end -}}
 {{- range $event, $groups := $serena -}}
 {{-   $kept := list -}}
 {{-   range get $hooks $event | default list -}}
