@@ -3,6 +3,20 @@
 
 load helper
 
+@test "switching to app removes stale lig and pitchfork startup hooks" {
+  hooks=("$HOME/.config/lig/init.zsh" "$HOME/.config/pitchfork/init.bash" "$HOME/.config/pitchfork/init.zsh")
+  for profile in personal app; do
+    cm --override-data "$(data "$profile" linux apt)" apply --parent-dirs "${hooks[@]}"
+    for hook in "${hooks[@]}"; do
+      if [[ "$profile" == personal ]]; then
+        [ -s "$hook" ]
+      else
+        [ ! -s "$hook" ]
+      fi
+    done
+  done
+}
+
 @test "zsh login shells keep Homebrew ahead of system commands" {
   cm --override-data '{"packageManager":"brew"}' apply --parent-dirs --exclude scripts,externals \
     "$HOME/.config/zsh/.zshenv" "$HOME/.config/zsh/.zprofile" "$HOME/.config/zsh/topics.zsh" \
