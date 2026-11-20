@@ -83,7 +83,7 @@ EOF
           case "$file" in
           *.zsh.tmpl) zsh -n "$BATS_TEST_TMPDIR/rendered" ;;
           *.sh.tmpl) sh -n "$BATS_TEST_TMPDIR/rendered" ;;
-          *.toml.tmpl) taplo lint --no-auto-config - <"$BATS_TEST_TMPDIR/rendered" ;;
+          *.toml.tmpl) taplo lint --no-auto-config --no-schema - <"$BATS_TEST_TMPDIR/rendered" ;;
           *.json.tmpl) prettier --parser json <"$BATS_TEST_TMPDIR/rendered" >/dev/null ;;
           esac
         done < <(find "$ROOT/home" -type f -name '*.tmpl' -print0)
