@@ -26,6 +26,7 @@ packages:
       - dev
       - personal
       - work
+    apt: ack
     brew:
       formula: ack
   age:
@@ -212,8 +213,8 @@ packages:
       - dev
       - personal
       - work
-    brew:
-      formula: docker-compose
+    mise:
+      github:docker/compose: latest
   doctl:
     profiles:
       - dev
@@ -226,6 +227,7 @@ packages:
       - dev
       - personal
       - work
+    apt: entr
     brew:
       formula: entr
   fd:
@@ -400,6 +402,7 @@ packages:
       - dev
       - personal
       - work
+    apt: libpq-dev
     brew:
       formula: libpq
   libtool:
@@ -497,6 +500,7 @@ packages:
       - dev
       - personal
       - work
+    apt: libssl-dev
     brew:
       formula: openssl
   orbstack:
@@ -510,6 +514,7 @@ packages:
       - dev
       - personal
       - work
+    apt: uuid-dev
     brew:
       formula: ossp-uuid
   pinentry-mac:
@@ -594,9 +599,8 @@ packages:
       - dev
       - personal
       - work
-    brew:
-      formula: rustfs/tap/rc
-      trusted: true
+    mise:
+      github:rustfs/cli: latest
   sequence-diagram:
     profiles:
       - personal
@@ -648,14 +652,21 @@ packages:
     aur: tailscale
     brew:
       cask: tailscale-app
+  tailscale-cli:
+    profiles:
+      - dev
+    platforms:
+      - linux
+    mise:
+      aqua:tailscale/tailscale: latest
   tangled:
     profiles:
       - dev
       - personal
       - work
-    brew:
-      formula: alyraffauf/tap/tg
-      trusted: true
+    mise:
+      go: latest
+      go:github.com/alyraffauf/tg/cmd/tg: latest
   telegram:
     profiles:
       - personal
@@ -727,6 +738,7 @@ packages:
       - dev
       - personal
       - work
+    apt: zlib1g-dev
     brew:
       formula: zlib
   zoom:

@@ -56,7 +56,7 @@ bats_require_minimum_version 1.5.0
     LC_ALL=C sort -cu "$BATS_TEST_TMPDIR/packages"
   done
   render personal darwin brew "$ROOT/home/private_dot_config/private_homebrew/private_Brewfile.tmpl" >"$BATS_TEST_TMPDIR/Brewfile"
-  grep -Fx 'brew "alyraffauf/tap/tg", trusted: true' "$BATS_TEST_TMPDIR/Brewfile"
+  grep -Fx 'brew "floatpane/matcha/matcha", trusted: true' "$BATS_TEST_TMPDIR/Brewfile"
   grep -Fx 'cask "nkzw-tech/tap/codiff", trusted: true' "$BATS_TEST_TMPDIR/Brewfile"
   grep -Fx 'mas "Xcode", id: 497799835' "$BATS_TEST_TMPDIR/Brewfile"
 
