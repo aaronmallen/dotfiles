@@ -420,12 +420,6 @@ packages:
     aur: libyaml
     brew:
       formula: libyaml
-  lig:
-    profiles:
-      - personal
-      - work
-    mise:
-      github:KevenGoncalves/lig: latest
   linear:
     profiles:
       - personal

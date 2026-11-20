@@ -1,5 +1,6 @@
 .DS_Store
 .config/ruby/default_gems
+.config/lig
 {{ if eq .chezmoi.os "darwin" }}
 .config/rex/agents.lua
 .config/rex/sshpick.lua

@@ -3,8 +3,8 @@
 
 load helper
 
-@test "switching to app removes stale lig and pitchfork startup hooks" {
-  hooks=("$HOME/.config/lig/init.zsh" "$HOME/.config/pitchfork/init.bash" "$HOME/.config/pitchfork/init.zsh")
+@test "switching to app removes stale pitchfork startup hooks" {
+  hooks=("$HOME/.config/pitchfork/init.bash" "$HOME/.config/pitchfork/init.zsh")
   for profile in personal app; do
     cm --override-data "$(data "$profile" linux apt)" apply --parent-dirs "${hooks[@]}"
     for hook in "${hooks[@]}"; do
